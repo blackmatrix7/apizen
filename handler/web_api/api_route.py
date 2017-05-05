@@ -102,8 +102,7 @@ class WebApiRoute(ApiBaseHandler):
             try:
                 # *args的函数参数
                 if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
-                    return method_func(body_data)
-                    # raise ApiSysError.unsupported_var_positional
+                    raise ApiSysError.unsupported_var_positional
                 # 参数没有默认值的情况
                 elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') \
                         and hasattr(v.default, '__name__') \

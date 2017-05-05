@@ -1,21 +1,17 @@
 # func2webapi
-简单的将python函数转换成webapi
-
-### 示例：
-
-pass
-
-### 更新日志：
-
-2017.05.15 项目初始提交
+快速将python函数转换成webapi
 
 ### 特性
 
 1. 统一的web api地址，支持接口版本管理
 2. 接口参数自动判断
 3. 统一的web api返回格式，提供接口异常代码及详细的异常信息
-4. 同时支持application/x-www-form-urlencoded和application/json的请求方式
+4. 同时支持application/x-www-form-urlencoded和application/json的请求方式，即支持以key/value的形式传参，也支持以json格式传参
 5. 绝大多数python函数可以直接转成为web api，减少接口开发工作量，专注业务逻辑实现
+
+### 更新日志
+
+2017.05.15 项目初始提交
 
 ### 原理说明
 
