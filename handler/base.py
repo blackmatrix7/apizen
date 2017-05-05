@@ -14,7 +14,7 @@ class BaseHandler(RequestHandler):
         pass
 
     def set_default_headers(self):
-        self.clear_header('Server')
+        pass
 
 
 class SysBaseHandler(BaseHandler):
