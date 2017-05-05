@@ -32,7 +32,7 @@ class WebApiRoute(ApiBaseHandler):
                 return False
 
         # API专属关键字
-        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v', 'client_id')
+        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'response_format', 'v', 'client_id')
 
         # access_token
         _access_token = self.get_argument('access_token', None)
@@ -45,7 +45,7 @@ class WebApiRoute(ApiBaseHandler):
         # 时间戳
         timestamp = self.get_argument('timestamp', None)
         # 数据格式
-        format_ = self.get_argument('format', 'json')
+        response_format_ = self.get_argument('response_format', 'json')
         # 接口版本
         v_ = self.get_argument('v', None)
         # client_id

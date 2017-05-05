@@ -18,7 +18,7 @@ class ApiDemo:
             'user_id': user_id,
             'name': name,
             'age': age
-        }, {'Hello': 'Python'}
+        }
 
     @staticmethod
     def demo2(**kwargs):
