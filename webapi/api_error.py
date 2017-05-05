@@ -73,16 +73,6 @@ class ApiSubError:
     unknown_error = ApiBaseError(code=2001, message='未知异常')
     other_error = ApiBaseError(code=2002, message='其它异常')
     empty_result = ApiBaseError(code=2003,  message='查询结果为空')
-    invalid_parent_id = ApiBaseError(code=2004, message='无效的父级id')
-    invalid_post = ApiBaseError(code=2005, message='无效的岗位信息')
-    invalid_skill = ApiBaseError(code=2006, message='无效的技能信息')
-    invalid_skill_category = ApiBaseError(code=2007, message='无效的技能分类')
-    invalid_course = ApiBaseError(code=2008, message='无效的课程信息')
-    course_in_skill = ApiBaseError(code=2009, message='技能与课程存在关联')
-    invalid_json_format = ApiBaseError(code=2010, message='无效的json格式')
-    unqualified_json_format = ApiBaseError(code=2011, message='不符合要求的json格式')
-    courseware_in_course = ApiBaseError(code=2012, message='课件与课程存在关联')
-    paper_in_course = ApiBaseError(code=2013, message='试卷与课程存在关联')
 
 if __name__ == '__main__':
     pass
