@@ -5,6 +5,7 @@
 # @Site: http://www.vcansenior.com
 # @File: api_retinfo.py
 # @Software: PyCharm
+from functools import wraps
 from datetime import date, datetime
 from webapi.api_error import ApiSysError, ApiBaseError
 
@@ -12,6 +13,8 @@ __author__ = 'matrix'
 
 
 def api_retinfo(func):
+
+    @wraps(func)
     def _webapi(*args, **kwargs):
         self = args[0]
 
