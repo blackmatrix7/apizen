@@ -18,7 +18,6 @@ from webapi.api_error import ApiBaseError, ApiSysError
 __author__ = 'matrix'
 
 
-# @route(r'/api/router/rest')
 class WebApiRoute(ApiBaseHandler):
 
     @api_retinfo
@@ -39,34 +38,34 @@ class WebApiRoute(ApiBaseHandler):
         # 接口名称
         _method = self.get_argument('method', None)
         # app_key
-        app_key_ = self.get_argument('app_key', None)
+        _app_key = self.get_argument('app_key', None)
         # 签名
-        sign_ = self.get_argument('sign', None)
+        _sign = self.get_argument('sign', None)
         # 时间戳
-        timestamp = self.get_argument('timestamp', None)
+        _timestamp = self.get_argument('timestamp', None)
         # 数据格式
-        response_format_ = self.get_argument('response_format', 'json')
+        _response_format = self.get_argument('response_format', 'json')
         # 接口版本
-        v_ = self.get_argument('v', None)
+        _v = self.get_argument('v', None)
         # client_id
-        client_id_ = self.get_argument('client_id', None)
+        _client_id = self.get_argument('client_id', None)
 
         # 检查版本号
-        if not v_:
+        if not _v:
             raise ApiSysError.missing_version
-        elif not is_float(v_):
+        elif not is_float(_v):
             raise ApiSysError.invalid_version
-        elif v_ not in api:
+        elif _v not in api:
             raise ApiSysError.unsupported_version
 
         # 检查方法名
         if not _method:
             raise ApiSysError.missing_method
-        elif _method not in api[v_]:
+        elif _method not in api[_v]:
             raise ApiSysError.invalid_method
-        elif not api[v_][_method].get('enable', True):
+        elif not api[_v][_method].get('enable', True):
             raise ApiSysError.api_stop
-        elif self.request.method.lower() not in api[v_][_method].get('method', ['get', 'post']):
+        elif self.request.method.lower() not in api[_v][_method].get('method', ['get', 'post']):
             raise ApiSysError.unsupported_request
 
         # 函数参数
@@ -84,7 +83,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api[v_][_method]['func']
+        method_func = api[_v][_method]['func']
         # 检查函数对象是否有效
         # 通过检查方法是否有__call__魔法函数，如果有，则认为是可调用的函数
         if not method_func or not hasattr(method_func, '__call__'):
@@ -153,37 +152,6 @@ class WebApiRoute(ApiBaseHandler):
 
     def check_xsrf_cookie(self):
         pass
-
-
-# @route(r'/api/authorize')
-# class Authorize(ApiBaseHandler):
-#
-#     # 根据用户信息生成client_id
-#     @staticmethod
-#     def create_client_id(user_id, email, account):
-#         # 通过sha256生成唯一的client_id
-#         m = hashlib.sha256()
-#         m.update('{account}{user_id}{email}'.format(account=account, user_id=user_id, email=email).encode('utf-8'))
-#         client_id = m.hexdigest()
-#         return client_id
-#
-#     # 接口授权方法
-#     def func(self, user_id, password):
-#         # TODO 调用登录接口
-#         pass
-#         # 获取用户信息
-#         get_user_info = [settings['web_config'].get('webservices', 'GET_USERS_BY_USER_ID')][0].format(user_id)
-#         user_info = WebRequests.requests(method='get', url=get_user_info)
-#         email = user_info.get('Email', '')
-#         account = user_info.get('Account')
-#         user_id = user_info.get('Id')
-#         # 获取用户对应的client_id
-#         client_id = self.create_client_id(user_id=user_id, email=email, account=account)
-#
-#     def get(self):
-#         # user_id = self.get_argument('user_id')
-#         # password = self.get_argument('password')
-#         self.func('32', 'password')
 
 
 if __name__ == '__main__':

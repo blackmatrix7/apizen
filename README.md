@@ -1,5 +1,15 @@
 # func2webapi
-快速将python函数转换成webapi
+快速将python函数转换成webapi。
+
+### 前言
+
+之前有大量的web api开发工作，如果每个web api都需要注册路由，检查请求参数，则需要进行大量的重复工作，同时过多的路由也不便于管理，且不易做到统一的api返回格式。
+
+所以就有这个想法，能否尽快地将一个python的函数转换成web api，不用重复注册路由，不需要对请求的参数进行检查，能统一api返回格式，支持api版本管理，对一些公共层面的异常进行处理(如请求参数缺失)。
+
+同时，希望能尽量减少对函数编写的限制，让尽量多的python函数，尽少甚至不做任何修改，只通过简单的添加一个调用名称，可以直接转换成web api。
+
+web api采用统一的请求url： /api/router/rest ，以method参数区分不同的调用方法，这样接口调用方不需要存储大量的接口地址，只需要存储接口调用的方法名。同时，可以统一在接口路由处，添加接口调用日志、接口调用次数限制、ban掉某些ip等功能。
 
 ### 特性
 
@@ -51,7 +61,7 @@ deactivate
 
 函数要求：
 
-1. 不能含有以下参数名 access_token, method, app_key, sign, timestamp, response_format, v, client_id
+1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, response_format, v, client_id
 2. 暂不支持VAR_POSITIONAL类型的参数，即*args
 3. 返回结果可正常转换成json或xml
 
@@ -75,8 +85,8 @@ deactivate
 api = {
     '1.0':
         {
-            'matrix.api.demo.demo1': {'func': api_demo.demo1},
-            'matrix.api.demo.demo2': {'func': api_demo.demo2},
+            'matrix.api.demo.demo1': {'func': api_demo.demo1, 'method': ['get', 'post']},
+            'matrix.api.demo.demo2': {'func': api_demo.demo2, 'enable': True },
             'matrix.api.demo.demo3': {'func': api_demo.demo3},
             'matrix.api.demo.demo4': {'func': api_demo.demo4},
             'matrix.api.demo.demo5': {'func': api_demo.demo5}
@@ -84,7 +94,15 @@ api = {
 }
 ```
 
-”1.0”为接口版本号，matrix.api.demo.demo1为接口方法名，{'func': api_demo.demo1} 为需要调用的函数对象。
+”1.0”为接口版本号
+
+matrix.api.demo.demo1为接口方法名
+
+'func': api_demo.demo1 为需要调用的函数对象
+
+'method': ['get', 'post'] 为支持的调用方式，非必填，如不填则默认同时支持get和post。以不支持的请求方式调用接口，会返回1019，不支持的http请求方式的异常
+
+'enable': True 接口的启用或禁用，非必填，不填则默认为接口启用。调用禁用的接口时，会返回1016，api已停用的异常
 
 #### 接口调用
 
@@ -106,18 +124,6 @@ api = {
 ##### 接口业务参数
 
 即请求业务接口需求的参数，支持在query string中传入，也支持以key/value的形式传入(application/x-www-form-urlencoded)，同时支持在body中以json格式传入(application/json)。
-
-接口函数示例
-
-```python
-    @staticmethod
-    def demo1(user_id, age, name='刘峰'):
-        return {
-            'user_id': user_id,
-            'name': name,
-            'age': age
-        }
-```
 
 当接口函数的参数没有默认值时(如示例函数的user_id，age两个参数)，此参数为必填的参数，转换成web api后，调用需要传入与函数参数同名的参数进行请求，如果未传入同名参数则会抛出code为1018的异常，即”缺少方法所需参数“。
 
@@ -192,5 +198,6 @@ api = {
 2. 完整的oauth 2.0 鉴权方案实现
 3. 接口访问日志记录
 4. 某些时间段内接口调用次数限制
-5. 自动生成接口说明文档
+5. 性能优化
+6. 自动生成接口说明文档
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time: 2017/3/14 8:43
 # @Author: Matrix
-# @Site: http://www.vcansenior.com
+# @Site:
 # @File: api_list.py
 # @Software: PyCharm
 from services.demo.api_demo import ApiDemo

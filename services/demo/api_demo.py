@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from webapi.api_error import ApiSubError
 
-__author__ = 'matrix'
+__author__ = 'blackmatrix'
 
 
 class ApiDemo:
