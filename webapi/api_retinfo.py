@@ -18,18 +18,21 @@ def api_retinfo(func):
     def _webapi(*args, **kwargs):
         self = args[0]
 
-        code = 1000
+        result_code = 1000
         message = '执行成功'
         result = None
+        status_code = 200
 
         try:
             result = func(*args, **kwargs)
         except ApiBaseError as api_ex:
-            code = api_ex.code
+            result_code = api_ex.err_code
+            status_code = api_ex.status_code
             message = api_ex.message
         except Exception as ex:
             api_ex = ApiSysError.system_error
-            code = api_ex.code
+            result_code = api_ex.err_code
+            status_code = api_ex.status_code
             message = '{0}：{1}'.format(api_ex.message, ex)
 
         # 如果返回结果是空的list或空的dict，则直接转换成None，统一返回结果
@@ -55,12 +58,13 @@ def api_retinfo(func):
 
         retinfo = {
             'meta': {
-                'code': code,
+                'code': result_code,
                 'message': message
             },
             'respone': result
         }
 
+        self.set_status(status_code=status_code)
         self.write(retinfo)
 
     return _webapi

@@ -67,7 +67,7 @@ class WebApiRoute(ApiBaseHandler):
         elif not api[_v][_method].get('enable', True):
             raise ApiSysError.api_stop
         elif self.request.method.lower() not in api[_v][_method].get('method', ['get', 'post']):
-            raise ApiSysError.unsupported_request
+            raise ApiSysError.not_allowed_request
 
         # 函数参数
         func_args = {}
@@ -101,7 +101,7 @@ class WebApiRoute(ApiBaseHandler):
             try:
                 # *args的函数参数
                 if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
-                    raise ApiSysError.unsupported_var_positional
+                    raise ApiSysError.error_api_config
                 # 参数没有默认值的情况
                 elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') \
                         and hasattr(v.default, '__name__') \
@@ -138,7 +138,8 @@ class WebApiRoute(ApiBaseHandler):
                                       if k not in api_keyword
                                       and k not in func_signature.parameters.keys()})
             except MissingArgumentError:
-                ex = ApiBaseError(code=ApiSysError.missing_arguments.code,
+                ex = ApiBaseError(err_code=ApiSysError.missing_arguments.err_code,
+                                  status_code=ApiSysError.missing_arguments.status_code,
                                   message='{message}:{key_name}'.format(
                                       message=ApiSysError.missing_arguments.message, key_name=v.name))
                 raise ex

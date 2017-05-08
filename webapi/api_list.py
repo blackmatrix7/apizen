@@ -5,6 +5,7 @@
 # @Site:
 # @File: api_list.py
 # @Software: PyCharm
+import copy
 from services.demo.api_demo import ApiDemo
 
 __author__ = 'matrix'
@@ -21,7 +22,3 @@ api = {
             'matrix.api.demo.demo5': {'func': api_demo.demo5}
         }
 }
-
-if __name__ == '__main__':
-    pass
-
