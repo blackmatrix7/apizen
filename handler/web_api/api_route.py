@@ -8,6 +8,7 @@
 import json
 import hashlib
 import inspect
+from types import FunctionType
 from webapi.api_list import api
 from json import JSONDecodeError
 from ..base import ApiBaseHandler
@@ -85,8 +86,7 @@ class WebApiRoute(ApiBaseHandler):
         # 获取函数对象
         method_func = api[_v][_method]['func']
         # 检查函数对象是否有效
-        # 通过检查方法是否有__call__魔法函数，如果有，则认为是可调用的函数
-        if not method_func or not hasattr(method_func, '__call__'):
+        if not method_func or type(method_func) is not FunctionType:
             raise ApiSysError.error_api_config
         # 获取函数签名
         func_signature = inspect.signature(method_func)
