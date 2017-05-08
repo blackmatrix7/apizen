@@ -6,10 +6,9 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-import hashlib
 import inspect
 from types import FunctionType
-from webapi.api_list import api
+from webapi.api_list import api_version
 from json import JSONDecodeError
 from ..base import ApiBaseHandler
 from webapi.api_retinfo import api_retinfo
@@ -56,17 +55,18 @@ class WebApiRoute(ApiBaseHandler):
             raise ApiSysError.missing_version
         elif not is_float(_v):
             raise ApiSysError.invalid_version
-        elif _v not in api:
+        elif _v not in api_version:
             raise ApiSysError.unsupported_version
 
         # 检查方法名
         if not _method:
             raise ApiSysError.missing_method
-        elif _method not in api[_v]:
+        elif _method not in api_version[_v].api_methods:
             raise ApiSysError.invalid_method
-        elif not api[_v][_method].get('enable', True):
+        elif not api_version[_v].api_methods[_method].get('enable', True):
             raise ApiSysError.api_stop
-        elif self.request.method.lower() not in api[_v][_method].get('method', ['get', 'post']):
+        elif self.request.method.lower() not in \
+                api_version[_v].api_methods[_method].get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
 
         # 函数参数
@@ -84,7 +84,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api[_v][_method]['func']
+        method_func = api_version[_v].api_methods[_method]['func']
         # 检查函数对象是否有效
         if not method_func or type(method_func) is not FunctionType:
             raise ApiSysError.error_api_config

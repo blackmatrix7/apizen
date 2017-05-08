@@ -29,11 +29,11 @@ def api_retinfo(func):
             result_code = api_ex.err_code
             status_code = api_ex.status_code
             message = api_ex.message
-        except Exception as ex:
-            api_ex = ApiSysError.system_error
-            result_code = api_ex.err_code
-            status_code = api_ex.status_code
-            message = '{0}：{1}'.format(api_ex.message, ex)
+        # except Exception as ex:
+        #     api_ex = ApiSysError.system_error
+        #     result_code = api_ex.err_code
+        #     status_code = api_ex.status_code
+        #     message = '{0}：{1}'.format(api_ex.message, ex)
 
         # 如果返回结果是空的list或空的dict，则直接转换成None，统一返回结果
         if result and not len(result):
