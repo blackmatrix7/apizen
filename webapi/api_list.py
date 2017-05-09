@@ -43,17 +43,17 @@ class ApiMethodBase(metaclass=ApiMethodMeta):
     api_methods = {}
 
     support_methods = {
-        'matrix.api.demo.demo1': {'func': api_demo.demo1},
-        'matrix.api.demo.demo2': {'func': api_demo.demo2}
+        'matrix.api.demo.func1': {'func': api_demo.demo1},
+        'matrix.api.demo.func2': {'func': api_demo.demo2}
     }
 
 
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.demo1': {'func': api_demo.demo3},
-        'matrix.api.demo.demo2': {'func': api_demo.demo4},
-        'matrix.api.demo.demo3': {'func': api_demo.demo4}
+        'matrix.api.demo.func3': {'func': api_demo.demo3},
+        'matrix.api.demo.func4': {'func': api_demo.demo4},
+        'matrix.api.demo.func5': {'func': api_demo.demo5}
     }
 
 

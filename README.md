@@ -1,7 +1,9 @@
 # func2webapi
 快速将python函数转换成webapi。
 
-### 前言
+[TOC]
+
+## 前言
 
 之前有大量的web api开发工作，如果每个web api都需要注册路由，检查请求参数，则需要进行大量的重复工作，同时过多的路由也不便于管理，且不易做到统一的api返回格式。
 
@@ -11,7 +13,7 @@
 
 web api采用统一的请求url： /api/router/rest ，以method参数区分不同的调用方法，这样接口调用方不需要存储大量的接口地址，只需要存储接口调用的方法名。同时，可以统一在接口路由处，添加接口调用日志、接口调用次数限制、ban掉某些ip等功能。
 
-### 特性
+## 特性
 
 1. 统一的web api地址，支持接口版本管理
 2. 接口参数自动判断，拦截参数不完整的请求
@@ -19,19 +21,21 @@ web api采用统一的请求url： /api/router/rest ，以method参数区分不�
 4. 同时支持application/x-www-form-urlencoded和application/json的请求方式，即支持以key/value的形式传参，也支持以json格式传参
 5. 绝大多数python函数可以直接转成为web api，减少接口开发工作量，专注业务逻辑实现
 
-### 依赖
+## 依赖
 
 ```
 tornado==4.5.1
 ```
 
-### 更新日志
+## 更新日志
 
-2017.05.15 项目初始提交
+2017.05.09	接口支持版本继承与管理
 
-2017.05.08 接口返回异常信息时，不会再统一返回http code 200
+2017.05.08	接口返回异常信息时，不会再统一返回http code 200
 
-### 安装
+2017.05.05	项目初始提交
+
+## 安装
 
 建立虚拟环境
 
@@ -57,9 +61,9 @@ source venv/bin/activate
 deactivate
 ```
 
-### 使用方法
+## 使用方法
 
-#### 编写业务函数
+### 编写业务函数
 
 函数要求：
 
@@ -79,40 +83,94 @@ deactivate
         }
 ```
 
-#### 添加调用方法
+### 添加调用方法
 
-在webapi/api_list.py中添加函数调用名称，如
+在webapi/api_list.py中添加接口方法名对应的函数，支持实例方法（类方法的支持情况有待测试和验证）。
+
+每个接口版本为独立的一个类，必须继承自超类ApiMethodBase。
+
+类属性support_methods为dict，表示这个接口版本支持的接口名称与对应方法。
 
 ```python
-api = {
-    '1.0':
-        {
-            'matrix.api.demo.demo1': {'func': api_demo.demo1, 'method': ['get', 'post']},
-            'matrix.api.demo.demo2': {'func': api_demo.demo2, 'enable': True },
-            'matrix.api.demo.demo3': {'func': api_demo.demo3},
-            'matrix.api.demo.demo4': {'func': api_demo.demo4},
-            'matrix.api.demo.demo5': {'func': api_demo.demo5}
-        }
-}
+class ApiMethodBase(metaclass=ApiMethodMeta):
+    api_methods = {}
+    support_methods = {
+        'matrix.api.demo.func1': {'func': api_demo.demo1},
+        'matrix.api.demo.func2': {'func': api_demo.demo2}
+    }
 ```
 
-”1.0”为接口版本号
+1. 'matrix.api.demo.func3'为接口的方法名
+2. 'func'为调用接口后需要执行的python函数
+3. ’method‘为接口支持的请求方式，不写method的情况下，默认为同时支持get和post方法。以不支持的请求方式调用接口，会返回1019，不支持的http请求方式的异常
+4. ’enable’为接口方法的启用与禁用，不写enable的情况下，默认为True，即接口启用。调用禁用的接口时，会返回1016，api已停用的异常
 
-matrix.api.demo.demo1为接口方法名
+### 接口版本继承
 
-'func': api_demo.demo1 为需要调用的函数对象
+接口支持版本管理与继承，通过装饰器@version('1.0')注册这个类对应的版本号。
 
-'method': ['get', 'post'] 为支持的调用方式，非必填，如不填则默认同时支持get和post。以不支持的请求方式调用接口，会返回1019，不支持的http请求方式的异常
+类继承关系即接口继承关系(暂不支持多重继承)。
 
-'enable': True 接口的启用或禁用，非必填，不填则默认为接口启用。调用禁用的接口时，会返回1016，api已停用的异常
+```python
+class ApiMethodBase(metaclass=ApiMethodMeta):
+    api_methods = {}
+    support_methods = {
+        'matrix.api.demo.func1': {'func': api_demo.demo1},
+        'matrix.api.demo.func2': {'func': api_demo.demo2}
+    }
 
-#### 接口调用
+@version('1.0')
+class ApiMethodV10(ApiMethodBase):
+    support_methods = {
+        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
+        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
+        'matrix.api.demo.func5': {'func': api_demo.demo5}
+    }
+```
+
+上述例子中，声明类ApiMethodV10，继承自超类ApiMethodBase，这样ApiMethodV10支持的类方法，除了自身support_methods的方法外，还会继承来自ApiMethodBase中support_methods的方法。
+
+等价于
+
+```python
+@version('1.0')
+class ApiMethodV10(ApiMethodBase):
+    support_methods = {
+        'matrix.api.demo.func1': {'func': api_demo.demo1},
+        'matrix.api.demo.func2': {'func': api_demo.demo2}
+        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
+        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
+        'matrix.api.demo.func5': {'func': api_demo.demo5}
+    }
+```
+
+这样，每次新增接口版本时，只需要在接口版本对应的类中，编辑类属性support_methods，填写新版本的接口改动情况，会自动继承超类接口版本的接口方法。
+
+### 接口版本禁用
+
+需要禁用某个版本时，在@version装饰器中，新增一个参数enable=False，如
+
+```python
+@version('1.0', enable=False)
+class ApiMethodV10(ApiMethodBase):
+    support_methods = {
+        'matrix.api.demo.func1': {'func': api_demo.demo1},
+        'matrix.api.demo.func2': {'func': api_demo.demo2}
+        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
+        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
+        'matrix.api.demo.func5': {'func': api_demo.demo5}
+    }
+```
+
+此时，再调用这个接口版本时，会返回接口版本已停用的异常信息。
+
+## 接口调用
 
 运行run.py
 
 访问 http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.demo.demo1 调用接口
 
-##### 接口公共参数
+### 接口公共参数
 
 公共参数调用填写在query string中
 
@@ -123,7 +181,7 @@ matrix.api.demo.demo1为接口方法名
 | response_format | 否    | json | 返回的请求格式，支持json或xml |
 | 其他参数            | 否    | 无    | 待完成                |
 
-##### 接口业务参数
+### 接口业务参数
 
 即请求业务接口需求的参数，支持在query string中传入，也支持以key/value的形式传入(application/x-www-form-urlencoded)，同时支持在body中以json格式传入(application/json)。
 
@@ -137,7 +195,7 @@ matrix.api.demo.demo1为接口方法名
 | age     | 是    | 无    | 用户年龄    |
 | name    | 否    | 刘峰   | 测试的用户名称 |
 
-#### 接口返回
+## 接口返回
 
 ```json
 {
@@ -161,7 +219,7 @@ matrix.api.demo.demo1为接口方法名
 | message  | 执行结构异常说明                           |
 | response | 接口函数返回值                            |
 
-##### 接口异常信息
+### 接口异常信息
 
 接口异常信息分为公共异常信息和业务异常信息，公共异常信息以1001开始，业务异常信息以2001开始
 
@@ -192,23 +250,25 @@ matrix.api.demo.demo1为接口方法名
 | 1021 | 无效的json格式             |
 | 1022 | 不支持VAR_POSITIONAL参数类型 |
 
-###### 业务异常信息以实际业务开发为准
+### 业务异常信息
 
-### TODO
+以实际业务开发为准
 
-##### 近期
+## TODO
+
+### 近期
 
 1. 支持以json或xml格式返回调用结果
 
 
-##### 中期
+### 中期
 
 1. 完整的oauth 2.0 鉴权方案实现
 2. 接口访问日志记录
 3. 某些时间段内接口调用次数限制
 
 
-##### 遥远
+### 遥远
 
 1. 性能优化
 2. 自动生成接口说明文档

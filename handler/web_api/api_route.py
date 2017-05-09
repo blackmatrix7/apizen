@@ -7,7 +7,6 @@
 # @Software: PyCharm
 import json
 import inspect
-from types import FunctionType
 from webapi.api_list import api_version
 from json import JSONDecodeError
 from ..base import ApiBaseHandler
@@ -86,7 +85,7 @@ class WebApiRoute(ApiBaseHandler):
         # 获取函数对象
         method_func = api_version[_v].api_methods[_method]['func']
         # 检查函数对象是否有效
-        if not method_func or type(method_func) is not FunctionType:
+        if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
         # 获取函数签名
         func_signature = inspect.signature(method_func)
