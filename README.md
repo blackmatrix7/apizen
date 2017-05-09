@@ -162,6 +162,43 @@ class ApiMethodV10(ApiMethodBase):
 
 此时，再调用这个接口版本时，会返回接口版本已停用的异常信息。
 
+### 接口异常配置
+
+接口异常信息在api_error.py中，分为公共异常和业务异常。
+
+公共异常写在类ApiSysError中，类属性即为异常信息，异常信息由类ApiBaseError实例化而来，分别有三个参数：
+
+err_code	接口异常时返回的代码，内置部分异常信息，公共异常信息以1001开始（1000为执行成功）
+
+status_code	接口出现异常时返回的http code，可以返回400、500之类
+
+message	接口异常说明文字
+
+```python
+# API 系统层面异常信息，以1000开始
+class ApiSysError:
+    # code 1000 为保留编码，代表执行成功
+    # 服务不可用
+    missing_system_error = ApiBaseError(err_code=1001, status_code=403, message='服务不可用')
+    # 限制时间内调用失败次数
+    app_call_limited = ApiBaseError(err_code=1002, status_code=403, message='限制时间内调用失败次数')
+    # 请求被禁止
+    forbidden_request = ApiBaseError(err_code=1003, status_code=403, message='请求被禁止')
+    # 缺少版本参数
+    missing_version = ApiBaseError(err_code=1004, status_code=400, message='缺少版本参数')
+```
+
+业务异常写在类ApiSubError中，以2001开始，由具体业务开发定义，配置过程与公共异常相同。
+
+```python
+# API 子系统（业务）层级执行结果，以2000开始
+class ApiSubError:
+    # code 2000 为保留编码
+    unknown_error = ApiBaseError(err_code=2001, status_code=500, message='未知异常')
+    other_error = ApiBaseError(err_code=2002, status_code=500, message='其它异常')
+    empty_result = ApiBaseError(err_code=2003, status_code=204, message='查询结果为空')
+```
+
 ## 接口调用
 
 运行run.py
