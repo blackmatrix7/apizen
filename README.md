@@ -199,6 +199,22 @@ class ApiSubError:
     empty_result = ApiBaseError(err_code=2003, status_code=204, message='查询结果为空')
 ```
 
+### 使用装饰器
+
+接口统一入口中，通过函数签名获取接口函数参数，以此判断web api调用请求是否符合接口参数要求。
+
+当使用装饰器时，会导致获取到的函数签名错误（获取到装饰器的函数签名），从而无法正常判断接口所需参数。
+
+所以在编写装饰器时，需要在包装器函数上增加一个functools中内置的装饰器 wraps，才能获取正确的函数签名。
+
+```python
+def test_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(args, kwargs)
+    return wrapper
+```
+
 ## 接口调用
 
 运行run.py

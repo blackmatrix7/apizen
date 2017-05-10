@@ -5,14 +5,23 @@
 # @Site    : 
 # @File    : api_demo.py
 # @Software: PyCharm
+from functools import wraps
 from webapi.api_error import ApiSubError
 
 __author__ = 'blackmatrix'
 
 
+def test_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(args, kwargs)
+    return wrapper
+
+
 class ApiDemo:
 
     @staticmethod
+    @test_decorator
     def demo1(user_id, age, name='刘峰'):
         return {
             'user_id': user_id,
