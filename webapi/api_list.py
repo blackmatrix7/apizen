@@ -57,7 +57,9 @@ class ApiMethodV10(ApiMethodBase):
         'matrix.api.err-func': {'func': api_demo.err_func},
         'matrix.api.instance-func': {'func': api_demo.instance_func},
         'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
-        'matrix.api.raise-error': {'func': api_demo.raise_error}
+        'matrix.api.raise-error': {'func': api_demo.raise_error},
+        'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 
 if __name__ == '__main__':

@@ -72,13 +72,21 @@ deactivate
 函数示例：
 
 ```python
-    @staticmethod
-    def demo1(user_id, age, name='刘峰'):
-        return {
-            'user_id': user_id,
-            'name': name,
-            'age': age
-        }
+@staticmethod
+@test_decorator
+def get_user(user_id, age, name='刘峰'):
+    """
+    测试装饰器对获取函数参数的影响，及接口参数判断说明
+    :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
+    :param age:  年龄，必填，原因同上
+    :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
+    :return:  返回测试结果
+    """
+    return {
+        'user_id': user_id,
+        'name': name,
+        'age': age
+    }
 ```
 
 ### 添加调用方法
@@ -90,11 +98,15 @@ deactivate
 类属性support_methods为dict，表示这个接口版本支持的接口名称与对应方法。
 
 ```python
-class ApiMethodBase(metaclass=ApiMethodMeta):
-    api_methods = {}
+@version('1.0')
+class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.func1': {'func': api_demo.demo1},
-        'matrix.api.demo.func2': {'func': api_demo.demo2}
+        'matrix.api.err-func': {'func': api_demo.err_func},
+        'matrix.api.instance-func': {'func': api_demo.instance_func},
+        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
+        'matrix.api.raise-error': {'func': api_demo.raise_error},
+        'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 ```
 
@@ -113,16 +125,20 @@ class ApiMethodBase(metaclass=ApiMethodMeta):
 class ApiMethodBase(metaclass=ApiMethodMeta):
     api_methods = {}
     support_methods = {
-        'matrix.api.demo.func1': {'func': api_demo.demo1},
-        'matrix.api.demo.func2': {'func': api_demo.demo2}
+        'matrix.api.get-user': {'func': api_demo.get_user},
+        'matrix.api.return-err': {'func': api_demo.raise_error}
     }
+
 
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
-        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
-        'matrix.api.demo.func5': {'func': api_demo.demo5}
+        'matrix.api.err-func': {'func': api_demo.err_func},
+        'matrix.api.instance-func': {'func': api_demo.instance_func},
+        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
+        'matrix.api.raise-error': {'func': api_demo.raise_error},
+        'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 ```
 
@@ -134,11 +150,14 @@ class ApiMethodV10(ApiMethodBase):
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.func1': {'func': api_demo.demo1},
-        'matrix.api.demo.func2': {'func': api_demo.demo2}
-        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
-        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
-        'matrix.api.demo.func5': {'func': api_demo.demo5}
+        'matrix.api.get-user': {'func': api_demo.get_user},
+        'matrix.api.return-err': {'func': api_demo.raise_error}
+        'matrix.api.err-func': {'func': api_demo.err_func},
+        'matrix.api.instance-func': {'func': api_demo.instance_func},
+        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
+        'matrix.api.raise-error': {'func': api_demo.raise_error},
+        'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 ```
 
@@ -152,11 +171,11 @@ class ApiMethodV10(ApiMethodBase):
 @version('1.0', enable=False)
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.func1': {'func': api_demo.demo1},
-        'matrix.api.demo.func2': {'func': api_demo.demo2}
-        'matrix.api.demo.func3': {'func': api_demo.demo3, 'method': ['get', 'post']},
-        'matrix.api.demo.func4': {'func': api_demo.demo4, 'enable': True},
-        'matrix.api.demo.func5': {'func': api_demo.demo5}
+        'matrix.api.err-func': {'func': api_demo.err_func},
+        'matrix.api.instance-func': {'func': api_demo.instance_func},
+        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
+        'matrix.api.raise-error': {'func': api_demo.raise_error},
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 ```
 
@@ -193,10 +212,9 @@ class ApiSysError:
 ```python
 # API 子系统（业务）层级执行结果，以2000开始
 class ApiSubError:
-    # code 2000 为保留编码
+    empty_result = ApiBaseError(err_code=2000, status_code=200, message='查询结果为空')
     unknown_error = ApiBaseError(err_code=2001, status_code=500, message='未知异常')
     other_error = ApiBaseError(err_code=2002, status_code=500, message='其它异常')
-    empty_result = ApiBaseError(err_code=2003, status_code=204, message='查询结果为空')
 ```
 
 ### 使用装饰器
@@ -208,10 +226,13 @@ class ApiSubError:
 所以在编写装饰器时，需要在包装器函数上增加一个functools中内置的装饰器 wraps，才能获取正确的函数签名。
 
 ```python
+from functools import wraps
+
 def test_decorator(func):
+    # 需要在包装器函数上增加一个functools中内置的装饰器 wraps
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return func(args, kwargs)
+        return func(*args, **kwargs)
     return wrapper
 ```
 
