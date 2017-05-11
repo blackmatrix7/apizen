@@ -131,7 +131,7 @@ class WebApiRoute(ApiBaseHandler):
                                           if k not in api_keyword
                                           and k not in func_signature.parameters.keys()})
                     # 再次检查 arguments里，如果有多余的参数，则传给函数
-                    func_args.update({k: v for k, v in self.request.arguments.items()
+                    func_args.update({k: self.get_argument(k) for k in self.request.arguments.keys()
                                       if k not in api_keyword
                                       and k not in func_signature.parameters.keys()})
             except MissingArgumentError:

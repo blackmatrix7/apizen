@@ -55,7 +55,9 @@ class ApiMethodBase(metaclass=ApiMethodMeta):
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
         'matrix.api.err-func': {'func': api_demo.err_func},
-        'matrix.api.instance-func': {'func': api_demo.instance_func}
+        'matrix.api.instance-func': {'func': api_demo.instance_func},
+        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
+        'matrix.api.raise-error': {'func': api_demo.raise_error}
     }
 
 if __name__ == '__main__':
