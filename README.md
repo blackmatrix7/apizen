@@ -110,7 +110,7 @@ class ApiMethodV10(ApiMethodBase):
     }
 ```
 
-1. 'matrix.api.demo.func3'为接口的方法名
+1. 'matrix.api.instance-func'为接口的方法名
 2. 'func'为调用接口后需要执行的python函数
 3. ’method‘为接口支持的请求方式，不写method的情况下，默认为同时支持get和post方法。以不支持的请求方式调用接口，会返回1019，不支持的http请求方式的异常
 4. ’enable’为接口方法的启用与禁用，不写enable的情况下，默认为True，即接口启用。调用禁用的接口时，会返回1016，api已停用的异常
@@ -309,6 +309,37 @@ def instance_func(self, value):
 }
 ```
 
+**类方法调用**
+
+http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.class-func&name=jim
+
+接口处理函数
+
+```python
+@classmethod
+def class_method(cls, name):
+    """
+    类方法调用测试
+    :param name:  姓名，
+    :return:  返回测试结果
+    """
+    return {'name': name}
+```
+
+返回
+
+```json
+{
+    "respone": {
+        "name": "jim"
+    },
+    "meta": {
+        "code": 1000,
+        "message": "执行成功"
+    }
+}
+```
+
 **不规范函数写法：声明为静态方法，却还存在参数self**
 
 http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.err-func
@@ -349,7 +380,7 @@ http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.send-kwargs&user_i
 @staticmethod
 def send_kwargs(**kwargs):
     """
-    VAR_KEYWORD 参数类型的传值测试，传入任意k/wc，会在调用结果中返回
+    VAR_KEYWORD 参数类型的传值测试，传入任意k/w，会在调用结果中返回
     :param kwargs:  键值对
     :return:  返回调用结果
     """

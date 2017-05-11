@@ -44,6 +44,15 @@ class ApiDemo:
             'age': age
         }
 
+    @classmethod
+    def class_method(cls, name):
+        """
+        类方法调用测试
+        :param name:  姓名，
+        :return:  返回测试结果
+        """
+        return {'name': name}
+
     def instance_func(self, value):
         """
         实例方法调用测试
