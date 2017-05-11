@@ -103,8 +103,7 @@ class WebApiRoute(ApiBaseHandler):
                 # 参数没有默认值的情况
                 elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') \
                         and hasattr(v.default, '__name__') \
-                        and v.default.__name__ == '_empty' \
-                        and v.name != 'self':
+                        and v.default.__name__ == '_empty':
                     if self.request.method == 'POST' \
                                 and body_json \
                                 and hasattr(body_json, 'keys') \

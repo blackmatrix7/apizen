@@ -219,7 +219,7 @@ def test_decorator(func):
 
 运行run.py
 
-访问 http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.demo.demo1 调用接口
+访问 http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.get-user&user_id=11&age=12 调用接口
 
 ### 接口公共参数
 

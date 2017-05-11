@@ -46,15 +46,16 @@ class ApiMethodMeta(type):
 class ApiMethodBase(metaclass=ApiMethodMeta):
     api_methods = {}
     support_methods = {
-        'matrix.api.user.get': {'func': api_demo.get_user},
-        'matrix.api.return.err': {'func': api_demo.raise_error}
+        'matrix.api.get-user': {'func': api_demo.get_user},
+        'matrix.api.return-err': {'func': api_demo.raise_error}
     }
 
 
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.func.err': {'func': api_demo.err_func}
+        'matrix.api.err-func': {'func': api_demo.err_func},
+        'matrix.api.instance-func': {'func': api_demo.instance_func}
     }
 
 if __name__ == '__main__':

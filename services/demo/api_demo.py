@@ -14,20 +14,27 @@ __author__ = 'blackmatrix'
 def test_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        return func(args, kwargs)
+        return func(*args, **kwargs)
     return wrapper
 
 
 class ApiDemo:
 
+    def __init__(self):
+        self.value = None
+
     @staticmethod
-    @test_decorator
+    # @test_decorator
     def get_user(user_id, age, name='刘峰'):
         return {
             'user_id': user_id,
             'name': name,
             'age': age
         }
+
+    def instance_func(self, value):
+        self.value = value
+        return self.value
 
     @staticmethod
     def err_func(self):
@@ -51,5 +58,7 @@ class ApiDemo:
         :return: 
         """
         raise ApiSubError.unknown_error
+
+
 if __name__ == '__main__':
     pass
