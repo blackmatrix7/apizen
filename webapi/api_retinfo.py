@@ -39,23 +39,6 @@ def api_retinfo(func):
         if result and not len(result):
             result = None
 
-        # 转换日期格式，引用传递，可直接修改retinfo
-        def convert_datetime(data):
-            if data and isinstance(data, (list, tuple)):
-                for d in data:
-                    convert_datetime(d)
-            elif data and hasattr(data, 'items'):
-                for key, value in data.items():
-                    if value and isinstance(value, datetime):
-                        data[key] = value.strftime('%Y-%m-%d %H:%M:%S')
-                    elif value and isinstance(value, date):
-                        data[key] = value.strftime('%Y-%m-%d')
-                    elif value and isinstance(value, dict):
-                        convert_datetime(value)
-
-        # 转换日期格式
-        convert_datetime(result)
-
         retinfo = {
             'meta': {
                 'code': result_code,

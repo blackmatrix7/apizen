@@ -22,12 +22,16 @@ class ApiDemo:
 
     @staticmethod
     @test_decorator
-    def demo1(user_id, age, name='刘峰'):
+    def get_user(user_id, age, name='刘峰'):
         return {
             'user_id': user_id,
             'name': name,
             'age': age
         }
+
+    @staticmethod
+    def err_func(self):
+        return self
 
     @staticmethod
     def demo2(**kwargs):
@@ -41,23 +45,11 @@ class ApiDemo:
         }
 
     @staticmethod
-    def demo4(*args):
-        return args
-
-    @staticmethod
-    def demo5():
-        print('r1sd')
+    def raise_error():
+        """
+        抛出异常
+        :return: 
+        """
         raise ApiSubError.unknown_error
-
-    # 不支持VAR_POSITIONAL和KEYWORD_ONLY并存的函数参数
-    @staticmethod
-    def demo5(*args, user_id):
-        return args, user_id
-
-    # 不支持VAR_POSITIONAL和KEYWORD_ONLY并存的函数参数
-    @staticmethod
-    def demo5(*args, **kwargs):
-        return args, kwargs
-
 if __name__ == '__main__':
     pass

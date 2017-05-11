@@ -71,10 +71,9 @@ class ApiSysError:
 
 # API 子系统（业务）层级执行结果，以2000开始
 class ApiSubError:
-    # code 2000 为保留编码
+    empty_result = ApiBaseError(err_code=2000, status_code=200, message='查询结果为空')
     unknown_error = ApiBaseError(err_code=2001, status_code=500, message='未知异常')
     other_error = ApiBaseError(err_code=2002, status_code=500, message='其它异常')
-    empty_result = ApiBaseError(err_code=2003, status_code=204, message='查询结果为空')
 
 if __name__ == '__main__':
     pass

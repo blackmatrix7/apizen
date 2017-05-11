@@ -14,8 +14,13 @@ api_demo = ApiDemo()
 api_version = {}
 
 
-# Web Api版本注册
 def version(v, enable=True):
+    """
+    Web Api版本注册
+    :param v:  版本号
+    :param enable:  版本是否停用
+    :return:  无
+    """
     def _version(aclass):
         if enable:
             api_version[v] = aclass
@@ -25,54 +30,34 @@ def version(v, enable=True):
 
 class ApiMethodMeta(type):
 
-    def __new__(mcs, classname, supers, classdict):
+    def __new__(mcs, classname, supers, clsdict):
         # 遍历父类的方法,获取父类版本的API方法
         all_api_methods = {}
         for super_ in supers:
             if super_ and 'api_methods' in super_.__dict__:
                 super_methods = getattr(super_, 'api_methods')
                 all_api_methods.update(super_methods)
-        aclass = type.__new__(mcs, classname, supers, classdict)
-        all_api_methods.update(getattr(aclass, 'support_methods'))
-        setattr(aclass, 'api_methods', all_api_methods)
-        return aclass
+        cls = type.__new__(mcs, classname, supers, clsdict)
+        all_api_methods.update(getattr(cls, 'support_methods'))
+        setattr(cls, 'api_methods', all_api_methods)
+        return cls
 
 
 class ApiMethodBase(metaclass=ApiMethodMeta):
-
     api_methods = {}
-
     support_methods = {
-        'matrix.api.demo.func1': {'func': api_demo.demo1},
-        'matrix.api.demo.func2': {'func': api_demo.demo2}
+        'matrix.api.user.get': {'func': api_demo.get_user},
+        'matrix.api.return.err': {'func': api_demo.raise_error}
     }
 
 
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     support_methods = {
-        'matrix.api.demo.func3': {'func': api_demo.demo3},
-        'matrix.api.demo.func4': {'func': api_demo.demo4},
-        'matrix.api.demo.func5': {'func': api_demo.demo5}
+        'matrix.api.func.err': {'func': api_demo.err_func}
     }
-
-
-@version('1.1')
-class ApiMethodV11(ApiMethodV10):
-    support_methods = {
-        'matrix.api.demo.demo3': {'func': None},
-        'matrix.api.demo.demo4': {'func': None}
-    }
-
-
-@version('1.2', enable=False)
-class ApiMethodV12(ApiMethodV11):
-    support_methods = {
-        'matrix.api.demo.demo3': {'func': api_demo.demo3}
-    }
-
 
 if __name__ == '__main__':
-    api_list = ApiMethodV12.api_methods
+    api_list = ApiMethodV10.api_methods
     print(api_version)
     print(api_list)
