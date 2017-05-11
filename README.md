@@ -91,7 +91,7 @@ def get_user(user_id, age, name='刘峰'):
 
 ### 添加调用方法
 
-在webapi/api_list.py中添加接口方法名对应的函数，支持实例方法（类方法的支持情况有待测试和验证）。
+在webapi/api_list.py中添加接口方法名对应的函数。
 
 每个接口版本为独立的一个类，必须继承自超类ApiMethodBase。
 
