@@ -6,10 +6,10 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-import inspect
-from webapi.api_list import api_version
-from json import JSONDecodeError
+from inspect import signature, Parameter
 from ..base import ApiBaseHandler
+from json import JSONDecodeError
+from webapi.api_list import api_version
 from webapi.api_retinfo import api_retinfo
 from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
@@ -88,7 +88,7 @@ class WebApiRoute(ApiBaseHandler):
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
         # 获取函数签名
-        func_signature = inspect.signature(method_func)
+        func_signature = signature(method_func)
         # 接口函数如果存在Api关键字，则直接抛出异常，函数不符合规范
         for key in func_signature.parameters.keys():
             if key in api_keyword:
@@ -101,9 +101,7 @@ class WebApiRoute(ApiBaseHandler):
                 if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
                     raise ApiSysError.error_api_config
                 # 参数没有默认值的情况
-                elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') \
-                        and hasattr(v.default, '__name__') \
-                        and v.default.__name__ == '_empty':
+                elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') and v.default == Parameter.empty:
                     if self.request.method == 'POST' \
                                 and body_json \
                                 and hasattr(body_json, 'keys') \
