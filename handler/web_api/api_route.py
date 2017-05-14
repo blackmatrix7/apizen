@@ -6,11 +6,11 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
+from dict2xml import dict2xml
 from ..base import ApiBaseHandler
 from json import JSONDecodeError
 from webapi.api_list import api_version
 from inspect import signature, Parameter
-from webapi.api_retinfo import api_retinfo
 from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
 
@@ -19,8 +19,9 @@ __author__ = 'matrix'
 
 class WebApiRoute(ApiBaseHandler):
 
-    @api_retinfo
-    def func(self):
+    format_ = 'json'
+
+    def call_api_func(self):
 
         def is_float(num):
             try:
@@ -43,15 +44,13 @@ class WebApiRoute(ApiBaseHandler):
         # 时间戳
         _timestamp = self.get_argument('timestamp', None)
         # 数据格式
-        _format = self.get_argument('format', 'json').lower()
+        self.format_ = self.get_argument('format', 'json').lower()
         # 接口版本
         _v = self.get_argument('v', None)
 
         # 检查请求的格式
-        if _format not in ('json', 'xml'):
+        if self.format_ not in ('json', 'xml'):
             raise ApiSysError.invalid_format
-
-        self.set_format(_format)
 
         # 检查版本号
         if not _v:
@@ -87,7 +86,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api_version[_v].api_methods[_method]['func']
+        method_func = api_version[_v].api_methods[_method]['call_api_func']
         # 检查函数对象是否有效
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
@@ -145,11 +144,44 @@ class WebApiRoute(ApiBaseHandler):
 
         return method_func(**func_args)
 
+    def format_retinfo(self):
+
+        result_code = 1000
+        message = '执行成功'
+        result = None
+        status_code = 200
+
+        try:
+            result = self.call_api_func()
+        except ApiBaseError as api_ex:
+            result_code = api_ex.err_code
+            status_code = api_ex.status_code
+            message = api_ex.message
+        except Exception as ex:
+            api_ex = ApiSysError.system_error
+            result_code = api_ex.err_code
+            status_code = api_ex.status_code
+            message = '{0}：{1}'.format(api_ex.message, ex)
+
+        retinfo = {
+            'meta': {
+                'code': result_code,
+                'message': message
+            },
+            'respone': result
+        }
+
+        if self.format_ == 'xml':
+            retinfo = dict2xml(retinfo)
+
+        self.set_status(status_code=status_code)
+        self.write(retinfo)
+
     def get(self):
-        self.func()
+        self.format_retinfo()
 
     def post(self):
-        self.func()
+        self.format_retinfo()
 
     def check_xsrf_cookie(self):
         pass
