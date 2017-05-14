@@ -6,10 +6,10 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-from inspect import signature, Parameter
 from ..base import ApiBaseHandler
 from json import JSONDecodeError
 from webapi.api_list import api_version
+from inspect import signature, Parameter
 from webapi.api_retinfo import api_retinfo
 from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
@@ -30,7 +30,7 @@ class WebApiRoute(ApiBaseHandler):
                 return False
 
         # API专属关键字
-        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'response_format', 'v', 'client_id')
+        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v', 'client_id')
 
         # access_token
         _access_token = self.get_argument('access_token', None)
@@ -43,11 +43,15 @@ class WebApiRoute(ApiBaseHandler):
         # 时间戳
         _timestamp = self.get_argument('timestamp', None)
         # 数据格式
-        _response_format = self.get_argument('response_format', 'json')
+        _format = self.get_argument('format', 'json').lower()
         # 接口版本
         _v = self.get_argument('v', None)
         # client_id
         _client_id = self.get_argument('client_id', None)
+
+        # 检查请求的格式
+        if _format not in ('json', 'xml'):
+            raise ApiSysError.invalid_format
 
         # 检查版本号
         if not _v:
@@ -138,7 +142,8 @@ class WebApiRoute(ApiBaseHandler):
                                   message='{message}:{key_name}'.format(
                                       message=ApiSysError.missing_arguments.message, key_name=v.name))
                 raise ex
-        return method_func(**func_args)
+
+        return method_func(**func_args), _format
 
     def get(self):
         self.func()

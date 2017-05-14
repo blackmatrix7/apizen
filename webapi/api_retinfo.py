@@ -6,6 +6,7 @@
 # @File: api_retinfo.py
 # @Software: PyCharm
 from functools import wraps
+from dict2xml import dict2xml
 from webapi.api_error import ApiSysError, ApiBaseError
 
 __author__ = 'matrix'
@@ -21,9 +22,10 @@ def api_retinfo(func):
         message = '执行成功'
         result = None
         status_code = 200
+        format_ = 'json'
 
         try:
-            result = func(*args, **kwargs)
+            result, format_ = func(*args, **kwargs)
         except ApiBaseError as api_ex:
             result_code = api_ex.err_code
             status_code = api_ex.status_code
@@ -34,10 +36,6 @@ def api_retinfo(func):
             status_code = api_ex.status_code
             message = '{0}：{1}'.format(api_ex.message, ex)
 
-        # 如果返回结果是空的list或空的dict，则直接转换成None，统一返回结果
-        if result and not len(result):
-            result = None
-
         retinfo = {
             'meta': {
                 'code': result_code,
@@ -45,6 +43,9 @@ def api_retinfo(func):
             },
             'respone': result
         }
+
+        if format_ == 'xml':
+            retinfo = dict2xml(data=retinfo)
 
         self.set_status(status_code=status_code)
         self.write(retinfo)

@@ -65,7 +65,7 @@ deactivate
 
 函数要求：
 
-1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, response_format, v, client_id
+1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, format, v, client_id
 2. 暂不支持VAR_POSITIONAL类型的参数，即*args
 3. 返回结果可正常转换成json或xml
 
@@ -435,12 +435,12 @@ def raise_error():
 
 公共参数调用填写在query string中
 
-| 参数名             | 必填   | 默认值  | 说明                 |
-| --------------- | ---- | ---- | ------------------ |
-| v               | 是    | 无    | 接口版本号，当前为1.0       |
-| method          | 是    | 无    | 接口方法名              |
-| response_format | 否    | json | 返回的请求格式，支持json或xml |
-| 其他参数            | 否    | 无    | 待完成                |
+| 参数名    | 必填   | 默认值  | 说明                 |
+| ------ | ---- | ---- | ------------------ |
+| v      | 是    | 无    | 接口版本号，当前为1.0       |
+| method | 是    | 无    | 接口方法名              |
+| format | 否    | json | 返回的请求格式，支持json或xml |
+| 其他参数   | 否    | 无    | 待完成                |
 
 ### 接口业务参数
 

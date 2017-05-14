@@ -38,11 +38,9 @@ class ApiDemo:
         :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
         :return:  返回测试结果
         """
-        return {
-            'user_id': user_id,
-            'name': name,
-            'age': age
-        }
+        return [
+            {'user_id': user_id,  'name': name, 'age': age}
+        ]
 
     @classmethod
     def class_method(cls, name):
@@ -89,13 +87,6 @@ class ApiDemo:
         :return:  返回调用结果
         """
         return kwargs
-
-    # @staticmethod
-    # def demo3(user_id, **kwargs):
-    #     return {
-    #         'user_id': user_id,
-    #         'other': kwargs
-    #     }
 
 if __name__ == '__main__':
     pass
