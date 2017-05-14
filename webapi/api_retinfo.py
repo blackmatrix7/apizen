@@ -14,9 +14,12 @@ __author__ = 'matrix'
 
 def api_retinfo(func):
 
+    format_ = 'json'
+
     @wraps(func)
     def _webapi(*args, **kwargs):
         self = args[0]
+        setattr(self, set_format.__name__, set_format)
 
         result_code = 1000
         message = '执行成功'
@@ -43,8 +46,15 @@ def api_retinfo(func):
             'respone': result
         }
 
+        if format_ == 'xml':
+            retinfo = dict2xml(retinfo)
+
         self.set_status(status_code=status_code)
         self.write(retinfo)
+
+    def set_format(new_format):
+        nonlocal format_
+        format_ = new_format
 
     return _webapi
 

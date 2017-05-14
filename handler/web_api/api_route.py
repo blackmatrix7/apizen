@@ -30,7 +30,7 @@ class WebApiRoute(ApiBaseHandler):
                 return False
 
         # API专属关键字
-        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v', 'client_id')
+        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v')
 
         # access_token
         _access_token = self.get_argument('access_token', None)
@@ -46,12 +46,12 @@ class WebApiRoute(ApiBaseHandler):
         _format = self.get_argument('format', 'json').lower()
         # 接口版本
         _v = self.get_argument('v', None)
-        # client_id
-        _client_id = self.get_argument('client_id', None)
 
         # 检查请求的格式
         if _format not in ('json', 'xml'):
             raise ApiSysError.invalid_format
+
+        self.set_format(_format)
 
         # 检查版本号
         if not _v:
@@ -78,7 +78,7 @@ class WebApiRoute(ApiBaseHandler):
         # 获取body
         body_data = self.request.body.decode()
         content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
-        if body_data and content_type == 'application/json':
+        if content_type == 'application/json' and body_data:
             try:
                 body_json = json.loads(body_data)
             except JSONDecodeError:
