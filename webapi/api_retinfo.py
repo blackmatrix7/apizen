@@ -22,10 +22,9 @@ def api_retinfo(func):
         message = '执行成功'
         result = None
         status_code = 200
-        format_ = 'json'
 
         try:
-            result, format_ = func(*args, **kwargs)
+            result = func(*args, **kwargs)
         except ApiBaseError as api_ex:
             result_code = api_ex.err_code
             status_code = api_ex.status_code
@@ -43,9 +42,6 @@ def api_retinfo(func):
             },
             'respone': result
         }
-
-        if format_ == 'xml':
-            retinfo = dict2xml(data=retinfo)
 
         self.set_status(status_code=status_code)
         self.write(retinfo)

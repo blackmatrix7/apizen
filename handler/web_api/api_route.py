@@ -143,7 +143,7 @@ class WebApiRoute(ApiBaseHandler):
                                       message=ApiSysError.missing_arguments.message, key_name=v.name))
                 raise ex
 
-        return method_func(**func_args), _format
+        return method_func(**func_args)
 
     def get(self):
         self.func()
