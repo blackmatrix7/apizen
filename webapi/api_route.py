@@ -6,7 +6,6 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-from dict2xml import dict2xml
 from json import JSONDecodeError
 from handler.base import ApiBaseHandler
 from webapi.api_list import api_version
@@ -141,39 +140,6 @@ class WebApiRoute(ApiBaseHandler):
                 raise ex
 
         return method_func(**func_args)
-
-    def format_retinfo(self):
-
-        result_code = 1000
-        message = '执行成功'
-        result = None
-        status_code = 200
-
-        try:
-            result = self.call_api_func()
-        except ApiBaseError as api_ex:
-            result_code = api_ex.err_code
-            status_code = api_ex.status_code
-            message = api_ex.message
-        except Exception as ex:
-            api_ex = ApiSysError.system_error
-            result_code = api_ex.err_code
-            status_code = api_ex.status_code
-            message = '{0}：{1}'.format(api_ex.message, ex)
-
-        retinfo = {
-            'meta': {
-                'code': result_code,
-                'message': message
-            },
-            'respone': result
-        }
-
-        if self._format == 'xml':
-            retinfo = dict2xml(retinfo)
-
-        self.set_status(status_code=status_code)
-        self.write(retinfo)
 
     def get(self):
         self.format_retinfo()
