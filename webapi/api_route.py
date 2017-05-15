@@ -7,8 +7,8 @@
 # @Software: PyCharm
 import json
 from dict2xml import dict2xml
-from ..base import ApiBaseHandler
 from json import JSONDecodeError
+from handler.base import ApiBaseHandler
 from webapi.api_list import api_version
 from inspect import signature, Parameter
 from tornado.web import MissingArgumentError
@@ -18,8 +18,6 @@ __author__ = 'matrix'
 
 
 class WebApiRoute(ApiBaseHandler):
-
-    format_ = 'json'
 
     def call_api_func(self):
 
@@ -34,41 +32,41 @@ class WebApiRoute(ApiBaseHandler):
         api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v')
 
         # access_token
-        _access_token = self.get_argument('access_token', None)
+        self._access_token = self.get_argument('access_token', None)
         # 接口名称
-        _method = self.get_argument('method', None)
+        self._method = self.get_argument('method', None)
         # app_key
-        _app_key = self.get_argument('app_key', None)
+        self._app_key = self.get_argument('app_key', None)
         # 签名
-        _sign = self.get_argument('sign', None)
+        self._sign = self.get_argument('sign', None)
         # 时间戳
-        _timestamp = self.get_argument('timestamp', None)
+        self._timestamp = self.get_argument('timestamp', None)
         # 数据格式
-        self.format_ = self.get_argument('format', 'json').lower()
+        self._format = self.get_argument('format', 'json').lower()
         # 接口版本
-        _v = self.get_argument('v', None)
+        self._v = self.get_argument('v', None)
 
         # 检查请求的格式
-        if self.format_ not in ('json', 'xml'):
+        if self._format not in ('json', 'xml'):
             raise ApiSysError.invalid_format
 
         # 检查版本号
-        if not _v:
+        if not self._v:
             raise ApiSysError.missing_version
-        elif not is_float(_v):
+        elif not is_float(self._v):
             raise ApiSysError.invalid_version
-        elif _v not in api_version:
+        elif self._v not in api_version:
             raise ApiSysError.unsupported_version
 
         # 检查方法名
-        if not _method:
+        if not self._method:
             raise ApiSysError.missing_method
-        elif _method not in api_version[_v].api_methods:
+        elif self._method not in api_version[self._v].api_methods:
             raise ApiSysError.invalid_method
-        elif not api_version[_v].api_methods[_method].get('enable', True):
+        elif not api_version[self._v].api_methods[self._method].get('enable', True):
             raise ApiSysError.api_stop
         elif self.request.method.lower() not in \
-                api_version[_v].api_methods[_method].get('method', ['get', 'post']):
+                api_version[self._v].api_methods[self._method].get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
 
         # 函数参数
@@ -86,7 +84,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api_version[_v].api_methods[_method]['call_api_func']
+        method_func = api_version[self._v].api_methods[self._method]['call_api_func']
         # 检查函数对象是否有效
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
@@ -171,7 +169,7 @@ class WebApiRoute(ApiBaseHandler):
             'respone': result
         }
 
-        if self.format_ == 'xml':
+        if self._format == 'xml':
             retinfo = dict2xml(retinfo)
 
         self.set_status(status_code=status_code)

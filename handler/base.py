@@ -22,5 +22,14 @@ class SysBaseHandler(BaseHandler):
 
 
 class ApiBaseHandler(SysBaseHandler):
-    pass
+
+    def __init__(self, application, request, **kwargs):
+        self._access_token = None
+        self._method = None
+        self._app_key = None
+        self._sign = None
+        self._timestamp = None
+        self._v = None
+        self._format = 'json'
+        SysBaseHandler.__init__(self, application, request, **kwargs)
 

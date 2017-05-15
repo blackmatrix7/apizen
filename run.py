@@ -7,7 +7,7 @@
 # @Software: PyCharm
 import tornado.web
 import tornado.ioloop
-from handler.web_api.api_route import WebApiRoute
+from webapi.api_route import WebApiRoute
 
 __author__ = 'matrix'
 
