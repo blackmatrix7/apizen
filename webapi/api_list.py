@@ -42,6 +42,9 @@ class ApiMethodMeta(type):
         setattr(cls, 'api_methods', all_api_methods)
         return cls
 
+    def __init__(cls, classname, supers, clsdict):
+        type.__init__(cls, classname, supers, clsdict)
+
 
 class ApiMethodBase(metaclass=ApiMethodMeta):
     api_methods = {}
