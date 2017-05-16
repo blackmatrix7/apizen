@@ -33,7 +33,7 @@ class ApiBaseHandler(SysBaseHandler):
             result_code = api_ex.err_code
             status_code = api_ex.status_code
             message = '{message}:{arg_name}'.format(
-                message=ApiSysError.missing_arguments.message,
+                message=api_ex.message,
                 arg_name=miss_arg_err.arg_name)
         except JSONDecodeError:
             api_ex = ApiSysError.invalid_json
