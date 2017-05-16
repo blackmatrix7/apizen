@@ -61,6 +61,7 @@ class ApiBaseHandler(SysBaseHandler):
         if self._format == 'xml':
             retinfo = dict2xml(retinfo)
 
+        self.set_header("Access-Control-Allow-Origin", "*")
         self.set_status(status_code=status_code)
         self.write(retinfo)
 
