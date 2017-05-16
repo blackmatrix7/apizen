@@ -6,10 +6,9 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-from json import JSONDecodeError
-from handler.base import ApiBaseHandler
 from webapi.api_list import api_version
 from inspect import signature, Parameter
+from webapi.api_base import ApiBaseHandler
 from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
 
@@ -75,10 +74,7 @@ class WebApiRoute(ApiBaseHandler):
         body_data = self.request.body.decode()
         content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
         if content_type == 'application/json' and body_data:
-            try:
                 body_json = json.loads(body_data)
-            except JSONDecodeError:
-                raise ApiSysError.invalid_json
         else:
             body_json = None
 
