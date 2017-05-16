@@ -78,7 +78,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api_version[self._v].api_methods[self._method]['call_api_func']
+        method_func = api_version[self._v].api_methods[self._method]['func']
         # 检查函数对象是否有效
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
