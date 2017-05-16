@@ -8,6 +8,7 @@
 from dict2xml import dict2xml
 from json import JSONDecodeError
 from handler.base import SysBaseHandler
+from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
 
 __author__ = 'blackmatrix'
@@ -27,6 +28,15 @@ class ApiBaseHandler(SysBaseHandler):
 
         try:
             result = self.call_api_func()
+        except MissingArgumentError as miss_arg_err:
+            api_ex = ApiBaseError(err_code=ApiSysError.missing_arguments.err_code,
+                                  status_code=ApiSysError.missing_arguments.status_code,
+                                  message='{message}:{arg_name}'.format(
+                                      message=ApiSysError.missing_arguments.message,
+                                      arg_name=miss_arg_err.arg_name))
+            result_code = api_ex.err_code
+            status_code = api_ex.status_code
+            message = api_ex.message
         except JSONDecodeError:
             api_ex = ApiSysError.invalid_json
             result_code = api_ex.err_code

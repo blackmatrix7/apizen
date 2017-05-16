@@ -9,7 +9,6 @@ import json
 from webapi.api_list import api_version
 from inspect import signature, Parameter
 from webapi.api_base import ApiBaseHandler
-from tornado.web import MissingArgumentError
 from webapi.api_error import ApiBaseError, ApiSysError
 
 __author__ = 'matrix'
@@ -92,48 +91,41 @@ class WebApiRoute(ApiBaseHandler):
 
         # 检查函数参数
         for k, v in func_signature.parameters.items():
-            try:
-                # *args的函数参数
-                if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
-                    raise ApiSysError.error_api_config
-                # 参数没有默认值的情况
-                elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') and v.default == Parameter.empty:
-                    if self.request.method == 'POST' \
-                                and body_json \
-                                and hasattr(body_json, 'keys') \
-                                and k in body_json.keys():
-                            func_args[k] = body_json.get(k)
-                    else:
-                        func_args[k] = self.get_argument(k)
-                # 参数有默认值的情况
-                elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
-                    if self.request.method == 'POST' \
+            # *args的函数参数
+            if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
+                raise ApiSysError.error_api_config
+            # 参数没有默认值的情况
+            elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') and v.default == Parameter.empty:
+                if self.request.method == 'POST' \
                             and body_json \
                             and hasattr(body_json, 'keys') \
                             and k in body_json.keys():
-                        func_args[k] = body_json.setdefault(k, v.default)
-                    else:
-                        func_args[k] = self.get_argument(k, v.default)
-                # **kwargs的情况
-                elif str(v.kind) == 'VAR_KEYWORD':
-                    # 检查body里的json，如果有多余的参数，则传给函数
-                    if self.request.method == 'POST' \
-                            and content_type == 'application/json' \
-                            and body_json \
-                            and hasattr(body_json, 'items'):
-                        func_args.update({k: v for k, v in body_json.items()
-                                          if k not in api_keyword
-                                          and k not in func_signature.parameters.keys()})
-                    # 再次检查 arguments里，如果有多余的参数，则传给函数
-                    func_args.update({k: self.get_argument(k) for k in self.request.arguments.keys()
+                        func_args[k] = body_json.get(k)
+                else:
+                    func_args[k] = self.get_argument(k)
+            # 参数有默认值的情况
+            elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
+                if self.request.method == 'POST' \
+                        and body_json \
+                        and hasattr(body_json, 'keys') \
+                        and k in body_json.keys():
+                    func_args[k] = body_json.setdefault(k, v.default)
+                else:
+                    func_args[k] = self.get_argument(k, v.default)
+            # **kwargs的情况
+            elif str(v.kind) == 'VAR_KEYWORD':
+                # 检查body里的json，如果有多余的参数，则传给函数
+                if self.request.method == 'POST' \
+                        and content_type == 'application/json' \
+                        and body_json \
+                        and hasattr(body_json, 'items'):
+                    func_args.update({k: v for k, v in body_json.items()
                                       if k not in api_keyword
                                       and k not in func_signature.parameters.keys()})
-            except MissingArgumentError:
-                ex = ApiBaseError(err_code=ApiSysError.missing_arguments.err_code,
-                                  status_code=ApiSysError.missing_arguments.status_code,
-                                  message='{message}:{key_name}'.format(
-                                      message=ApiSysError.missing_arguments.message, key_name=v.name))
-                raise ex
+                # 再次检查 arguments里，如果有多余的参数，则传给函数
+                func_args.update({k: self.get_argument(k) for k in self.request.arguments.keys()
+                                  if k not in api_keyword
+                                  and k not in func_signature.parameters.keys()})
 
         return method_func(**func_args)
 
