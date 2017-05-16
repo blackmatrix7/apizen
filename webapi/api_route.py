@@ -8,8 +8,8 @@
 import json
 from webapi.api_list import api_version
 from inspect import signature, Parameter
+from webapi.api_error import ApiSysError
 from webapi.api_base import ApiBaseHandler
-from webapi.api_error import ApiBaseError, ApiSysError
 
 __author__ = 'matrix'
 
