@@ -6,6 +6,7 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
+import hashlib
 from webapi.api_list import api_version
 from inspect import signature, Parameter
 from webapi.api_error import ApiSysError
@@ -58,12 +59,20 @@ class WebApiRoute(ApiBaseHandler):
         # 检查方法名
         if not self._method:
             raise ApiSysError.missing_method
-        elif self._method not in api_version[self._v].api_methods:
+
+        # hash方法名
+        _hash_method = 'x_{hash_method}'.format(
+            hash_method=hashlib.sha1(self._method.encode('utf-8')).hexdigest())
+
+        # 检查方法名是否存在
+        if not hasattr(api_version[self._v], _hash_method):
             raise ApiSysError.invalid_method
-        elif not api_version[self._v].api_methods[self._method].get('enable', True):
+        # 检查方法是否停用
+        elif not getattr(api_version[self._v], _hash_method).get('enable', True):
             raise ApiSysError.api_stop
+        # 检查方法是否允许以某种请求方式调用
         elif self.request.method.lower() not in \
-                api_version[self._v].api_methods[self._method].get('method', ['get', 'post']):
+                getattr(api_version[self._v], _hash_method).get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
 
         # 函数参数
@@ -78,7 +87,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = api_version[self._v].api_methods[self._method]['func']
+        method_func = getattr(api_version[self._v], _hash_method).get('func', None)
         # 检查函数对象是否有效
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config

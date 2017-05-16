@@ -32,15 +32,12 @@ def version(v, enable=True):
 class ApiMethodMeta(type):
 
     def __new__(mcs, classname, supers, clsdict):
-        # 遍历父类的方法,获取父类版本的API方法
-        all_api_methods = {}
-        for super_ in supers:
-            if super_ and 'api_methods' in super_.__dict__:
-                super_methods = getattr(super_, 'api_methods')
-                all_api_methods.update(super_methods)
         cls = type.__new__(mcs, classname, supers, clsdict)
-        all_api_methods.update(getattr(cls, 'support_methods'))
-        setattr(cls, 'api_methods', all_api_methods)
+        support_methods = getattr(cls, 'support_methods')
+        for support_method in support_methods:
+            hash_method = 'x_{hash_method}'.format(
+                hash_method=hashlib.sha1(support_method.encode('utf-8')).hexdigest())
+            setattr(cls, hash_method, support_methods.get(support_method, None))
         return cls
 
     def __init__(cls, classname, supers, clsdict):
@@ -48,7 +45,6 @@ class ApiMethodMeta(type):
 
 
 class ApiMethodBase(metaclass=ApiMethodMeta):
-    api_methods = {}
     support_methods = {
         'matrix.api.get-user': {'func': api_demo.get_user},
         'matrix.api.return-err': {'func': api_demo.raise_error}

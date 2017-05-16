@@ -27,6 +27,8 @@ tornado==4.5.1
 
 ## 更新日志
 
+2017.05.16	接口版本支持多重继承
+
 2017.05.09	接口支持版本继承与管理
 
 2017.05.08	接口返回异常信息时，不再统一返回http code 200
@@ -65,7 +67,7 @@ deactivate
 
 函数要求：
 
-1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, format, v, client_id
+1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, format, v
 2. 暂不支持VAR_POSITIONAL类型的参数，即*args
 3. 返回结果可正常转换成json或xml
 
@@ -119,7 +121,7 @@ class ApiMethodV10(ApiMethodBase):
 
 接口支持版本管理与继承，通过装饰器@version('1.0')注册这个类对应的版本号。
 
-类继承关系即接口继承关系(暂不支持多重继承)。
+类继承关系即接口继承关系
 
 ```python
 class ApiMethodBase(metaclass=ApiMethodMeta):
@@ -519,14 +521,12 @@ def raise_error():
 ### 近期
 
 1. 代码调整及优化
-2. 接口版本集成方案调整，支持多重继承
 
 
 ### 中期
 
 1. 完整的oauth 2.0 鉴权方案实现
 2. 接口访问日志记录
-3. 某些时间段内接口调用次数限制
 
 
 ### 遥远
