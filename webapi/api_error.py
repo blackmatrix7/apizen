@@ -32,7 +32,7 @@ class ApiSysError:
     # 请求被禁止
     forbidden_request = ApiBaseError(err_code=1003, status_code=403, message='请求被禁止')
     # 缺少版本参数
-    missing_version = ApiBaseError(err_code=1004, status_code=400, message='缺少版本参数')
+    missing_version = ApiBaseError(err_code=1004, status_code=400, message='缺少版本参数：v')
     # 不支持的版本号
     unsupported_version = ApiBaseError(err_code=1005, status_code=400, message='不支持的版本号')
     # 非法的版本参数
@@ -48,7 +48,7 @@ class ApiSysError:
     # 无效数据格式
     invalid_format = ApiBaseError(err_code=1011, status_code=400, message='无效数据格式')
     # 缺少方法名参数
-    missing_method = ApiBaseError(err_code=1012, status_code=400, message='缺少方法名参数')
+    missing_method = ApiBaseError(err_code=1012, status_code=400, message='缺少方法名参数：method')
     # 不存在的方法名
     invalid_method = ApiBaseError(err_code=1013, status_code=404, message='不存在的方法名')
     # 缺少access_token参数

@@ -29,36 +29,30 @@ class WebApiRoute(ApiBaseHandler):
         # API专属关键字
         api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v')
 
+        # 接口名称
+        self._method = self.get_argument('method')
+        # 接口版本
+        self._v = self.get_argument('v')
+        # 数据格式
+        self._format = self.get_argument('format', 'json').lower()
         # access_token
         self._access_token = self.get_argument('access_token', None)
-        # 接口名称
-        self._method = self.get_argument('method', None)
         # app_key
         self._app_key = self.get_argument('app_key', None)
         # 签名
         self._sign = self.get_argument('sign', None)
         # 时间戳
         self._timestamp = self.get_argument('timestamp', None)
-        # 数据格式
-        self._format = self.get_argument('format', 'json').lower()
-        # 接口版本
-        self._v = self.get_argument('v', None)
 
         # 检查请求的格式
         if self._format not in ('json', 'xml'):
             raise ApiSysError.invalid_format
 
         # 检查版本号
-        if not self._v:
-            raise ApiSysError.missing_version
-        elif not is_float(self._v):
+        if not is_float(self._v):
             raise ApiSysError.invalid_version
         elif self._v not in api_version:
             raise ApiSysError.unsupported_version
-
-        # 检查方法名
-        if not self._method:
-            raise ApiSysError.missing_method
 
         # hash方法名
         _hash_method = 'x_{hash_method}'.format(
