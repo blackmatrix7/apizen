@@ -94,39 +94,23 @@ class WebApiRoute(ApiBaseHandler):
             if key in api_keyword:
                 raise ApiSysError.error_api_config
 
+        # 使用Type Hints判断接口处理函数限制的参数类型
         def set_method_args(arg_key, arg_value, type_hints=None):
             _arg_value = copy.copy(arg_value)
             try:
-
-                if type_hints and type_hints != Parameter.empty:
-
+                converter = {
+                    'int': lambda: int(_arg_value) if isinstance(arg_value, str) else _arg_value,
+                    'float': lambda:  float(_arg_value),
+                    'str': lambda: str(_arg_value),
+                    'list': lambda: json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value,
+                    'dict': lambda: json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value,
+                    'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value)
+                }
+                type_hints_name = type_hints.__name__.lower()
+                if type_hints and type_hints != Parameter.empty and type_hints_name in converter:
+                    _arg_value = converter[type_hints_name]()
                     if not isinstance(_arg_value, type_hints):
-                        # int 类型自动转换
-                        if type_hints is int:
-                            _arg_value = int(_arg_value) if isinstance(arg_value, str) else _arg_value
-                            converted = True
-                        # float 类型自动转换
-                        elif type_hints is float:
-                            _arg_value = float(_arg_value)
-                            converted = True
-                        # str 类型自动转换
-                        elif type_hints is str:
-                            _arg_value = str(_arg_value)
-                            converted = True
-                        # list、dict 尝试解析json字符串
-                        elif type_hints in (list, dict):
-                            _arg_value = json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value
-                            converted = True
-                        # tuple 需要解析json字符串并转换为tuple，不推荐type hints 使用 tuple类型
-                        elif type_hints is tuple:
-                            _arg_value = tuple(json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value)
-                            converted = True
-                        else:
-                            converted = False
-
-                        # 如果转换之后类型依旧不一致
-                        if converted and not isinstance(_arg_value, type_hints):
-                            raise ValueError
+                        raise ValueError
             # JSONDecodeError是ValueError的子类
             # 如果不先做解析异常的判断，会显示参数类型错误，虽然看起来也没什么不对
             except JSONDecodeError:
