@@ -90,13 +90,14 @@ class ApiDemo:
         raise ApiSubError.unknown_error
 
     @staticmethod
-    def send_kwargs(**kwargs):
+    def send_kwargs(value: str, **kwargs):
         """
         VAR_KEYWORD 参数类型的传值测试，传入任意k/wc，会在调用结果中返回
+        :param value:  任意字符串
         :param kwargs:  键值对
         :return:  返回调用结果
         """
-        return kwargs
+        return {"value": value, "kwargs": kwargs}
 
 if __name__ == '__main__':
     pass
