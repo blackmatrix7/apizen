@@ -28,29 +28,32 @@ class ApiBaseHandler(SysBaseHandler):
 
         try:
             result = self.call_api_func()
+        # 参数缺失异常
         except MissingArgumentError as miss_arg_err:
             # 缺少方法名
             if miss_arg_err.arg_name == 'method':
                 api_ex = ApiSysError.missing_method
-                message = api_ex.message
             # 缺少版本号
             elif miss_arg_err.arg_name == 'v':
                 api_ex = ApiSysError.missing_version
-                message = api_ex.message
+            # 其他缺少参数的情况
             else:
                 api_ex = ApiSysError.missing_arguments
-                message = '{0}:{1}'.format(api_ex.message, miss_arg_err.arg_name)
+            message = '{0}:{1}'.format(api_ex.message, miss_arg_err.arg_name)
             result_code = api_ex.err_code
             status_code = api_ex.status_code
+        # JSON解析异常
         except JSONDecodeError:
             api_ex = ApiSysError.invalid_json
             result_code = api_ex.err_code
             status_code = api_ex.status_code
             message = api_ex.message
+        # API其他异常
         except ApiBaseError as api_ex:
             result_code = api_ex.err_code
             status_code = api_ex.status_code
             message = api_ex.message
+        # 全局异常
         except Exception as ex:
             api_ex = ApiSysError.system_error
             result_code = api_ex.err_code
