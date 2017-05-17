@@ -67,6 +67,8 @@ class ApiSysError:
     error_api_config = ApiBaseError(err_code=1020, status_code=500, message='错误的API配置')
     # 无效的json格式
     invalid_json = ApiBaseError(err_code=1021, status_code=400, message='无效的json格式')
+    # 参数类型错误
+    error_args_type = ApiBaseError(err_code=1022, status_code=400, message='参数类型错误')
 
 
 # API 子系统（业务）层级执行结果，以2000开始

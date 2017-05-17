@@ -30,17 +30,27 @@ class ApiDemo:
 
     @staticmethod
     @test_decorator
-    def get_user(user_id, age, name='刘峰'):
+    def set_user(user_id: int, name: str, mark: float, age: int=19):
         """
         测试装饰器对获取函数参数的影响，及接口参数判断说明
         :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
         :param age:  年龄，必填，原因同上
         :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
+        :param mark:  分数
         :return:  返回测试结果
         """
         return [
-            {'user_id': user_id,  'name': name, 'age': age}
+            {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
         ]
+
+    @staticmethod
+    def set_users(users: list):
+        def return_users():
+            for user in users:
+                yield {'user_id': user.get('user_id'),
+                       'name': user.get('name'),
+                       'age': user.get('age')}
+        return list(return_users())
 
     @classmethod
     def class_method(cls, name):

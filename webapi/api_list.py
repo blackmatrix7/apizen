@@ -46,7 +46,8 @@ class ApiMethodMeta(type):
 
 class ApiMethodBase(metaclass=ApiMethodMeta):
     support_methods = {
-        'matrix.api.get-user': {'func': api_demo.get_user},
+        'matrix.api.set-user': {'func': api_demo.set_user},
+        'matrix.api.set-users': {'func': api_demo.set_users},
         'matrix.api.return-err': {'func': api_demo.raise_error}
     }
 
