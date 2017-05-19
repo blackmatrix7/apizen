@@ -80,7 +80,11 @@ class WebApiRoute(ApiBaseHandler):
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
         # 获取函数签名
+        # if _hash_method not in methodsig:
         func_signature = signature(method_func)
+        #     methodsig.update({_hash_method: func_signature})
+        # else:
+        #     func_signature = methodsig.get(_hash_method)
 
         # 使用Type Hints判断接口处理函数限制的参数类型
         def set_method_args(arg_key, arg_value, type_hints=None):
