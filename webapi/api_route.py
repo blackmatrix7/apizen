@@ -9,10 +9,11 @@ import json
 import copy
 import hashlib
 from json import JSONDecodeError
-from webapi.api_list import api_version
+from apizen.error import ApiSysError
+from apizen.version import allversion
 from inspect import signature, Parameter
 from webapi.api_base import ApiBaseHandler
-from webapi.api_error import ApiSysError, ApiBaseError
+from webapi.api_error import ApiBaseError
 
 __author__ = 'matrix'
 
@@ -20,13 +21,6 @@ __author__ = 'matrix'
 class WebApiRoute(ApiBaseHandler):
 
     def call_api_func(self):
-
-        def is_float(num):
-            try:
-                float(num)
-                return True
-            except (TypeError, ValueError):
-                return False
 
         # API专属关键字
         api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v')
@@ -51,9 +45,7 @@ class WebApiRoute(ApiBaseHandler):
             raise ApiSysError.invalid_format
 
         # 检查版本号
-        if not is_float(self._v):
-            raise ApiSysError.invalid_version
-        elif self._v not in api_version:
+        if self._v not in allversion:
             raise ApiSysError.unsupported_version
 
         # hash方法名
@@ -61,14 +53,14 @@ class WebApiRoute(ApiBaseHandler):
             hash_method=hashlib.sha1(self._method.encode('utf-8')).hexdigest())
 
         # 检查方法名是否存在
-        if not hasattr(api_version[self._v], _hash_method):
+        if not hasattr(allversion[self._v]['model'], _hash_method):
             raise ApiSysError.invalid_method
         # 检查方法是否停用
-        elif not getattr(api_version[self._v], _hash_method).get('enable', True):
+        elif not getattr(allversion[self._v]['model'], _hash_method).get('enable', True):
             raise ApiSysError.api_stop
         # 检查方法是否允许以某种请求方式调用
         elif self.request.method.lower() not in \
-                getattr(api_version[self._v], _hash_method).get('method', ['get', 'post']):
+                getattr(allversion[self._v]['model'], _hash_method).get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
 
         # 函数参数
@@ -83,7 +75,7 @@ class WebApiRoute(ApiBaseHandler):
             body_json = None
 
         # 获取函数对象
-        method_func = getattr(api_version[self._v], _hash_method).get('func', None)
+        method_func = getattr(allversion[self._v]['model'], _hash_method).get('func', None)
         # 检查函数对象是否有效
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
@@ -100,7 +92,7 @@ class WebApiRoute(ApiBaseHandler):
             try:
                 converter = {
                     'int': lambda: int(_arg_value) if isinstance(arg_value, str) else _arg_value,
-                    'float': lambda:  float(_arg_value),
+                    'float': lambda: float(_arg_value),
                     'str': lambda: str(_arg_value),
                     'list': lambda: json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value,
                     'dict': lambda: json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value,
