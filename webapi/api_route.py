@@ -80,11 +80,7 @@ class WebApiRoute(ApiBaseHandler):
         if not method_func or not callable(method_func):
             raise ApiSysError.error_api_config
         # 获取函数签名
-        # if _hash_method not in methodsig:
-        func_signature = signature(method_func)
-        #     methodsig.update({_hash_method: func_signature})
-        # else:
-        #     func_signature = methodsig.get(_hash_method)
+        func_param = signature(method_func).parameters
 
         # 使用Type Hints判断接口处理函数限制的参数类型
         def set_method_args(arg_key, arg_value, type_hints=None):
@@ -118,7 +114,8 @@ class WebApiRoute(ApiBaseHandler):
                 func_args[arg_key] = _arg_value
 
         # 检查函数参数
-        for k, v in func_signature.parameters.items():
+        for k, v in func_param.items():
+
             # *args的函数参数
             if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
                 raise ApiSysError.error_api_config
@@ -149,11 +146,11 @@ class WebApiRoute(ApiBaseHandler):
                         and hasattr(body_json, 'items'):
                     func_args.update({k: v for k, v in body_json.items()
                                       if k not in api_keyword
-                                      and k not in func_signature.parameters.keys()})
+                                      and k not in func_param.keys()})
                 # 再次检查 arguments里，如果有多余的参数，则传给函数
                 func_args.update({k: self.get_argument(k) for k in self.request.arguments.keys()
                                   if k not in api_keyword
-                                  and k not in func_signature.parameters.keys()})
+                                  and k not in func_param.keys()})
 
         return method_func(**func_args)
 

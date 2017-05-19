@@ -100,8 +100,8 @@ class ApiDemo:
         return {"value": value, "kwargs": kwargs}
 
     @staticmethod
-    def speed_test():
-        return []
+    def speed_test(value):
+        return value
 
 if __name__ == '__main__':
     pass
