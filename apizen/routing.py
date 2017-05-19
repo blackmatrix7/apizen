@@ -8,5 +8,14 @@
 
 __author__ = 'blackmatrix'
 
+
+def tornado_routing():
+    pass
+
+
+def flask_routing():
+    pass
+
+
 if __name__ == '__main__':
     pass

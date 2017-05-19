@@ -81,10 +81,6 @@ class WebApiRoute(ApiBaseHandler):
             raise ApiSysError.error_api_config
         # 获取函数签名
         func_signature = signature(method_func)
-        # 接口函数如果存在Api关键字，则直接抛出异常，函数不符合规范
-        for key in func_signature.parameters.keys():
-            if key in api_keyword:
-                raise ApiSysError.error_api_config
 
         # 使用Type Hints判断接口处理函数限制的参数类型
         def set_method_args(arg_key, arg_value, type_hints=None):
