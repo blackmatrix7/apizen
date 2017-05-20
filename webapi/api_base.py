@@ -10,7 +10,7 @@ from json import JSONDecodeError
 from abc import ABCMeta, abstractmethod
 from handler.base import SysBaseHandler
 from tornado.web import MissingArgumentError
-from apizen.error import ApiBaseError, ApiSysError
+from apizen.error import ApiError, ApiSysError
 
 __author__ = 'blackmatrix'
 
@@ -33,13 +33,10 @@ class ApiBaseHandler(SysBaseHandler, metaclass=ABCMeta):
 
     def format_retinfo(self):
 
-        result_code = 1000
-        message = '执行成功'
         result = None
-        status_code = 200
 
         try:
-            result = self.call_api_func()
+            result, status_code, result_code, message = self.call_api_func()
         # 参数缺失异常
         except MissingArgumentError as miss_arg_err:
             # 缺少方法名
@@ -61,7 +58,7 @@ class ApiBaseHandler(SysBaseHandler, metaclass=ABCMeta):
             status_code = api_ex.status_code
             message = api_ex.message
         # API其他异常
-        except ApiBaseError as api_ex:
+        except ApiError as api_ex:
             result_code = api_ex.err_code
             status_code = api_ex.status_code
             message = api_ex.message
