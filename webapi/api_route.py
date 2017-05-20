@@ -22,9 +22,6 @@ class WebApiRoute(ApiBaseHandler):
 
     def call_api_func(self):
 
-        # API专属关键字
-        api_keyword = ('access_token', 'method', 'app_key', 'sign', 'timestamp', 'format', 'v')
-
         # 接口名称
         self._method = self.get_argument('method')
         # 接口版本
@@ -63,27 +60,8 @@ class WebApiRoute(ApiBaseHandler):
                 getattr(allversion[self._v]['model'], _hash_method).get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
 
-        # 函数参数
-        func_args = {}
-
-        # 获取body
-        body_data = self.request.body.decode()
-        content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
-        if content_type == 'application/json' and body_data:
-                body_json = json.loads(body_data)
-        else:
-            body_json = None
-
-        # 获取函数对象
-        method_func = getattr(allversion[self._v]['model'], _hash_method).get('func', None)
-        # 检查函数对象是否有效
-        if not method_func or not callable(method_func):
-            raise ApiSysError.error_api_config
-        # 获取函数签名
-        func_param = signature(method_func).parameters
-
         # 使用Type Hints判断接口处理函数限制的参数类型
-        def set_method_args(arg_key, arg_value, default_value, type_hints=None):
+        def set_method_args(arg_key, arg_value, default_value, type_hints):
             _arg_value = copy.copy(arg_value)
             try:
                 converter = {
@@ -115,44 +93,37 @@ class WebApiRoute(ApiBaseHandler):
             else:
                 func_args[arg_key] = _arg_value
 
-        # 检查函数参数
-        for k, v in func_param.items():
+        # 函数参数
+        func_args = {}
 
-            # *args的函数参数
-            if str(v.kind) == 'VAR_POSITIONAL' and isinstance(body_json, (list, tuple)):
+        # 请求参数
+        content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
+        request_args = {key: self.get_argument(key) for key in self.request.arguments}
+
+        if content_type == 'application/json':
+            body_data = json.loads(self.request.body.decode())
+            if body_data and isinstance(body_data, dict):
+                request_args.update(body_data)
+            else:
+                raise ApiSysError.invalid_json
+
+        # 获取函数对象
+        method_func = getattr(allversion[self._v]['model'], _hash_method).get('func', None)
+        # 检查函数对象是否有效
+        if not callable(method_func):
+            raise ApiSysError.error_api_config
+        # 获取函数参数
+        func_param = signature(method_func).parameters
+
+        for k, v in func_param.items():
+            if str(v.kind) == 'VAR_POSITIONAL':
                 raise ApiSysError.error_api_config
-            # 参数没有默认值的情况
-            elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY') and v.default == Parameter.empty:
-                if self.request.method == 'POST' \
-                            and body_json \
-                            and hasattr(body_json, 'keys') \
-                            and k in body_json.keys():
-                    set_method_args(k, body_json.get(k), v.default, v.annotation)
-                else:
-                    set_method_args(k, self.get_argument(k), v.default, v.annotation)
-            # 参数有默认值的情况
             elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
-                if self.request.method == 'POST' \
-                        and body_json \
-                        and hasattr(body_json, 'keys') \
-                        and k in body_json.keys():
-                    set_method_args(k, body_json.get(k, v.default),  v.default, v.annotation)
-                else:
-                    set_method_args(k,  self.get_argument(k, v.default),  v.default, v.annotation)
-            # **kwargs的情况
+                value = request_args.get(k) if k in request_args else v.default if v.default != Parameter.empty else self.get_argument(k)
+                set_method_args(k, value, v.default, v.annotation)
             elif str(v.kind) == 'VAR_KEYWORD':
-                # 检查body里的json，如果有多余的参数，则传给函数
-                if self.request.method == 'POST' \
-                        and content_type == 'application/json' \
-                        and body_json \
-                        and hasattr(body_json, 'items'):
-                    func_args.update({k: v for k, v in body_json.items()
-                                      if k not in api_keyword
-                                      and k not in func_param.keys()})
-                # 再次检查 arguments里，如果有多余的参数，则传给函数
-                func_args.update({k: self.get_argument(k) for k in self.request.arguments.keys()
-                                  if k not in api_keyword
-                                  and k not in func_param.keys()})
+                func_args.update({k: v for k, v in request_args.items()
+                                  if k not in func_param.keys()})
 
         return method_func(**func_args)
 
@@ -161,8 +132,4 @@ class WebApiRoute(ApiBaseHandler):
 
     def post(self):
         self.format_retinfo()
-
-
-if __name__ == '__main__':
-    pass
 
