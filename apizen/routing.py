@@ -8,6 +8,5 @@
 
 __author__ = 'blackmatrix'
 
-
 if __name__ == '__main__':
     pass

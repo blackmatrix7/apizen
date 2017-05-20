@@ -7,12 +7,25 @@
 # @Software: PyCharm
 from dict2xml import dict2xml
 from json import JSONDecodeError
+from tornado.web import RequestHandler
 from abc import ABCMeta, abstractmethod
-from handler.base import SysBaseHandler
-from tornado.web import MissingArgumentError
 from apizen.error import ApiError, ApiSysError
+from tornado.web import MissingArgumentError
 
 __author__ = 'blackmatrix'
+
+
+class BaseHandler(RequestHandler):
+
+    def data_received(self, chunk):
+        pass
+
+    def set_default_headers(self):
+        pass
+
+
+class SysBaseHandler(BaseHandler):
+    pass
 
 
 class ApiBaseHandler(SysBaseHandler, metaclass=ABCMeta):

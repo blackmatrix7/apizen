@@ -9,7 +9,6 @@ import json
 from apizen.error import ApiSysError
 from apizen.method import run_api_method
 from webapi.api_base import ApiBaseHandler
-
 __author__ = 'blackmatrix'
 
 

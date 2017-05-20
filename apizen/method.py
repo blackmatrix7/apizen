@@ -81,11 +81,8 @@ def _run_api_method(version, method_name, request_method, request_params):
         except JSONDecodeError:
             raise ApiSysError.invalid_json
         except ValueError:
-            message = '{0}：{1} <{2}>'.format(ApiSysError.error_args_type.message, arg_key, type_hints.__name__)
-            api_ex = ApiBaseError(
-                err_code=ApiSysError.error_args_type.err_code,
-                status_code=ApiSysError.error_args_type.status_code,
-                message=message)
+            api_ex = ApiSysError.error_args_type
+            api_ex.message = '{0}：{1} <{2}>'.format(ApiSysError.error_args_type.message, arg_key, type_hints.__name__)
             raise api_ex
         else:
             func_args[arg_key] = _arg_value
@@ -97,21 +94,23 @@ def _run_api_method(version, method_name, request_method, request_params):
 
     # 获取函数方法的参数
     api_method_params = signature(api_method).parameters
+
     for k, v in api_method_params.items():
         if str(v.kind) == 'VAR_POSITIONAL':
             raise ApiSysError.error_api_config
         elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
             # 当没有默认值且没有传入参数时，必须抛出参数缺失的异常
             if k not in request_params and v.default is Parameter.empty:
-                api_ex = ApiSysError.missing_arguments
-                api_ex.message = '{0}：{1}'.format(api_ex.message, k)
-                raise api_ex
+                missing_arguments = ApiSysError.missing_arguments
+                missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
+                raise missing_arguments
             else:
                 value = request_params.get(k)
                 set_method_args(k, value, v.default, v.annotation)
         elif str(v.kind) == 'VAR_KEYWORD':
             func_args.update({k: v for k, v in request_params.items()
                               if k not in api_method_params.keys()})
+
     return api_method(**func_args)
 
 
@@ -128,10 +127,10 @@ def run_api_method(version, method_name, request_method, request_params):
     api_msg = '执行成功'
 
     try:
-        _run_api_method(version=version,
-                        method_name=method_name,
-                        request_method=request_method,
-                        request_params=request_params)
+        result = _run_api_method(version=version,
+                                 method_name=method_name,
+                                 request_method=request_method,
+                                 request_params=request_params)
     except JSONDecodeError:
         api_ex = ApiSysError.invalid_json
         api_code = api_ex.err_code
