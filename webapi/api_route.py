@@ -7,13 +7,12 @@
 # @Software: PyCharm
 import json
 import copy
-import hashlib
 from json import JSONDecodeError
-from apizen.error import ApiSysError
 from apizen.version import allversion
 from inspect import signature, Parameter
+from apizen.method import get_api_method
 from webapi.api_base import ApiBaseHandler
-from webapi.api_error import ApiBaseError
+from apizen.error import ApiSysError, ApiBaseError
 
 __author__ = 'matrix'
 
@@ -44,21 +43,6 @@ class WebApiRoute(ApiBaseHandler):
         # 检查版本号
         if self._v not in allversion:
             raise ApiSysError.unsupported_version
-
-        # hash方法名
-        _hash_method = 'x_{hash_method}'.format(
-            hash_method=hashlib.sha1(self._method.encode('utf-8')).hexdigest())
-
-        # 检查方法名是否存在
-        if not hasattr(allversion[self._v]['model'], _hash_method):
-            raise ApiSysError.invalid_method
-        # 检查方法是否停用
-        elif not getattr(allversion[self._v]['model'], _hash_method).get('enable', True):
-            raise ApiSysError.api_stop
-        # 检查方法是否允许以某种请求方式调用
-        elif self.request.method.lower() not in \
-                getattr(allversion[self._v]['model'], _hash_method).get('method', ['get', 'post']):
-            raise ApiSysError.not_allowed_request
 
         # 使用Type Hints判断接口处理函数限制的参数类型
         def set_method_args(arg_key, arg_value, default_value, type_hints):
@@ -93,6 +77,11 @@ class WebApiRoute(ApiBaseHandler):
             else:
                 func_args[arg_key] = _arg_value
 
+        # 获取 API 处理函数
+        api_method = get_api_method(version=self._v,
+                                    method_name=self._method,
+                                    request_method=self.request.method)
+
         # 函数参数
         func_args = {}
 
@@ -107,13 +96,8 @@ class WebApiRoute(ApiBaseHandler):
             else:
                 raise ApiSysError.invalid_json
 
-        # 获取函数对象
-        method_func = getattr(allversion[self._v]['model'], _hash_method).get('func', None)
-        # 检查函数对象是否有效
-        if not callable(method_func):
-            raise ApiSysError.error_api_config
-        # 获取函数参数
-        func_param = signature(method_func).parameters
+        # 获取函数需求的参数
+        func_param = signature(api_method).parameters
 
         for k, v in func_param.items():
             if str(v.kind) == 'VAR_POSITIONAL':
@@ -125,7 +109,7 @@ class WebApiRoute(ApiBaseHandler):
                 func_args.update({k: v for k, v in request_args.items()
                                   if k not in func_param.keys()})
 
-        return method_func(**func_args)
+        return api_method(**func_args)
 
     def get(self):
         self.format_retinfo()

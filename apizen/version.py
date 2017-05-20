@@ -14,7 +14,7 @@ allversion = {}
 
 def register(versions):
     allversion.update(
-        {versoin[0]: {'model': versoin[1],
+        {versoin[0]: {'methods': versoin[1],
                       'enable': versoin[2]
                       } for versoin in versions
          }
@@ -27,7 +27,7 @@ class _ApiMethodMeta(type):
         cls = type.__new__(mcs, classname, supers, clsdict)
         api_methods = getattr(cls, 'api_methods')
         for api_method in api_methods:
-            hash_method = 'x_{hash_method}'.format(
+            hash_method = 'zen_{hash_method}'.format(
                 hash_method=hashlib.sha1(api_method.encode('utf-8')).hexdigest())
             setattr(cls, hash_method, api_methods.get(api_method, None))
         return cls

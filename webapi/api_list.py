@@ -5,7 +5,6 @@
 # @Site:
 # @File: api_list.py
 # @Software: PyCharm
-
 from apizen.version import ApiMethodBase
 from services.demo.api_demo import ApiDemo
 
@@ -13,24 +12,7 @@ __author__ = 'matrix'
 
 api_demo = ApiDemo()
 
-# allversion = {}
-#
-#
-# def version(v, enable=True):
-#     """
-#     Web Api版本注册
-#     :param v:  版本号
-#     :param enable:  版本是否停用
-#     :return:  无
-#     """
-#     def _version(cls):
-#         if enable:
-#             allversion[v] = cls
-#         return cls
-#     return _version
 
-
-# @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     api_methods = {
         'matrix.api.set-user': {'func': api_demo.set_user},
