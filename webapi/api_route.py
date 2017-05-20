@@ -83,7 +83,7 @@ class WebApiRoute(ApiBaseHandler):
         func_param = signature(method_func).parameters
 
         # 使用Type Hints判断接口处理函数限制的参数类型
-        def set_method_args(arg_key, arg_value, type_hints=None):
+        def set_method_args(arg_key, arg_value, default_value, type_hints=None):
             _arg_value = copy.copy(arg_value)
             try:
                 converter = {
@@ -95,7 +95,9 @@ class WebApiRoute(ApiBaseHandler):
                     'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(arg_value, str) else _arg_value)
                 }
                 type_hints_name = type_hints.__name__.lower()
-                if type_hints and type_hints != Parameter.empty and type_hints_name in converter:
+                if _arg_value != default_value \
+                        and type_hints != Parameter.empty \
+                        and type_hints_name in converter:
                     _arg_value = converter[type_hints_name]()
                     if not isinstance(_arg_value, type_hints):
                         raise ValueError
@@ -125,18 +127,18 @@ class WebApiRoute(ApiBaseHandler):
                             and body_json \
                             and hasattr(body_json, 'keys') \
                             and k in body_json.keys():
-                    set_method_args(k, body_json.get(k), v.annotation)
+                    set_method_args(k, body_json.get(k), v.default, v.annotation)
                 else:
-                    set_method_args(k, self.get_argument(k), v.annotation)
+                    set_method_args(k, self.get_argument(k), v.default, v.annotation)
             # 参数有默认值的情况
             elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
                 if self.request.method == 'POST' \
                         and body_json \
                         and hasattr(body_json, 'keys') \
                         and k in body_json.keys():
-                    set_method_args(k, body_json.get(k, v.default), v.annotation)
+                    set_method_args(k, body_json.get(k, v.default),  v.default, v.annotation)
                 else:
-                    set_method_args(k,  self.get_argument(k, v.default), v.annotation)
+                    set_method_args(k,  self.get_argument(k, v.default),  v.default, v.annotation)
             # **kwargs的情况
             elif str(v.kind) == 'VAR_KEYWORD':
                 # 检查body里的json，如果有多余的参数，则传给函数
