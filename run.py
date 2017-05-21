@@ -20,7 +20,7 @@ def runserver():
         (r'/api/router/rest', WebApiRoute),
     ])
 
-    # web api 版本注册
+    # web webapi 版本注册
     apizen.version.register([
         ('1.0', ApiMethodV10, True),
         ('1.1', ApiMethodV11, True)

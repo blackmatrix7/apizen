@@ -30,7 +30,7 @@ class ApiMethodV11(ApiMethodV10):
         'matrix.api.raise-error': {'func': api_demo.raise_error},
         'matrix.api.speed-test': {'func': api_demo.speed_test},
         'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
-        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
+        'matrix.api.webapi-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 
 

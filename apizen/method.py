@@ -99,11 +99,12 @@ def _run_api_method(version, method_name, request_method, request_params):
         if str(v.kind) == 'VAR_POSITIONAL':
             raise ApiSysError.error_api_config
         elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
-            # 当没有默认值且没有传入参数时，必须抛出参数缺失的异常
-            if k not in request_params and v.default is Parameter.empty:
-                missing_arguments = ApiSysError.missing_arguments
-                missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
-                raise missing_arguments
+            if k not in request_params:
+                if v.default is Parameter.empty:
+                    missing_arguments = ApiSysError.missing_arguments
+                    missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
+                    raise missing_arguments
+                set_method_args(k,  v.default, v.default, v.annotation)
             else:
                 value = request_params.get(k)
                 set_method_args(k, value, v.default, v.annotation)
@@ -122,10 +123,10 @@ def run_api_method(version, method_name, request_method, request_params):
                                  method_name=method_name,
                                  request_method=request_method,
                                  request_params=request_params)
+    except ApiError as ex:
+        raise ex
     except JSONDecodeError:
         raise ApiSysError.invalid_json
-    except ApiError as api_ex:
-        raise api_ex
     except Exception as ex:
         api_ex = ApiSysError.system_error
         api_ex.message = '{0}：{1}'.format(api_ex.message, ex)
