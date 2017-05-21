@@ -14,6 +14,10 @@ from inspect import signature, Parameter
 from apizen.error import ApiError, ApiSysError
 __author__ = 'blackmatrix'
 
+'''
+接口处理方法的异常判断与执行
+'''
+
 
 # 获取api处理函数及相关异常判断
 def get_api_method(version, method_name, request_method):
