@@ -6,7 +6,6 @@
 # @File    : api_base.py
 # @Software: PyCharm
 from tornado.web import RequestHandler
-from abc import ABCMeta, abstractmethod
 
 __author__ = 'blackmatrix'
 
@@ -24,7 +23,7 @@ class SysBaseHandler(BaseHandler):
     pass
 
 
-class ApiBaseHandler(SysBaseHandler, metaclass=ABCMeta):
+class ApiBaseHandler(SysBaseHandler):
 
     def __init__(self, application, request, **kwargs):
         self._access_token = None
@@ -35,10 +34,6 @@ class ApiBaseHandler(SysBaseHandler, metaclass=ABCMeta):
         self._v = None
         self._format = 'json'
         SysBaseHandler.__init__(self, application, request, **kwargs)
-
-    @abstractmethod
-    def call_api_func(self):
-        pass
 
     def check_xsrf_cookie(self):
         pass

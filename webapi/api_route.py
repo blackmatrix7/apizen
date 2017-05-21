@@ -7,17 +7,18 @@
 # @Software: PyCharm
 import json
 from dict2xml import dict2xml
+from apizen.method import Method
 from json import JSONDecodeError
-from apizen.method import run_api_method
 from webapi.api_base import ApiBaseHandler
 from apizen.error import ApiError, ApiSysError
 from tornado.web import MissingArgumentError
+
 __author__ = 'blackmatrix'
 
 
 class WebApiRoute(ApiBaseHandler):
 
-    def format_retinfo(self):
+    def handler(self):
 
         result = None
         api_code = 1000
@@ -105,11 +106,11 @@ class WebApiRoute(ApiBaseHandler):
             else:
                 raise ApiSysError.invalid_json
 
-        return run_api_method(version=self._v, method_name=self._method, request_method=self.request.method, request_params=request_args)
+        return Method.run(version=self._v, method_name=self._method, request_method=self.request.method, request_params=request_args)
 
     def get(self):
-        self.format_retinfo()
+        self.handler()
 
     def post(self):
-        self.format_retinfo()
+        self.handler()
 
