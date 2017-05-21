@@ -5,7 +5,7 @@
 # @Site:
 # @File: api_list.py
 # @Software: PyCharm
-from apizen.version import ApiMethodBase
+from apizen.version import ApiMethodBase, version
 from services.demo.api_demo import ApiDemo
 
 __author__ = 'matrix'
@@ -13,6 +13,7 @@ __author__ = 'matrix'
 api_demo = ApiDemo()
 
 
+@version(1.0)
 class ApiMethodV10(ApiMethodBase):
     api_methods = {
         'matrix.api.set-user': {'func': api_demo.set_user},
@@ -24,6 +25,7 @@ class ApiMethodV10(ApiMethodBase):
     }
 
 
+@version(1.1)
 class ApiMethodV11(ApiMethodV10):
     api_methods = {
         'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},

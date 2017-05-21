@@ -8,6 +8,7 @@
 import tornado.web
 import apizen.version
 import tornado.ioloop
+import webapi.api_list
 from webapi.api_route import WebApiRoute
 from webapi.api_list import ApiMethodV10, ApiMethodV11
 
@@ -21,10 +22,7 @@ def runserver():
     ])
 
     # web webapi 版本注册
-    apizen.version.register([
-        ('1.0', ApiMethodV10, True),
-        ('1.1', ApiMethodV11, True)
-    ])
+    apizen.version.register(ApiMethodV10, ApiMethodV11)
 
     application.listen(port=8010)
     tornado.ioloop.IOLoop.instance().start()

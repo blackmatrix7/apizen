@@ -12,13 +12,22 @@ __author__ = 'blackmatrix'
 allversion = {}
 
 
-def register(versions):
-    allversion.update(
-        {versoin[0]: {'methods': versoin[1],
-                      'enable': versoin[2]
-                      } for versoin in versions
-         }
-    )
+def register(*args):
+    # 我就是什么也不干
+    return args
+
+
+def version(v, enable=True):
+    """
+    Web Api版本注册
+    :param v:  版本号
+    :param enable:  版本是否停用
+    :return:  无
+    """
+    def _version(cls):
+        allversion.update({str(v): {'methods': cls, 'enable': enable}})
+        return cls
+    return _version
 
 
 class _ApiMethodMeta(type):

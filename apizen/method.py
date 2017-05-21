@@ -29,6 +29,8 @@ def get_api_method(version, method_name, request_method):
         # 检查版本号
         if version not in allversion:
             raise ApiSysError.unsupported_version
+        elif not allversion[version].get('enable', True):
+            raise ApiSysError.version_stop
 
         # hash方法名
         _hash_method = 'zen_{hash_method}'.format(

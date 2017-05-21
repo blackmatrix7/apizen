@@ -51,7 +51,7 @@ class ApiSysError(ApiBaseError):
     # 不支持的版本号
     unsupported_version = {'api_code': 1005, 'http_code': 400, 'api_msg': '不支持的版本号'}
     # 非法的版本参数
-    invalid_version = {'api_code': 1006, 'http_code': 400, 'api_msg': '非法的版本参数'}
+    version_stop = {'api_code': 1006, 'http_code': 400, 'api_msg': '接口版本已停用'}
     # 缺少时间戳参数
     missing_timestamp = {'api_code': 1007, 'http_code': 400, 'api_msg': '缺少时间戳参数'}
     # 非法的时间戳参数
