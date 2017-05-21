@@ -117,48 +117,21 @@ def _run_api_method(version, method_name, request_method, request_params):
 # 运行接口处理方法，及异常处理
 def run_api_method(version, method_name, request_method, request_params):
 
-    # 接口处理方法执行结果
-    result = None
-    # http status code
-    status_code = 200
-    # api code
-    api_code = 1000
-    # 执行消息
-    api_msg = '执行成功'
-
     try:
         result = _run_api_method(version=version,
                                  method_name=method_name,
                                  request_method=request_method,
                                  request_params=request_params)
     except JSONDecodeError:
-        api_ex = ApiSysError.invalid_json
-        api_code = api_ex.err_code
-        status_code = api_ex.status_code
-        api_msg = api_ex.message
-    # API其他异常
+        raise ApiSysError.invalid_json
     except ApiError as api_ex:
-        api_code = api_ex.err_code
-        status_code = api_ex.status_code
-        api_msg = api_ex.message
-    # 全局异常
+        raise api_ex
     except Exception as ex:
         api_ex = ApiSysError.system_error
-        api_code = api_ex.err_code
-        status_code = api_ex.status_code
-        api_msg = '{0}：{1}'.format(api_ex.message, ex)
-    finally:
-        return result, status_code, api_code, api_msg
+        api_ex.message = '{0}：{1}'.format(api_ex.message, ex)
+        raise api_ex
+    return result
 
-
-class ApiMethod:
-
-    def __init__(self, name, func, method=('get', 'post'), enable=True, auth=False):
-        self.name = name
-        self.func = func
-        self.method = method
-        self.enable = enable
-        self.auth = auth
 
 if __name__ == '__main__':
     pass

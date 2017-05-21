@@ -6,13 +6,72 @@
 # @File    : api_route.py
 # @Software: PyCharm
 import json
-from apizen.error import ApiSysError
+from dict2xml import dict2xml
+from json import JSONDecodeError
 from apizen.method import run_api_method
 from webapi.api_base import ApiBaseHandler
+from apizen.error import ApiError, ApiSysError
+from tornado.web import MissingArgumentError
 __author__ = 'blackmatrix'
 
 
 class WebApiRoute(ApiBaseHandler):
+
+    def format_retinfo(self):
+
+        result = None
+        api_code = 1000
+        api_msg = '执行成功'
+        http_code = 200
+
+        try:
+            result = self.call_api_func()
+        # 参数缺失异常
+        except MissingArgumentError as miss_arg_err:
+            # 缺少方法名
+            if miss_arg_err.arg_name == 'method':
+                api_ex = ApiSysError.missing_method
+            # 缺少版本号
+            elif miss_arg_err.arg_name == 'v':
+                api_ex = ApiSysError.missing_version
+            # 其他缺少参数的情况
+            else:
+                api_ex = ApiSysError.missing_arguments
+            api_msg = '{0}:{1}'.format(api_ex.message, miss_arg_err.arg_name)
+            api_code = api_ex.err_code
+            http_code = api_ex.status_code
+        # JSON解析异常
+        except JSONDecodeError:
+            api_ex = ApiSysError.invalid_json
+            api_code = api_ex.err_code
+            http_code = api_ex.status_code
+            api_msg = api_ex.message
+        # API其他异常
+        except ApiError as api_ex:
+            api_code = api_ex.err_code
+            http_code = api_ex.status_code
+            api_msg = api_ex.message
+        # 全局异常
+        except Exception as ex:
+            api_ex = ApiSysError.system_error
+            api_code = api_ex.err_code
+            http_code = api_ex.status_code
+            api_msg = '{0}：{1}'.format(api_ex.message, ex)
+
+        retinfo = {
+            'meta': {
+                'code': api_code,
+                'message': api_msg
+            },
+            'respone': result
+        }
+
+        if self._format == 'xml':
+            retinfo = dict2xml(retinfo)
+
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_status(status_code=http_code)
+        self.write(retinfo)
 
     def call_api_func(self):
 
@@ -34,8 +93,6 @@ class WebApiRoute(ApiBaseHandler):
         # 检查请求的格式
         if self._format not in ('json', 'xml'):
             raise ApiSysError.invalid_format
-
-        # TODO 判断参数缺失的异常怎么办
 
         # 拼装请求参数
         content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
