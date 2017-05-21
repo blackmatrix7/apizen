@@ -10,7 +10,7 @@ import copy
 from json import JSONDecodeError
 from apizen.version import allversion
 from inspect import signature, Parameter
-from apizen.exception import ApiException, ApiSysExceptions
+from apizen.exception import ApiSysExceptions
 __author__ = 'blackmatrix'
 
 '''
