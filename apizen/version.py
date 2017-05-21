@@ -9,11 +9,15 @@ import hashlib
 
 __author__ = 'blackmatrix'
 
+'''
+接口版本的注册、管理与继承功能。
+'''
+
 allversion = {}
 
 
 def register(*args):
-    # 我就是什么也不干
+    # \(╯-╰)/ 我就是什么也不干
     return args
 
 

@@ -8,6 +8,10 @@
 
 __author__ = 'blackmatrix'
 
+'''
+接口异常类型的管理与继承
+'''
+
 
 class ApiError(Exception):
 
