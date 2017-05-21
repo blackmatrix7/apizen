@@ -9,26 +9,23 @@
 __author__ = 'blackmatrix'
 
 
-class _Http:
+class Object(dict):
+    pass
 
-    def __init__(self):
-        self._headers = {}
-        self.host = None
-        self.host_name = None
-        self.method = None
-        self.path = None
-        self.protocol = None
-        self.query = None
-        self.version = None
-        self.body = None
 
-    @property
-    def headers(self):
-        return self._headers
+class List:
 
-    @headers.setter
-    def headers(self, headers):
-        # TODO 隔离不同web框架的headers，转换成统一格式的dict
-        self._headers = {key: value for key, value in headers.items()}
+    def __init__(self, obj=None):
+        if isinstance(obj, Object):
+            raise ValueError
+        else:
+            self._obj = None
 
-Http = _Http()
+    def compare(self, value):
+        if self._obj.keys() not in value.keys():
+            return False
+
+
+if __name__ == '__main__':
+    test = {'key': {'value': 'a', 'hello': 'python'}, 'test': 1}
+    print(test.keys())

@@ -7,11 +7,11 @@
 # @Software: PyCharm
 import json
 from dict2xml import dict2xml
-from apizen.method import Method
 from json import JSONDecodeError
+from apizen.method import Method
 from webapi.api_base import ApiBaseHandler
-from apizen.error import ApiError, ApiSysError
 from tornado.web import MissingArgumentError
+from apizen.exception import ApiException, ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
@@ -31,30 +31,30 @@ class WebApiRoute(ApiBaseHandler):
         except MissingArgumentError as miss_arg_err:
             # 缺少方法名
             if miss_arg_err.arg_name == 'method':
-                api_ex = ApiSysError.missing_method
+                api_ex = ApiSysExceptions.missing_method
             # 缺少版本号
             elif miss_arg_err.arg_name == 'v':
-                api_ex = ApiSysError.missing_version
+                api_ex = ApiSysExceptions.missing_version
             # 其他缺少参数的情况
             else:
-                api_ex = ApiSysError.missing_arguments
+                api_ex = ApiSysExceptions.missing_arguments
             api_msg = '{0}:{1}'.format(api_ex.message, miss_arg_err.arg_name)
             api_code = api_ex.err_code
             http_code = api_ex.status_code
         # JSON解析异常
         except JSONDecodeError:
-            api_ex = ApiSysError.invalid_json
+            api_ex = ApiSysExceptions.invalid_json
             api_code = api_ex.err_code
             http_code = api_ex.status_code
             api_msg = api_ex.message
         # API其他异常
-        except ApiError as api_ex:
+        except ApiException as api_ex:
             api_code = api_ex.err_code
             http_code = api_ex.status_code
             api_msg = api_ex.message
         # 全局异常
         except Exception as ex:
-            api_ex = ApiSysError.system_error
+            api_ex = ApiSysExceptions.system_error
             api_code = api_ex.err_code
             http_code = api_ex.status_code
             api_msg = '{0}：{1}'.format(api_ex.message, ex)
@@ -93,7 +93,7 @@ class WebApiRoute(ApiBaseHandler):
 
         # 检查请求的格式
         if self._format not in ('json', 'xml'):
-            raise ApiSysError.invalid_format
+            raise ApiSysExceptions.invalid_format
 
         # 拼装请求参数
         content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
@@ -104,7 +104,7 @@ class WebApiRoute(ApiBaseHandler):
             if body_data and isinstance(body_data, dict):
                 request_args.update(body_data)
             else:
-                raise ApiSysError.invalid_json
+                raise ApiSysExceptions.invalid_json
 
         return Method.run(version=self._v, method_name=self._method, request_method=self.request.method, request_params=request_args)
 

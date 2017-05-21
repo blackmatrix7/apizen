@@ -6,7 +6,7 @@
 # @File    : api_demo.py
 # @Software: PyCharm
 from functools import wraps
-from webapi.api_error import ApiSubError
+from webapi.api_error import ApiSubExceptions
 
 __author__ = 'blackmatrix'
 
@@ -87,7 +87,7 @@ class ApiDemo:
         同时，返回的http code 也会根据异常配置中的status_code而改变
         :return:  返回异常信息
         """
-        raise ApiSubError.unknown_error
+        raise ApiSubExceptions.unknown_error
 
     @staticmethod
     def send_kwargs(value: str, **kwargs):

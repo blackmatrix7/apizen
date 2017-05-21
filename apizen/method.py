@@ -10,7 +10,7 @@ import copy
 from json import JSONDecodeError
 from apizen.version import allversion
 from inspect import signature, Parameter
-from apizen.error import ApiError, ApiSysError
+from apizen.exception import ApiException, ApiSysExceptions
 __author__ = 'blackmatrix'
 
 '''
@@ -42,10 +42,10 @@ class Method:
         # JSONDecodeError是ValueError的子类
         # 如果不先做解析异常的判断，会显示参数类型错误，虽然看起来也没什么不对
         except JSONDecodeError:
-            raise ApiSysError.invalid_json
+            raise ApiSysExceptions.invalid_json
         except ValueError:
-            api_ex = ApiSysError.error_args_type
-            api_ex.message = '{0}：{1} <{2}>'.format(ApiSysError.error_args_type.message, key, type_hints.__name__)
+            api_ex = ApiSysExceptions.error_args_type
+            api_ex.message = '{0}：{1} <{2}>'.format(ApiSysExceptions.error_args_type.message, key, type_hints.__name__)
             raise api_ex
         else:
             return _arg_value
@@ -64,25 +64,25 @@ class Method:
 
             # 检查版本号
             if version not in allversion:
-                raise ApiSysError.unsupported_version
+                raise ApiSysExceptions.unsupported_version
             # 检查版本是否停用
             elif not allversion[version].get('enable', True):
-                raise ApiSysError.version_stop
+                raise ApiSysExceptions.version_stop
 
             methods = getattr(allversion[version]['methods'], 'api_methods')
 
             # 检查方法名是否存在
             if method_name not in methods:
-                raise ApiSysError.invalid_method
+                raise ApiSysExceptions.invalid_method
             # 检查方法是否停用
             elif not methods[method_name].get('enable', True):
-                raise ApiSysError.api_stop
+                raise ApiSysExceptions.api_stop
             # 检查方法是否允许以某种请求方式调用
             elif request_method.lower() not in methods[method_name].get('method', ['get', 'post']):
-                raise ApiSysError.not_allowed_request
+                raise ApiSysExceptions.not_allowed_request
             # 检查函数是否可调用
             elif not callable(methods[method_name].get('func')):
-                raise ApiSysError.error_api_config
+                raise ApiSysExceptions.error_api_config
 
             return methods[method_name].get('func')
 
@@ -102,11 +102,11 @@ class Method:
 
         for k, v in api_method_params.items():
             if str(v.kind) == 'VAR_POSITIONAL':
-                raise ApiSysError.error_api_config
+                raise ApiSysExceptions.error_api_config
             elif str(v.kind) in ('POSITIONAL_OR_KEYWORD', 'KEYWORD_ONLY'):
                 if k not in request_params:
                     if v.default is Parameter.empty:
-                        missing_arguments = ApiSysError.missing_arguments
+                        missing_arguments = ApiSysExceptions.missing_arguments
                         missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
                         raise missing_arguments
                     func_args[k] = Method.convert(k, v.default, v.default, v.annotation)
@@ -117,11 +117,11 @@ class Method:
                                   if k not in api_method_params.keys()})
 
         return api_method(**func_args)
-        # except ApiError as ex:
+        # except ApiException as ex:
         #     raise ex
         # except JSONDecodeError:
-        #     raise ApiSysError.invalid_json
+        #     raise ApiSysExceptions.invalid_json
         # except Exception as ex:
-        #     api_ex = ApiSysError.system_error
+        #     api_ex = ApiSysExceptions.system_error
         #     api_ex.message = '{0}：{1}'.format(api_ex.message, ex)
         #     raise api_ex

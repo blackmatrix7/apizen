@@ -3,7 +3,7 @@
 # @Time    : 2017/5/19 上午8:54
 # @Author  : Matrix
 # @Site    : 
-# @File    : error.py
+# @File    : exception.py
 # @Software: PyCharm
 
 __author__ = 'blackmatrix'
@@ -13,7 +13,7 @@ __author__ = 'blackmatrix'
 '''
 
 
-class ApiError(Exception):
+class ApiException(Exception):
 
     def __init__(self, err_code, message, status_code=500):
         self.err_code = err_code
@@ -27,22 +27,22 @@ class ApiError(Exception):
             message=self.message))
 
 
-class MetaApiError(type):
+class MetaApiExceptions(type):
 
     def __getattribute__(self, item):
         api_ex = super().__getattribute__(item)
-        new_api_ex = ApiError(err_code=api_ex['api_code'],
-                              status_code=api_ex['http_code'],
-                              message=api_ex['api_msg'])
+        new_api_ex = ApiException(err_code=api_ex['api_code'],
+                                  status_code=api_ex['http_code'],
+                                  message=api_ex['api_msg'])
         return new_api_ex
 
 
-class ApiBaseError(metaclass=MetaApiError):
+class ApiBaseExceptions(metaclass=MetaApiExceptions):
     pass
 
 
 # API 系统层面异常信息，以1000开始
-class ApiSysError(ApiBaseError):
+class ApiSysExceptions(ApiBaseExceptions):
     # code 1000 为保留编码，代表执行成功
     # 服务不可用
     missing_system_error = {'api_code': 1001, 'http_code': 403, 'api_msg': '服务不可用'}
