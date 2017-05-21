@@ -5,7 +5,7 @@
 # @Site    : 
 # @File    : version.py
 # @Software: PyCharm
-import hashlib
+import copy
 
 __author__ = 'blackmatrix'
 
@@ -37,13 +37,20 @@ def version(v, enable=True):
 class _ApiMethodMeta(type):
 
     def __new__(mcs, classname, supers, clsdict):
+        # 破坏并重建继承关系
+        new_api_methods = {}
         cls = type.__new__(mcs, classname, supers, clsdict)
-        api_methods = getattr(cls, 'api_methods')
-        for api_method in api_methods:
-            hash_method = 'zen_{hash_method}'.format(
-                hash_method=hashlib.sha1(api_method.encode('utf-8')).hexdigest())
-            setattr(cls, hash_method, api_methods.get(api_method, None))
-        return cls
+        new_cls = type.__new__(mcs, classname, (object,), clsdict)
+        if hasattr(cls, 'api_methods'):
+            new_api_methods = copy.deepcopy(cls.api_methods)
+        for super_ in cls.__mro__:
+            if hasattr(super_, 'api_methods'):
+                new_api_methods.update({key: value
+                                        for key, value in getattr(super_, 'api_methods').items()
+                                        if key not in new_api_methods})
+        setattr(new_cls, 'api_methods', new_api_methods)
+        del cls
+        return new_cls
 
     def __init__(cls, classname, supers, clsdict):
         type.__init__(cls, classname, supers, clsdict)

@@ -7,7 +7,6 @@
 # @Software: PyCharm
 import json
 import copy
-import hashlib
 from json import JSONDecodeError
 from apizen.version import allversion
 from inspect import signature, Parameter
@@ -36,25 +35,22 @@ def get_api_method(version, method_name, request_method):
         elif not allversion[version].get('enable', True):
             raise ApiSysError.version_stop
 
-        # hash方法名
-        _hash_method = 'zen_{hash_method}'.format(
-            hash_method=hashlib.sha1(method_name.encode('utf-8')).hexdigest())
+        methods = getattr(allversion[version]['methods'], 'api_methods')
 
         # 检查方法名是否存在
-        if not hasattr(allversion[version]['methods'], _hash_method):
+        if method_name not in methods:
             raise ApiSysError.invalid_method
         # 检查方法是否停用
-        elif not getattr(allversion[version]['methods'], _hash_method).get('enable', True):
+        elif not methods[method_name].get('enable', True):
             raise ApiSysError.api_stop
         # 检查方法是否允许以某种请求方式调用
-        elif request_method.lower() not in \
-                getattr(allversion[version]['methods'], _hash_method).get('method', ['get', 'post']):
+        elif request_method.lower() not in methods[method_name].get('method', ['get', 'post']):
             raise ApiSysError.not_allowed_request
         # 检查函数是否可调用
-        elif not callable(getattr(allversion[version]['methods'], _hash_method).get('func')):
+        elif not callable(methods[method_name].get('func')):
             raise ApiSysError.error_api_config
 
-        return getattr(allversion[version]['methods'], _hash_method).get('func')
+        return methods[method_name].get('func')
 
 
 # 运行接口处理方法

@@ -31,8 +31,14 @@ class ApiMethodV11(ApiMethodV10):
         'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
         'matrix.api.raise-error': {'func': api_demo.raise_error},
         'matrix.api.speed-test': {'func': api_demo.speed_test},
+    }
+
+
+@version(1.2)
+class ApiMethodV12(ApiMethodV11):
+    api_methods = {
         'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
-        'matrix.api.webapi-stop': {'func': api_demo.raise_error, 'enable': False}
+        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
     }
 
 
