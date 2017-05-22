@@ -20,6 +20,9 @@ __author__ = 'blackmatrix'
 
 class Method:
 
+    def __init__(self):
+        super().__init__()
+
     @staticmethod
     def convert(key, value, default_value, type_hints):
         converter = {
