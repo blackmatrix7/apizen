@@ -90,7 +90,6 @@ class Method:
     @staticmethod
     def run(version, method_name, request_method, request_params):
 
-        # try:
         # 最终传递给接口处理方法的全部参数
         func_args = {}
         # 获取接口处理方法
@@ -117,11 +116,3 @@ class Method:
                                   if k not in api_method_params.keys()})
 
         return api_method(**func_args)
-        # except ApiException as ex:
-        #     raise ex
-        # except JSONDecodeError:
-        #     raise ApiSysExceptions.invalid_json
-        # except Exception as ex:
-        #     api_ex = ApiSysExceptions.system_error
-        #     api_ex.message = '{0}：{1}'.format(api_ex.message, ex)
-        #     raise api_ex

@@ -3,10 +3,10 @@
 # @Time    : 2017/5/5 下午3:29
 # @Author  : Matrix
 # @Site    : 
-# @File    : api_demo.py
+# @File    : apidemo.py
 # @Software: PyCharm
 from functools import wraps
-from webapi.api_error import ApiSubExceptions
+from webapi.exception import ApiSubExceptions
 
 __author__ = 'blackmatrix'
 

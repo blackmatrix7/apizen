@@ -1,4 +1,4 @@
-# func2webapi
+# api zen
 
 快速将python函数转换成webapi。
 
@@ -14,11 +14,11 @@ web api采用统一的请求url： /api/router/rest ，以method参数区分不�
 
 ## 特性
 
-1. 统一的web api地址，支持接口版本管理及继承
-2. 接口参数自动判断，拦截参数不完整的请求
-3. 支持常用接口参数类型的自动判断，自动拦截参数类型错误的请求
+1. 统一的web api入口地址，支持接口版本管理及继承
+2. 自动判断请求的参数，自动拦截参数不完整的请求
+3. 支持常用接口参数类型的自动判断及转换，自动拦截参数类型错误的请求
 4. 统一的web api返回格式，提供接口异常代码及详细的异常信息
-5. 同时支持application/x-www-form-urlencoded和application/json的请求方式，即支持以key/value的形式传参，也支持以json格式传参
+5. 在不修改业务代码的前提下，同时支持application/x-www-form-urlencoded、application/json等请求方式
 6. 绝大多数python函数可以直接转成为web api，减少接口开发工作量，专注业务逻辑实现
 
 ## 依赖
@@ -75,30 +75,22 @@ source venv/bin/activate
 deactivate
 ```
 
-## 使用方法
+## QuickStart
 
-### 编写业务函数
+### 从第一个接口处理函数开始
 
-#### 函数要求
+#### 编写接口处理函数
 
-1. 不能含有以下公共参数名 access_token, method, app_key, sign, timestamp, format, v
-2. 暂不支持VAR_POSITIONAL类型的参数，即*args
-3. 返回结果可正常转换成json或xml
+框架设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
 
-#### 函数示例
+1. 暂时不支持VAR_POSITIONAL类型的参数，即*args
+2. 函数的返回结果可以正常的转换成json和xml
+
+简单的示例
 
 ```python
 @staticmethod
-@test_decorator
 def set_user(user_id: int, name: str, mark: float, age: int=19):
-    """
-    测试装饰器对获取函数参数的影响，及接口参数判断说明
-    :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
-    :param age:  年龄，必填，原因同上
-    :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
-    :param mark:  分数
-    :return:  返回测试结果
-    """
     return [
         {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
     ]
@@ -125,7 +117,7 @@ def test_decorator(func):
 
 #### 判断接口参数类型
 
-接口路由通过Type Hints判断请求参数的类型是否符合要求（Python 3.5 PEP0484）。
+接口路由可以通过Type Hints判断请求参数的类型是否符合要求（Python 3.5 PEP0484）。
 
 对于需要做参数类型检查的函数，需要在参数后标记参数类型，目前能对str、int、float、list、dict、tuple这6种类型做参数检查和部分情况下的转换，其他不支持的类型或无法转换的情况，会直接将参数值传给接口处理函数。
 
@@ -147,7 +139,7 @@ http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user&user_id=1
 }
 ```
 
-**对于list、dict、tuple的参数类型，如果请求的参数是字符串，接口路由会尝试作为json字符串进行解析，解析失败会抛出json格式异常的错误，解析成功则比对是否符合参数类型要求，若解析后仍不符合，则抛出参数类型错误的异常。tuple类型会先由json.loads()转换为list，再转换为tuple，不建议标记参数类型为tuple，会增加额外的类型转换。**
+对于list、dict、tuple的参数类型，如果请求的参数是字符串，接口路由会尝试作为json字符串进行解析，解析失败会抛出json格式异常的错误，解析成功则比对是否符合参数类型要求，若解析后仍不符合，则抛出参数类型错误的异常。tuple类型会先由json.loads()转换为list，再转换为tuple，不建议标记参数类型为tuple，会增加额外的类型转换。
 
 ### 添加调用方法
 
@@ -672,10 +664,11 @@ def raise_error():
 2. 支持xml格式返回数据
 3. 接口版本支持多重继承
 4. 接口参数类型判断
+5. API版本继承性能优化
 
 ### 近期
 
-1. API版本继承性能优化
+1. 加入单元测试
 
 ### 中期
 

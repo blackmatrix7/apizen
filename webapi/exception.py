@@ -3,7 +3,7 @@
 # @Time    : 2017/4/12 下午9:46
 # @Author  : Matrix
 # @Site    : 
-# @File    : api_error.py
+# @File    : exception.py
 # @Software: PyCharm
 from apizen.exception import ApiBaseExceptions
 

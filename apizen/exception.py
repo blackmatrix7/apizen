@@ -38,7 +38,9 @@ class MetaApiExceptions(type):
 
 
 class ApiBaseExceptions(metaclass=MetaApiExceptions):
-    pass
+
+    def __init__(self):
+        pass
 
 
 # API 系统层面异常信息，以1000开始
