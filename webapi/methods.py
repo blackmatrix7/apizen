@@ -5,7 +5,7 @@
 # @Site:
 # @File: methods.py
 # @Software: PyCharm
-from apizen.version import ApiMethodBase, version
+from apizen.version import ApiMethodsBase, version
 from services.demo.apidemo import ApiDemo
 
 __author__ = 'matrix'
@@ -14,7 +14,7 @@ apidemo = ApiDemo()
 
 
 @version(1.0)
-class ApiMethodV10(ApiMethodBase):
+class ApiMethodsV10(ApiMethodsBase):
     api_methods = {
         'matrix.api.set-user': {'func': apidemo.set_user},
         'matrix.api.set-users': {'func': apidemo.set_users},
@@ -26,7 +26,7 @@ class ApiMethodV10(ApiMethodBase):
 
 
 @version(1.1)
-class ApiMethodV11(ApiMethodV10):
+class ApiMethodsV11(ApiMethodsV10):
     api_methods = {
         'matrix.api.send-kwargs': {'func': apidemo.send_kwargs},
         'matrix.api.raise-error': {'func': apidemo.raise_error},
@@ -35,7 +35,7 @@ class ApiMethodV11(ApiMethodV10):
 
 
 @version(1.2)
-class ApiMethodV12(ApiMethodV11):
+class ApiMethodsV12(ApiMethodsV11):
     api_methods = {
         'matrix.api.only-post': {'func': apidemo.raise_error, 'method': ['post']},
         'matrix.api.api-stop': {'func': apidemo.raise_error, 'enable': False}
@@ -43,5 +43,5 @@ class ApiMethodV12(ApiMethodV11):
 
 
 if __name__ == '__main__':
-    api_list = ApiMethodV10.api_methods
+    api_list = ApiMethodsV10.api_methods
     print(api_list)

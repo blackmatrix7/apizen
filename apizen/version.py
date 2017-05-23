@@ -34,7 +34,7 @@ def version(v, enable=True):
     return _version
 
 
-class _ApiMethodMeta(type):
+class _ApiMethodsMeta(type):
 
     def __new__(mcs, classname, supers, clsdict):
         # 破坏并重建继承关系
@@ -56,7 +56,7 @@ class _ApiMethodMeta(type):
         type.__init__(cls, classname, supers, clsdict)
 
 
-class ApiMethodBase(metaclass=_ApiMethodMeta):
+class ApiMethodsBase(metaclass=_ApiMethodsMeta):
     api_methods = {}
 
 
