@@ -31,9 +31,10 @@ class ApiException(Exception):
 class MetaApiExceptions(type):
 
     def __getattribute__(self, item):
+        # 改变ApiException继承关系，支持将ApiException自定义为任何异常类型的子类
         ex_conf = super().__getattribute__(item)
-        ex_type = (ex_conf.get('ex_type'), Exception) if ex_conf.get('ex_type') else (Exception, )
-        api_ex = type(item, (ApiException, *ex_type, ), {})
+        supers = (ex_conf.get('ex_type'), Exception) if ex_conf.get('ex_type') else (Exception, )
+        api_ex = type(item, (ApiException, *supers, ), {})
         return api_ex(**{'err_code': ex_conf['api_code'], 'message': ex_conf['api_msg'], 'status_code': ex_conf['http_code']})
 
 
