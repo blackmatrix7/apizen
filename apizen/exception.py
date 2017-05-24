@@ -27,8 +27,13 @@ class ApiException(Exception):
             message=self.message))
 
     # 让类实例变成可调用对象，用于接收自定义异常信息，并抛出
-    def __call__(self, message):
-        self.message = message
+    def __call__(self, message=None, *, err_code=None, status_code=None):
+        if message:
+            self.message = message
+        if err_code:
+            self.err_code = err_code
+        if status_code:
+            self.status_code = status_code
         return self
 
 
