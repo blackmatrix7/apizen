@@ -27,6 +27,10 @@ class ApiException(Exception):
             status_code=self.status_code,
             message=self.message))
 
+    def __call__(self, message):
+        self.message = message
+        return self
+
 
 class MetaApiExceptions(type):
 
@@ -93,4 +97,4 @@ class ApiSysExceptions(ApiBaseExceptions):
     error_args_type = {'api_code': 1022, 'http_code': 400, 'api_msg': '参数类型错误', 'ex_type': KeyError}
 
 if __name__ == '__main__':
-    pass
+    raise ApiSysExceptions.error_api_config('你好啊')
