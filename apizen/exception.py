@@ -24,9 +24,9 @@ class ApiException(Exception):
     def __str__(self):
         return str('异常编号：{code} 异常信息：{message}'.format(
             code=self.err_code,
-            status_code=self.status_code,
             message=self.message))
 
+    # 让类实例变成可调用对象，用于接收自定义异常信息，并抛出
     def __call__(self, message):
         self.message = message
         return self
