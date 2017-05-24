@@ -84,7 +84,7 @@ class ApiSysExceptions(ApiBaseExceptions):
     # 缺少方法所需参数
     missing_arguments = {'api_code': 1018, 'http_code': 400, 'api_msg': '缺少方法所需参数', 'ex_type': KeyError}
     # 不支持的http请求方式
-    not_allowed_request = {'api_code': 1019, 'http_code': 405, 'api_msg': '不支持的http请求方式'}
+    not_allowed_request = {'api_code': 1019, 'http_code': 405, 'api_msg': '不支持的http请求方式', 'ex_type': Exception}
     # 错误的API配置
     error_api_config = {'api_code': 1020, 'http_code': 500, 'api_msg': '错误的API配置', 'ex_type': NotImplementedError}
     # 无效的json格式
