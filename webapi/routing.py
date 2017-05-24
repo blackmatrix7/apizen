@@ -99,7 +99,7 @@ class WebApiRoute(ApiBaseHandler):
         content_type = self.request.headers['Content-Type'].lower() if 'Content-Type' in self.request.headers else None
         request_args = {key: self.get_argument(key) for key in self.request.arguments}
 
-        if content_type == 'application/json':
+        if content_type == 'application/json' and self.request.method.lower() == 'post':
             body_data = json.loads(self.request.body.decode())
             if body_data and isinstance(body_data, dict):
                 request_args.update(body_data)
