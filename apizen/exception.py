@@ -6,7 +6,6 @@
 # @File    : exception.py
 # @Software: PyCharm
 from json import JSONDecodeError
-from tornado.web import MissingArgumentError
 
 __author__ = 'blackmatrix'
 
