@@ -28,6 +28,11 @@ class WebApiRoute(ApiBaseHandler):
         try:
             result = self.call_api_func()
         # 参数缺失异常
+        except KeyError:
+            api_code = 2000
+            http_code = 500
+            api_msg = '抓到你了'
+        # 参数缺失异常
         except MissingArgumentError as miss_arg_err:
             # 缺少方法名
             if miss_arg_err.arg_name == 'method':
