@@ -16,13 +16,13 @@ __author__ = 'blackmatrix'
 
 class ApiException(Exception):
 
-    def __init__(self, err_code, message, status_code=500):
+    def __init__(self,  message, *, err_code='0000', status_code=500):
         self.err_code = err_code
         self.status_code = status_code
         self.message = message
 
     def __str__(self):
-        return str('异常编号：{code}; Http Code:{status_code}; 异常信息：{message}'.format(
+        return str('异常编号：{code} 异常信息：{message}'.format(
             code=self.err_code,
             status_code=self.status_code,
             message=self.message))
@@ -92,3 +92,5 @@ class ApiSysExceptions(ApiBaseExceptions):
     # 参数类型错误
     error_args_type = {'api_code': 1022, 'http_code': 400, 'api_msg': '参数类型错误', 'ex_type': KeyError}
 
+if __name__ == '__main__':
+    pass
