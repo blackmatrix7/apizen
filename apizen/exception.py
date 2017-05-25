@@ -18,7 +18,7 @@ _no_value = object()
 
 class ApiException(Exception):
 
-    def __init__(self,  message, *, err_code='0000', status_code=500):
+    def __init__(self,  message, err_code='0000', status_code=500):
         self.err_code = err_code
         self.status_code = status_code
         self.message = message
