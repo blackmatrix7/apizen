@@ -13,6 +13,8 @@ __author__ = 'blackmatrix'
 接口异常类型的管理与继承
 '''
 
+_no_value = object()
+
 
 class ApiException(Exception):
 
@@ -27,12 +29,12 @@ class ApiException(Exception):
             message=self.message))
 
     # 让类实例变成可调用对象，用于接收自定义异常信息，并抛出
-    def __call__(self, message=None, *, err_code=None, status_code=None):
-        if message:
+    def __call__(self, message=_no_value, *, err_code=_no_value, status_code=_no_value):
+        if message is not _no_value:
             self.message = message
-        if err_code:
+        if err_code is not _no_value:
             self.err_code = err_code
-        if status_code:
+        if status_code is not _no_value:
             self.status_code = status_code
         return self
 
