@@ -2,6 +2,8 @@
 
 快速将python函数转换成webapi。
 
+[TOC]
+
 ## 前言
 
 之前有大量的web api开发工作，如果每个web api都需要注册路由，检查请求参数，则需要进行大量的重复工作，同时过多的路由也不便于管理，且不易做到统一的api返回格式。
@@ -77,9 +79,7 @@ deactivate
 
 ## QuickStart
 
-### 从第一个接口处理函数开始
-
-#### 编写接口处理函数
+### 编写接口处理函数
 
 框架设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
 
@@ -96,7 +96,7 @@ def set_user(user_id: int, name: str, mark: float, age: int=19):
     ]
 ```
 
-#### 使用装饰器
+### 使用装饰器
 
 接口路由中，通过函数签名获取接口函数参数，以此判断web api调用请求是否符合接口参数要求。
 
@@ -115,7 +115,7 @@ def test_decorator(func):
     return wrapper
 ```
 
-#### 判断接口参数类型
+### 判断接口参数类型
 
 接口路由可以通过Type Hints判断请求参数的类型是否符合要求（Python 3.5 PEP0484）。
 
@@ -143,16 +143,16 @@ http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user&user_id=1
 
 ### 添加调用方法
 
-在webapi/api_list.py中添加接口方法名对应的函数。
+在webapi/methods.py中添加接口方法名对应的函数。
 
 每个接口版本为独立的一个类，必须继承自超类ApiMethodBase。
 
-类属性support_methods为dict，表示这个接口版本支持的接口名称与对应方法。
+类属性api_methods为dict，表示这个接口版本支持的接口名称与对应方法。
 
 ```python
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
-    support_methods = {
+    api_methods = {
         'matrix.api.err-func': {'func': api_demo.err_func},
         'matrix.api.instance-func': {'func': api_demo.instance_func},
         'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
@@ -184,7 +184,7 @@ class ApiMethodBase(metaclass=ApiMethodMeta):
 
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
-    support_methods = {
+    api_methods = {
         'matrix.api.err-func': {'func': api_demo.err_func},
         'matrix.api.instance-func': {'func': api_demo.instance_func},
         'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
@@ -201,7 +201,7 @@ class ApiMethodV10(ApiMethodBase):
 ```python
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
-    support_methods = {
+    api_methods = {
         'matrix.api.get-user': {'func': api_demo.get_user},
         'matrix.api.return-err': {'func': api_demo.raise_error}
         'matrix.api.err-func': {'func': api_demo.err_func},
@@ -235,38 +235,41 @@ class ApiMethodV10(ApiMethodBase):
 
 ### 接口异常配置
 
-接口异常信息在api_error.py中，分为公共异常和业务异常。
+接口异常信息在exception.py中，分为公共异常和业务异常。
 
-公共异常写在类ApiSysError中，类属性即为异常信息，异常信息由类ApiBaseError实例化而来，分别有三个参数：
+公共异常写在类ApiSysExceptions中，类属性即为异常信息，异常信息为dict，分别有四个参数：
 
-err_code	接口异常时返回的代码，内置部分异常信息，公共异常信息以1001开始（1000为执行成功）
+| 参数          | 说明                  | 必填   | 默认值       |
+| ----------- | ------------------- | ---- | --------- |
+| err_code    | 接口异常时返回的代码，内置部分异常信息 | 是    | 无         |
+| status_code | 接口出现异常时返回的http code | 否    | 500       |
+| message     | 接口异常说明文字            | 是    | 无         |
+| ex_type     | 接口异常类型              | 否    | Exception |
 
-status_code	接口出现异常时返回的http code，可以返回400、500之类，未配置时默认为400
-
-message	接口异常说明文字
+示例
 
 ```python
 # API 系统层面异常信息，以1000开始
-class ApiSysError:
+class ApiSysExceptions(ApiBaseExceptions):
     # code 1000 为保留编码，代表执行成功
     # 服务不可用
-    missing_system_error = ApiBaseError(err_code=1001, status_code=403, message='服务不可用')
+    missing_system_error = {'api_code': 1001, 'http_code': 403, 'api_msg': '服务不可用', 'ex_type': Exception}
     # 限制时间内调用失败次数
-    app_call_limited = ApiBaseError(err_code=1002, status_code=403, message='限制时间内调用失败次数')
+    app_call_limited = {'api_code': 1002, 'http_code': 403, 'api_msg': '限制时间内调用失败次数', 'ex_type': Exception}
     # 请求被禁止
-    forbidden_request = ApiBaseError(err_code=1003, status_code=403, message='请求被禁止')
+    forbidden_request = {'api_code': 1003, 'http_code': 403, 'api_msg': '请求被禁止', 'ex_type': Exception}
     # 缺少版本参数
-    missing_version = ApiBaseError(err_code=1004, status_code=400, message='缺少版本参数')
+    missing_version = {'api_code': 1004, 'http_code': 400, 'api_msg': '缺少版本参数', 'ex_type': KeyError}
 ```
 
-业务异常写在类ApiSubError中，以2001开始，由具体业务开发定义，配置过程与公共异常相同。
+业务异常写在类ApiSubExceptions中，以2001开始，由具体业务开发定义，配置过程与公共异常相同。
 
 ```python
 # API 子系统（业务）层级执行结果，以2000开始
-class ApiSubError:
-    empty_result = ApiBaseError(err_code=2000, status_code=200, message='查询结果为空')
-    unknown_error = ApiBaseError(err_code=2001, status_code=500, message='未知异常')
-    other_error = ApiBaseError(err_code=2002, status_code=500, message='其它异常')
+class ApiSubExceptions(ApiBaseExceptions):
+    empty_result = {'api_code': 2000, 'http_code': 200, 'api_msg': '查询结果为空', 'ex_type': Exception}
+    unknown_error = {'api_code': 2001, 'http_code': 500, 'api_msg': '未知异常', 'ex_type': Exception}
+    other_error = {'api_code': 2002, 'http_code': 500, 'api_msg': '其它异常', 'ex_type': Exception}
 ```
 
 ## 接口调用测试
@@ -510,7 +513,11 @@ def err_func(self):
 
 **VAR_KEYWORD 参数类型的传值测试**
 
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.send-kwargs&user_id=11&age=12&value=1
+含有VAR_KEYWORD类型的参数时，框架除了会将全部的k/v作为参数传入，包括框架层面的公共参数，如method、v。
+
+同时此示例演示版本继承的效果，如改成v 1.0无法提示方法不存在，改成v 1.1 v 1.2可以正常访问接口。
+
+http://127.0.0.1:8010/api/router/rest?v=1.1&method=matrix.api.send-kwargs&user_id=11&age=12&value=1
 
 接口处理函数
 
@@ -530,23 +537,25 @@ def send_kwargs(value: str, **kwargs):
 
 ```json
 {
-    "meta": {
-        "code": 1000,
-        "message": "执行成功"
-    },
     "respone": {
+        "value": "1",
         "kwargs": {
-            "user_id": "11",
-            "age": "12"
-        },
-        "value": "1"
+            "method": "matrix.api.send-kwargs",
+            "age": "12",
+            "v": "1.1",
+            "user_id": "11"
+        }
+    },
+    "meta": {
+        "message": "执行成功",
+        "code": 1000
     }
 }
 ```
 
 **抛出特定异常**
 
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.raise-error
+http://127.0.0.1:8010/api/router/rest?v=1.1&method=matrix.api.raise-error
 
 接口处理函数
 
@@ -665,6 +674,7 @@ def raise_error():
 3. 接口版本支持多重继承
 4. 接口参数类型判断
 5. API版本继承性能优化
+6. 支持自定义异常的类型
 
 ### 近期
 
