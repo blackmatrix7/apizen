@@ -16,7 +16,8 @@ from ..webapi import webapi
 __author__ = 'blackmatix'
 
 
-def format_retinfo(response, err_code=1000, api_msg='执行成功', dev_msg=None):
+def format_retinfo(response=None, err_code=1000,
+                   api_msg='执行成功', dev_msg=None):
     """
     格式化接口返回结果
     :param err_code: 
@@ -55,8 +56,7 @@ def missing_arguments(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message,
-                             dev_msg=','.join(ex.args),
-                             response=None)
+                             dev_msg=','.join(ex.args))
     return jsonify(retinfo), api_ex.status_code
 
 
@@ -65,16 +65,14 @@ def bad_request(ex):
     if 'Failed to decode JSON object' in ex.description:
         api_ex = ApiSysExceptions.invalid_json
         retinfo = format_retinfo(err_code=api_ex.err_code,
-                                 api_msg=api_ex.message,
-                                 response=None)
+                                 api_msg=api_ex.message)
         return jsonify(retinfo), api_ex.status_code
 
 
 @webapi.errorhandler(ApiException)
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
-                             response=None)
+                             api_msg=api_ex.message)
     return jsonify(retinfo), api_ex.status_code
 
 
@@ -83,6 +81,5 @@ def other_exception(ex):
     api_ex = ApiSysExceptions.system_error
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message,
-                             dev_msg=ex,
-                             response=None)
+                             dev_msg=ex)
     return jsonify(retinfo), api_ex.status_code

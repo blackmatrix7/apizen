@@ -7,8 +7,8 @@
 # @Software: PyCharm
 from flask import Flask
 from app import config
+from app.database import db
 from app.webapi import webapi
-
 __author__ = 'blackmatrix'
 
 
@@ -19,6 +19,8 @@ def create_app(app_config=config.DevConfig):
     app.config.from_object(app_config)
     # 蓝图注册
     register_blueprints(app)
+    # 扩展注册
+    register_extensions(app)
 
     @app.route('/', methods=['GET'])
     def index():
@@ -29,6 +31,11 @@ def create_app(app_config=config.DevConfig):
 
 def register_blueprints(app):
     app.register_blueprint(webapi, url_prefix='/api')
+
+
+def register_extensions(app):
+    db.init_app(app)
+
 
 if __name__ == '__main__':
     pass

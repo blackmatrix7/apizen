@@ -12,21 +12,25 @@ __author__ = 'blackmatix'
 db = SQLAlchemy()
 
 
-class ModelBase:
+class ModelBase(db.Model):
 
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **{attr: value for attr, value in kwargs.items()
+                                   if attr in self.__class__.__table__.columns})
 
 
 class ModelMixin:
 
     @classmethod
     def create(cls, **kwargs):
-        instance = cls(**kwargs)
+        instance = cls(**{attr: value for attr, value in kwargs.items() if attr in cls.__table__.columns})
         return instance.save()
 
     def update(self, commit=True, **kwargs):
-        for attr, value in kwargs.():
+        for attr, value in kwargs.items():
             setattr(self, attr, value)
         return commit and self.save() or self
 
