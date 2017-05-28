@@ -29,7 +29,7 @@ app = create_app(app_config=app_config)
 
 
 def run_server():
-    app.run(port=app_config.PORT)
+    app.run()
 
 
 def create_db():

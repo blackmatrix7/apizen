@@ -15,9 +15,9 @@ class BaseConfig:
     TESTING = False
 
     SITE_NAME = 'Api Zen'
+    SERVER_NAME = 'apizen.dev:8080'
 
     HOST = '0.0.0.0'
-    PORT = 8080
 
     SQLALCHEMY_BINDS = {
 
