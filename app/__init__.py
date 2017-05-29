@@ -6,13 +6,15 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Flask
-from app import config
 from app.database import db
+from app.config import configs
 from app.webapi import webapi
 __author__ = 'blackmatrix'
 
+_no_value = object()
 
-def create_app(app_config=config.DevConfig):
+
+def create_app(app_config=configs['default']):
 
     app = Flask(__name__)
     # 读取配置文件

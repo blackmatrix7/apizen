@@ -6,7 +6,7 @@
 # @File    : config.py
 # @Software: PyCharm
 import os
-__author__ = 'blackmatix'
+__author__ = 'blackmatrix'
 
 
 class BaseConfig:
@@ -15,9 +15,11 @@ class BaseConfig:
     TESTING = False
 
     SITE_NAME = 'Api Zen'
-    SERVER_NAME = 'apizen.dev:8080'
+    SERVER_NAME = 'apizen.matrix:8080'
 
     HOST = '0.0.0.0'
+    PORT = 8080
+    WORKS = 5
 
     SQLALCHEMY_BINDS = {
 
@@ -49,8 +51,10 @@ class TestConfig(BaseConfig):
 
 class ProdConfig(BaseConfig):
     DEBUG = False
+    SITE_NAME = 'Api Zen'
+    SERVER_NAME = 'apizen.matrix:8080'
 
-config = {
+configs = {
     'dev_config': DevConfig,
     'test_config': TestConfig,
     'prod_config': ProdConfig,
