@@ -19,7 +19,7 @@ class BaseConfig:
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
-    SERVER_NAME = 'apizen.matrix{0}'.format(PORT)
+    SERVER_NAME = 'apizen.matrix:{0}'.format(PORT)
 
     SQLALCHEMY_BINDS = {
 

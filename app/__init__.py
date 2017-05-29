@@ -18,7 +18,7 @@ def create_app():
 
     app = Flask(__name__)
 
-    def init(app_config='default'):
+    def prepare(app_config='default'):
         # 读取配置文件
         app.config.from_object(configs[app_config])
         # 蓝图注册
@@ -26,7 +26,7 @@ def create_app():
         # 扩展注册
         register_extensions(app)
 
-    app.init = init
+    app.prepare = prepare
 
     @app.route('/', methods=['GET'])
     def index():
