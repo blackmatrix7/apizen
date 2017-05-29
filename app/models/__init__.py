@@ -8,7 +8,6 @@
 
 __author__ = 'blackmatix'
 
-__all__ = ['oauth']
 
 if __name__ == '__main__':
     pass

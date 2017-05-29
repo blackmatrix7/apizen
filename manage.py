@@ -13,16 +13,14 @@ from flask_migrate import Migrate, MigrateCommand
 
 __author__ = 'blackmatrix'
 
-new_app = create_app(app_config='devcfg')
 manager = Manager(create_app)
 manager.add_option('-c', '--config', dest='app_config', required=False)
-# manager.add_command('db', MigrateCommand)
+manager.add_command('db', MigrateCommand)
 
 
 @manager.command
 def devserver():
     # 必须在manager.run()之后才能获取到创建的Flask实例
-    a = manager
     app = manager.app
     # migrate = Migrate(app, db)
     app.run()
