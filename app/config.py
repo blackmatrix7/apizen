@@ -26,7 +26,7 @@ class BaseConfig:
     }
 
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
-    MARIADB_PORT = os.environ.get('MARIADB_PORT', 1433)
+    MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
     MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
     MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
     MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
