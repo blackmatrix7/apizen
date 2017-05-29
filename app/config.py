@@ -14,12 +14,12 @@ class BaseConfig:
     DEBUG = True
     TESTING = False
 
-    SITE_NAME = 'Api Zen'
-    SERVER_NAME = 'apizen.matrix:8080'
-
     HOST = '0.0.0.0'
     PORT = 8080
     WORKS = 5
+
+    SITE_NAME = 'Api Zen'
+    SERVER_NAME = 'apizen.matrix{0}'.format(PORT)
 
     SQLALCHEMY_BINDS = {
 
@@ -34,7 +34,7 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
-        MARIADB_HOST,
+        MARIADB_USER,
         MARIADB_PASS,
         MARIADB_HOST,
         MARIADB_PORT,
@@ -50,12 +50,12 @@ class DevConfig(BaseConfig):
 class TestConfig(BaseConfig):
     DEBUG = True
     TESTING = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProdConfig(BaseConfig):
     DEBUG = False
-    SITE_NAME = 'Api Zen'
-    SERVER_NAME = 'apizen.matrix:8080'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 configs = {
     'dev_config': DevConfig,
