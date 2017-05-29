@@ -20,7 +20,7 @@ manager = Manager(app)
 
 @manager.command
 def devserver(config='default'):
-    app.prepare(app_config=config)
+    app.init(app_config=config)
     app.run()
 
 
