@@ -46,7 +46,7 @@ class DevConfig(BaseConfig):
     DEBUG = True
     PORT = 8080
     SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestConfig(BaseConfig):
@@ -60,9 +60,9 @@ class ProdConfig(BaseConfig):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 configs = {
-    'dev_config': DevConfig,
-    'test_config': TestConfig,
-    'prod_config': ProdConfig,
+    'devcfg': DevConfig,
+    'testcfg': TestConfig,
+    'prodcfg': ProdConfig,
     'default': DevConfig
 }
 
