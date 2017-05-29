@@ -52,6 +52,11 @@ class ApiDemo:
                        'age': user.get('age')}
         return list(return_users())
 
+    @staticmethod
+    def set_client(user: dict):
+        from app.models.oauth import OAuthClient
+        OAuthClient.create(**user)
+
     @classmethod
     def class_method(cls, name):
         """

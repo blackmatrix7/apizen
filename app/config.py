@@ -19,7 +19,7 @@ class BaseConfig:
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
-    SERVER_NAME = 'apizen.matrix:{0}'.format(PORT)
+    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
 
     SQLALCHEMY_BINDS = {
 
@@ -44,6 +44,8 @@ class BaseConfig:
 
 class DevConfig(BaseConfig):
     DEBUG = True
+    PORT = 8080
+    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 

@@ -16,6 +16,7 @@ class ApiMethodsV10(ApiMethodsBase):
     api_methods = {
         'matrix.api.set-user': {'func': demo.set_user},
         'matrix.api.set-users': {'func': demo.set_users},
+        'matrix.api.set-client': {'func': demo.set_client},
         'matrix.api.return-err': {'func': demo.raise_error},
         'matrix.api.err-func': {'func': demo.err_func},
         'matrix.api.instance-func': {'func': demo.instance_func},

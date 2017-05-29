@@ -13,7 +13,7 @@ from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
 from ..webapi import webapi
 
-__author__ = 'blackmatix'
+__author__ = 'blackmatrix'
 
 
 def format_retinfo(response=None, err_code=1000,
@@ -36,9 +36,9 @@ def format_retinfo(response=None, err_code=1000,
 
 
 @webapi.route(r'/router/rest', methods=['GET', 'POST'])
-def api_routing():
-    _method = request.args['method']
-    _v = request.args['v']
+def api_routing(v=None, method=None):
+    _method = method if method else request.args['method']
+    _v = v if v else request.args['v']
     request_args = request.args.to_dict()
     if request.form:
         request_args.update(request.form.to_dict())

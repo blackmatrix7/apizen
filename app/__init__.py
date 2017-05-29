@@ -18,10 +18,7 @@ def create_app():
 
     app = Flask(__name__)
 
-    print(id(app))
-
     def init(app_config='default'):
-        print(id(app))
         # 读取配置文件
         app.config.from_object(configs[app_config])
         # 蓝图注册
@@ -31,9 +28,9 @@ def create_app():
 
     app.init = init
 
-    # @app.route('/', methods=['GET'])
-    # def index():
-    #     return '<h1>请直接调用接口</h1>'
+    @app.route('/', methods=['GET'])
+    def index():
+        return '<h1>请直接调用接口</h1>'
 
     return app
 
