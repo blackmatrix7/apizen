@@ -5,7 +5,7 @@
 # @Site : https://github.com/blackmatrix7
 # @File : __init__.py
 # @Software: PyCharm
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 __author__ = 'blackmatix'
 

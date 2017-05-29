@@ -31,6 +31,8 @@ class BaseConfig:
     MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
     MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
 
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
         MARIADB_HOST,
         MARIADB_PASS,
@@ -42,6 +44,7 @@ class BaseConfig:
 
 class DevConfig(BaseConfig):
     DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestConfig(BaseConfig):

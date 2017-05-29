@@ -8,16 +8,10 @@
 from app import create_app
 from app.database import db
 from app.config import configs
-from flask.ext.script import Manager
+from flask_script import Manager
 
 __author__ = 'blackmatrix'
 
-
-def _make_context():
-    return dict(
-        app=create_app(configs.dev_config),
-        db=db
-    )
 
 # 创建app
 app = create_app()
@@ -26,17 +20,13 @@ manager = Manager(app)
 
 @manager.command
 def devserver(config='default'):
-    app.config.from_object(configs[config])
+    app.init(app_config=config)
     app.run()
 
 
 @manager.command
-def gunicron():
-    pass
-
-
-@manager.command
-def createdb():
+def createdb(config='default'):
+    app.init(app_config=config)
     db.create_all()
 
 if __name__ == '__main__':
