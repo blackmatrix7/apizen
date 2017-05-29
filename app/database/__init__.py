@@ -6,6 +6,7 @@
 # @File : __init__.py
 # @Software: PyCharm
 from flask_sqlalchemy import SQLAlchemy
+
 __author__ = 'blackmatix'
 
 db = SQLAlchemy()

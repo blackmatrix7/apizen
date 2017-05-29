@@ -36,7 +36,6 @@ def create_app():
 
 
 def register_blueprints(app):
-    print(id(app))
     app.register_blueprint(webapi, url_prefix='/api')
 
 

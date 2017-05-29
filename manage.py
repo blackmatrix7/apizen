@@ -7,8 +7,8 @@
 # @Software: PyCharm
 from app import create_app
 from app.database import db
-from app.config import configs
 from flask_script import Manager
+from app.models.oauth import OAuthClient
 
 __author__ = 'blackmatrix'
 
