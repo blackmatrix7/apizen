@@ -5,6 +5,7 @@
 # @Site : https://github.com/blackmatrix7
 # @File : oauth
 # @Software: PyCharm
+from app.models import *
 from app.database import ModelBase, ModelMixin, db
 
 __author__ = 'blackmatix'
@@ -16,6 +17,7 @@ class OAuthClient(ModelBase, ModelMixin):
 
     client_id = db.Column(db.Integer, nullable=False)
     client_name = db.Column(db.String(40), nullable=False)
+    client_secret = db.Column(db.String(40), nullable=False)
 
 
 if __name__ == '__main__':

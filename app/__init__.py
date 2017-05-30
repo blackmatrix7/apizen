@@ -14,17 +14,16 @@ __author__ = 'blackmatrix'
 _no_value = object()
 
 
-def create_app(app_config=None):
+def create_app(app_config='default'):
 
     app = Flask(__name__)
 
-    if app_config:
-        # 读取配置文件
-        app.config.from_object(configs[app_config])
-        # 蓝图注册
-        register_blueprints(app)
-        # 扩展注册
-        register_extensions(app)
+    # 读取配置文件
+    app.config.from_object(configs[app_config])
+    # 蓝图注册
+    register_blueprints(app)
+    # 扩展注册
+    register_extensions(app)
 
     @app.route('/', methods=['GET'])
     def index():

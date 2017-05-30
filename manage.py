@@ -5,6 +5,7 @@
 # @Site    : 
 # @File    : manage.py
 # @Software: PyCharm
+import os
 from app import create_app
 from app.database import db
 from flask_script import Manager
@@ -13,16 +14,16 @@ from flask_migrate import Migrate, MigrateCommand
 
 __author__ = 'blackmatrix'
 
-manager = Manager(create_app)
-manager.add_option('-c', '--config', dest='app_config', required=False)
+
+cfg_name = os.environ.get('APIZEN_CFG', 'default')
+app = create_app(cfg_name)
+migrate = Migrate(app, db)
+manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 
 @manager.command
 def devserver():
-    # 必须在manager.run()之后才能获取到创建的Flask实例
-    app = manager.app
-    # migrate = Migrate(app, db)
     app.run()
 
 
@@ -37,4 +38,3 @@ def dropdb():
 
 if __name__ == '__main__':
     manager.run()
-
