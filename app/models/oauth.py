@@ -5,7 +5,6 @@
 # @Site : https://github.com/blackmatrix7
 # @File : oauth
 # @Software: PyCharm
-from app.models import *
 from app.database import ModelBase, ModelMixin, db
 
 __author__ = 'blackmatix'
