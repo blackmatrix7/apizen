@@ -36,7 +36,7 @@ class ApiMethodsV11(ApiMethodsV10):
 @version(1.2)
 class ApiMethodsV12(ApiMethodsV11):
     api_methods = {
-        'matrix.api.only-post': {'func': demo.raise_error, 'method': ['post']},
+        'matrix.api.only-post': {'func': demo.raise_error, 'methods': ['post']},
         'matrix.api.api-stop': {'func': demo.raise_error, 'enable': False}
     }
 

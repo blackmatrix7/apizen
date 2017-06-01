@@ -83,7 +83,7 @@ class Method:
             elif not methods[method_name].get('enable', True):
                 raise ApiSysExceptions.api_stop
             # 检查方法是否允许以某种请求方式调用
-            elif request_method.lower() not in methods[method_name].get('method', ['get', 'post']):
+            elif request_method.lower() not in methods[method_name].get('methods', ['get', 'post']):
                 raise ApiSysExceptions.not_allowed_request
             # 检查函数是否可调用
             elif not callable(methods[method_name].get('func')):
