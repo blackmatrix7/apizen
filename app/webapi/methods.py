@@ -27,7 +27,7 @@ class ApiMethodsV10(ApiMethodsBase):
         # 实例方法调用
         'matrix.api.instance-func': {'func': demo.instance_func},
         # 类方法调用
-        'matrix.api.class-func': {'func': demo.class_method},
+        'matrix.api.class-func': {'func': demo.class_method}
     }
 
 
