@@ -17,9 +17,9 @@ class ModelBase(db.Model):
 
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True, index=True)
-    created_time = db.Column(db.DateTime, default=datetime.now())
-    updated_time = db.Column(db.DateTime, default=datetime.now(),
-                             onupdate=datetime.now())
+    created_time = db.Column(db.DateTime, default=datetime.now)
+    updated_time = db.Column(db.DateTime, default=datetime.now,
+                             onupdate=datetime.now)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **{attr: value for attr, value in kwargs.items()
