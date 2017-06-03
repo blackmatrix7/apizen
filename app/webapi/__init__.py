@@ -12,7 +12,7 @@ from app.webapi.methods import ApiMethodsBase, ApiMethodsV10, ApiMethodsV11, Api
 
 __author__ = 'blackmatix'
 # 蓝图注册
-webapi = Blueprint('webapi', __name__, template_folder='templates')
+webapi = Blueprint('webapi', __name__)
 # Web Api 版本注册
 app.apizen.version.register(ApiMethodsBase, ApiMethodsV10, ApiMethodsV11, ApiMethodsV12)
 

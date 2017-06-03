@@ -6,7 +6,6 @@
 # @File    : manage.py
 # @Software: PyCharm
 import os
-import app.models
 from app import create_app
 from app.database import db
 from flask_script import Manager

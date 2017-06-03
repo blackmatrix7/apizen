@@ -3,7 +3,7 @@
 # @Time : 2017/5/29 2:22
 # @Author : BlackMatrix
 # @Site : https://github.com/blackmatrix7
-# @File : user.py
+# @File : models.py
 # @Software: PyCharm
 
 from app.database import ModelBase, ModelMixin, db
