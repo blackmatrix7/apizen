@@ -5,7 +5,6 @@
 # @Site : https://github.com/blackmatrix7
 # @File : __init__.py
 # @Software: PyCharm
-from .oauth import OAuthClient
 
 __author__ = 'blackmatix'
 
