@@ -14,3 +14,4 @@ class User(ModelBase, ModelMixin):
     user_name = db.Column(db.String(40))
     password = db.Column(db.Sequence(100))
     email = db.Column(db.String(100))
+

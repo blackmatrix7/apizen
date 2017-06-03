@@ -6,12 +6,12 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Flask
+from app.user import user
+from app.oauth import oauth
 from app.database import db
-from app.config import configs
 from app.webapi import webapi
+from app.config import configs
 __author__ = 'blackmatrix'
-
-_no_value = object()
 
 
 def create_app(app_config='default'):
@@ -34,6 +34,8 @@ def create_app(app_config='default'):
 
 def register_blueprints(app):
     app.register_blueprint(webapi, url_prefix='/api')
+    app.register_blueprint(oauth, url_prefix='/oauth')
+    app.register_blueprint(user, url_prefix='/user')
 
 
 def register_extensions(app):
