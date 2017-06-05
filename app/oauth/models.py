@@ -17,7 +17,6 @@ class Client(ModelBase, ModelMixin):
     name = db.Column(db.String(40))
     description = db.Column(db.String(400))
     user_id = db.Column(db.ForeignKey('user.id'))
-    user = db.relationship('user')
     client_id = db.Column(db.String(40),
                           primary_key=True)
     client_secret = db.Column(db.String(55),

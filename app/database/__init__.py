@@ -21,16 +21,19 @@ class ModelBase(db.Model):
     updated_time = db.Column(db.DateTime, default=datetime.now,
                              onupdate=datetime.now)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **{attr: value for attr, value in kwargs.items()
-                                   if attr in self.__class__.__table__.columns})
+    def __init__(self, **kwargs):
+        columns = [c.name for c in self.__table__.columns]
+        temp = {attr: value for attr, value in kwargs.items()
+                            if attr in columns}
+        super().__init__(**{attr: value for attr, value in kwargs.items()
+                            if attr in columns})
 
 
 class ModelMixin:
 
     @classmethod
     def create(cls, **kwargs):
-        instance = cls(**{attr: value for attr, value in kwargs.items() if attr in cls.__table__.columns})
+        instance = cls(**kwargs)
         return instance.save()
 
     def update(self, commit=True, **kwargs):

@@ -8,7 +8,7 @@
 import os
 from app import create_app
 from app.database import db
-from app.database import models
+from app.database.models import *
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -25,6 +25,13 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def devserver():
     flask_app.run()
+
+
+@manager.command
+def initadmin(name, password):
+    admin = User(user_name=name)
+    admin.password = password
+    admin.save()
 
 
 @manager.command
