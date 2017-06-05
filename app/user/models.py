@@ -11,7 +11,9 @@ from app.database import ModelBase, ModelMixin, db
 
 class User(ModelBase, ModelMixin):
 
+    __tablename__ = 'user'
+
     user_name = db.Column(db.String(40))
-    password = db.Column(db.Sequence(100))
+    password = db.Column(db.String(100))
     email = db.Column(db.String(100))
 

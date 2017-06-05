@@ -8,6 +8,7 @@
 import os
 from app import create_app
 from app.database import db
+from app.database import models
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 

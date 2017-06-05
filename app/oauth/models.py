@@ -11,12 +11,18 @@ __author__ = 'blackmatix'
 
 
 class Client(ModelBase, ModelMixin):
+
+    __tablename__ = 'client'
+
     name = db.Column(db.String(40))
     description = db.Column(db.String(400))
-    user_id = db.Column(db.ForeignKey('User.id'))
-    user = db.relationship('User')
-    client_id = db.Column(db.String(40), primary_key=True)
-    client_secret = db.Column(db.String(55), unique=True, index=True,
+    user_id = db.Column(db.ForeignKey('user.id'))
+    user = db.relationship('user')
+    client_id = db.Column(db.String(40),
+                          primary_key=True)
+    client_secret = db.Column(db.String(55),
+                              unique=True,
+                              index=True,
                               nullable=False)
     is_confidential = db.Column(db.Boolean)
 
