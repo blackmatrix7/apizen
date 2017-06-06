@@ -31,7 +31,8 @@ def devserver():
 def initadmin(name, password):
     admin = User(user_name=name)
     admin.password = password
-    admin.save()
+    temp = dict(admin)
+    admin.upsert_and_commit()
 
 
 @manager.command
