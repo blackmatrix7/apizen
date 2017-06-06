@@ -5,9 +5,9 @@
 # @Site : https://github.com/blackmatrix7
 # @File : models.py
 # @Software: PyCharm
-from werkzeug.security import check_password_hash, generate_password_hash
-from app.database import ModelBase, ModelMixin, db
 from ..oauth.models import Client
+from app.database import ModelBase, ModelMixin, db
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class User(ModelBase, ModelMixin):
@@ -17,7 +17,7 @@ class User(ModelBase, ModelMixin):
     user_name = db.Column(db.String(40))
     password_hash = db.Column(db.String(200))
     email = db.Column(db.String(100))
-    clients = db.relationship(Client, backref='user', lazy='dynamic')
+    clients = db.relationship(Client, backref='user', lazy='dynamic', order_by=Client.Id)
 
     @property
     def password(self):

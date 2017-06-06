@@ -23,23 +23,11 @@ class ModelBase(db.Model):
 
     def __init__(self, **kwargs):
         columns = [c.name for c in self.__table__.columns]
-        temp = {attr: value for attr, value in kwargs.items()
-                            if attr in columns}
         super().__init__(**{attr: value for attr, value in kwargs.items()
                             if attr in columns})
 
 
 class ModelMixin:
-
-    @classmethod
-    def create(cls, **kwargs):
-        instance = cls(**kwargs)
-        return instance.save()
-
-    def update(self, commit=True, **kwargs):
-        for attr, value in kwargs.items():
-            setattr(self, attr, value)
-        return commit and self.save() or self
 
     def save(self, commit=True):
         db.session.add(self)
