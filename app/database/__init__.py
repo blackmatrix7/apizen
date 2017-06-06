@@ -49,6 +49,11 @@ class ModelMixin(db.Model):
         self.delete(commit=True)
 
     def to_dict(self, columns=None):
+        """
+        将SQLALCHEMY MODEL 转换成 dict
+        :param columns: dict 的 key, 如果为None, 则返回全部列
+        :return:
+        """
         if columns is None:
             columns = (c.name for c in self.__table__.columns)
         return {c: getattr(self, c) for c in columns}
