@@ -5,11 +5,11 @@
 # @Site    : 
 # @File    : routing.py
 # @Software: PyCharm
-from app.apizen.methods import Method
 from flask import jsonify
 from flask import request
+from app.database import ModelMixin
+from app.apizen.methods import Method
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-
 from app.apizen.exceptions import ApiException, ApiSysExceptions
 from ..webapi import webapi
 
@@ -48,6 +48,8 @@ def api_routing(v=None, method=None):
                         method_name=_method,
                         request_method=request.method,
                         request_params=request_args)
+    if isinstance(result, ModelMixin):
+        result = result.to_dict()
     return jsonify(format_retinfo(result))
 
 

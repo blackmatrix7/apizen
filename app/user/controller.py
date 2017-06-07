@@ -21,6 +21,7 @@ def user_login(email, password):
         user.last_login = datetime.now()
         user.upsert().commit()
         # TODO 登录成功后的处理
+        return user
     else:
         raise ApiSubExceptions.wrong_password
 

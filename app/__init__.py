@@ -11,12 +11,16 @@ from app.oauth import oauth
 from app.database import db
 from app.webapi import webapi
 from app.config import configs
+from app.common.funcext import CustomJSONEncoder
+
 __author__ = 'blackmatrix'
 
 
 def create_app(app_config='default'):
 
     app = Flask(__name__)
+
+    app.json_encoder = CustomJSONEncoder
 
     # 读取配置文件
     app.config.from_object(configs[app_config])

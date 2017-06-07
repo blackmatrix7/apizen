@@ -41,6 +41,8 @@ class BaseConfig:
         MARIADB_DB
     )
 
+    DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
+
 
 class DevConfig(BaseConfig):
     DEBUG = True
