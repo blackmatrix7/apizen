@@ -14,11 +14,15 @@ class User(ModelBase, ModelMixin):
 
     __tablename__ = 'user'
 
-    user_name = db.Column(db.String(40))
+    email = db.Column(db.String(100), nullable=False)
+    user_name = db.Column(db.String(40), nullable=True)
     password_hash = db.Column(db.String(200))
-    email = db.Column(db.String(100))
 
     clients = db.relationship(Client, backref='user', lazy='dynamic', order_by=Client.id)
+
+    @classmethod
+    def get_by_email(cls, email):
+        return db.session.query(cls).filter(cls.email == email).first()
 
     @property
     def password(self):

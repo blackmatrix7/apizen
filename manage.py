@@ -8,8 +8,9 @@
 import os
 from app import create_app
 from app.database import db
-from app.database.models import *
 from flask_script import Manager
+from app.database.models import *
+from app.user.controller import new_user
 from flask_migrate import Migrate, MigrateCommand
 
 __author__ = 'blackmatrix'
@@ -28,10 +29,8 @@ def devserver():
 
 
 @manager.command
-def initadmin(name, password):
-    admin = User(user_name=name)
-    admin.password = password
-    admin.upsert().commit()
+def initadmin(email, user_name, password):
+    new_user(email, user_name, password)
 
 
 @manager.command

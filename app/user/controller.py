@@ -22,5 +22,14 @@ def user_login(email, password):
         raise ApiSubExceptions.wrong_password
 
 
+def new_user(email, user_name, password):
+    if User.get_by_email(email):
+        raise ApiSubExceptions.email_registered
+    user = User(email=email, user_name=user_name)
+    user.password = password
+    user.upsert().commit()
+    return user
+
+
 if __name__ == '__main__':
     pass

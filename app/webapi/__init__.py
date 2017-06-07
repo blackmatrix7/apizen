@@ -8,13 +8,13 @@
 from flask import Blueprint
 
 import app.apizen.version
-from app.webapi.methods import ApiMethodsBase, ApiMethodsV10, ApiMethodsV11
+from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 
 __author__ = 'blackmatix'
 # 蓝图注册
 webapi = Blueprint('webapi', __name__)
 # Web Api 版本注册
-app.apizen.version.register(ApiMethodsBase, ApiMethodsV10, ApiMethodsV11)
+app.apizen.version.register(ApiMethodsV10, ApiMethodsV11)
 
 # 必须注册完蓝图后才能导入
 from app.webapi import routing
