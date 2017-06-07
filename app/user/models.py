@@ -5,6 +5,7 @@
 # @Site : https://github.com/blackmatrix7
 # @File : models.py
 # @Software: PyCharm
+import copy
 from ..oauth.models import Client
 from app.database import ModelBase, ModelMixin, db
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -25,6 +26,19 @@ class User(ModelBase, ModelMixin):
     @classmethod
     def get_by_email(cls, email):
         return db.session.query(cls).filter(cls.email == email).first()
+
+    # 去除 password_hash 的显示
+    def to_dict(self, columns=None):
+        """
+        将SQLALCHEMY MODEL 转换成 dict
+        :param columns: dict 的 key, 如果为None, 则返回全部列
+        :return:
+        """
+        if columns is None:
+            columns = list(self.columns)
+        _columns = copy.copy(columns)
+        _columns.remove('password_hash')
+        return super().to_dict(columns=_columns)
 
     @property
     def password(self):

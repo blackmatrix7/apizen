@@ -32,6 +32,12 @@ class ModelMixin(db.Model):
 
     __abstract__ = True
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
+
     def upsert(self):
         db.session.add(self)
         return self
@@ -39,6 +45,10 @@ class ModelMixin(db.Model):
     def delete(self):
         db.session.delete(self)
         return self
+
+    @property
+    def columns(self):
+        yield from (c.name for c in self.__table__.columns)
 
     @staticmethod
     def commit():
@@ -55,7 +65,7 @@ class ModelMixin(db.Model):
         :return:
         """
         if columns is None:
-            columns = (c.name for c in self.__table__.columns)
+            columns = self.columns
         return {c: getattr(self, c) for c in columns}
 
     def to_json(self):

@@ -14,7 +14,8 @@ __author__ = 'blackmatix'
 
 
 def user_login(email, password):
-    user = db.session.query(User).filter(User.email == email).first()
+    user = db.session.query(User).filter(User.email == email,
+                                         User.is_enable == 1).first()
     if user:
         if not user.verify_password(password):
             raise ApiSubExceptions.wrong_password
