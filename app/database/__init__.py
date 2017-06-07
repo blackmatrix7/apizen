@@ -45,8 +45,8 @@ class ModelMixin(db.Model):
         db.session.commit()
 
     @classmethod
-    def get_by_id(cls, table_id):
-        return db.session.query(cls).filter(cls.id == int(table_id)).first()
+    def get_by_id(cls, id_):
+        return db.session.query(cls).filter(cls.id == int(id_)).first()
 
     def to_dict(self, columns=None):
         """

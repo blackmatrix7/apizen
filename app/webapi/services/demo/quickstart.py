@@ -43,6 +43,7 @@ class ApiDemo:
             {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
         ]
 
+    # 演示静态方法调用
     @staticmethod
     def set_users(users: list):
         def return_users():
@@ -52,6 +53,7 @@ class ApiDemo:
                        'age': user.get('age')}
         return list(return_users())
 
+    # 演示类方法调用
     @classmethod
     def class_method(cls, name):
         """
@@ -61,6 +63,7 @@ class ApiDemo:
         """
         return {'name': name}
 
+    # 演示实例方法调用
     def instance_func(self, value):
         """
         实例方法调用测试
@@ -70,6 +73,7 @@ class ApiDemo:
         self.value = value
         return self.value
 
+    # 演示错误的函数写法
     @staticmethod
     def err_func(self):
         """
@@ -80,6 +84,7 @@ class ApiDemo:
         """
         return self
 
+    # 演示抛出异常
     @staticmethod
     def raise_error():
         """
@@ -89,6 +94,7 @@ class ApiDemo:
         """
         raise ApiSubExceptions.unknown_error
 
+    # 演示自定义异常信息
     @staticmethod
     def custom_error():
         """
@@ -98,19 +104,16 @@ class ApiDemo:
         """
         raise ApiSubExceptions.unknown_error('这是一个自定义异常信息')
 
+    # 演示接口接收任意k/w参数
     @staticmethod
     def send_kwargs(value: str, **kwargs):
         """
-        VAR_KEYWORD 参数类型的传值测试，传入任意k/wc，会在调用结果中返回
+        VAR_KEYWORD 参数类型的传值测试，传入任意k/w，会在调用结果中返回
         :param value:  任意字符串
         :param kwargs:  键值对
         :return:  返回调用结果
         """
         return {"value": value, "kwargs": kwargs}
-
-    @staticmethod
-    def speed_test(value):
-        return value
 
 demo = ApiDemo()
 

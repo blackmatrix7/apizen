@@ -5,8 +5,8 @@
 # @Site:
 # @File: methods.py
 # @Software: PyCharm
-from app.apizen.version import ApiMethodsBase, version
 from app.webapi.services.demo.quickstart import demo
+from app.apizen.version import ApiMethodsBase, version
 
 __author__ = 'blackmatrix'
 
@@ -53,7 +53,3 @@ class ApiMethodsV12(ApiMethodsV11):
         'matrix.api.custom-error': {'func': demo.custom_error}
     }
 
-
-if __name__ == '__main__':
-    api_list = ApiMethodsV10.api_methods
-    print(api_list)
