@@ -6,7 +6,7 @@
 # @File: methods.py
 # @Software: PyCharm
 from app.apizen.version import ApiMethodsBase, version
-from app.webapi.services.demo import demo
+from app.webapi.services.demo.quickstart import demo
 
 __author__ = 'blackmatrix'
 
@@ -14,6 +14,7 @@ __author__ = 'blackmatrix'
 @version(1.0)
 class ApiMethodsV10(ApiMethodsBase):
     api_methods = {
+        'matrix.api-get-user': {'func': None},
         # 第一个demo
         'matrix.api.set-user': {'func': demo.set_user},
         # 以list的方式传值

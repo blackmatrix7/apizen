@@ -3,7 +3,7 @@
 # @Time    : 2017/5/5 下午3:29
 # @Author  : Matrix
 # @Site    : 
-# @File    : demo.py
+# @File    : quickstart.py
 # @Software: PyCharm
 from functools import wraps
 from app.webapi.exceptions import ApiSubExceptions
@@ -51,11 +51,6 @@ class ApiDemo:
                        'name': user.get('name'),
                        'age': user.get('age')}
         return list(return_users())
-
-    @staticmethod
-    def set_client(user: dict):
-        from app.models.oauth import OAuthClient
-        OAuthClient.create(**user)
 
     @classmethod
     def class_method(cls, name):

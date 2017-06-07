@@ -32,21 +32,21 @@ class ModelMixin(db.Model):
 
     __abstract__ = True
 
-    def upsert(self, commit=False):
+    def upsert(self):
         db.session.add(self)
-        if commit:
-            db.session.commit()
         return self
 
-    def delete(self, commit=False):
+    def delete(self):
         db.session.delete(self)
-        return commit and db.session.commit()
+        return self
 
-    def upsert_and_commit(self):
-        self.upsert(commit=True)
+    @staticmethod
+    def commit():
+        db.session.commit()
 
-    def delete_and_commit(self):
-        self.delete(commit=True)
+    @classmethod
+    def get_by_id(cls, table_id):
+        return db.session.query(cls).filter(cls.id == int(table_id)).first()
 
     def to_dict(self, columns=None):
         """
