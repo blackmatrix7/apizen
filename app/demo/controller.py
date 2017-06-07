@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2017/5/5 下午3:29
-# @Author  : Matrix
-# @Site    : 
-# @File    : quickstart.py
+# @Time: 2017/6/7 下午9:50
+# @Author: BlackMatrix
+# @Site: https://github.com/blackmatrix7
+# @File: controller.py
 # @Software: PyCharm
 from functools import wraps
 from app.webapi.exceptions import ApiSubExceptions
 
-__author__ = 'blackmatrix'
+__author__ = 'blackmatix'
 
 
 def test_decorator(func):
     """
     装饰器，测试使用，无功能
-    :param func: 
-    :return: 
+    :param func:
+    :return:
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
