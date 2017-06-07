@@ -15,7 +15,7 @@ class UserApiMethods(ApiMethodsBase):
 
     api_methods = {
         # 用户登录
-        'apizen.session.get': {'func': user_login, 'methods': ['post']},
+        'apizen.session.get': {'func': user_login, 'methods': ['get']},
         # 获取用户信息
         'apizen.user.get': {'func': None}
     }

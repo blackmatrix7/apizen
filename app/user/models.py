@@ -14,9 +14,11 @@ class User(ModelBase, ModelMixin):
 
     __tablename__ = 'user'
 
-    email = db.Column(db.String(100), nullable=False)
-    user_name = db.Column(db.String(40), nullable=True)
+    email = db.Column(db.String(100), nullable=False, index=True)
+    user_name = db.Column(db.String(40), nullable=True, index=True)
     password_hash = db.Column(db.String(200))
+    last_login = db.Column(db.DateTime)
+    is_enable = db.Column(db.Boolean, default=True)
 
     clients = db.relationship(Client, backref='user', lazy='dynamic', order_by=Client.id)
 

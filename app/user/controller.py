@@ -7,6 +7,7 @@
 # @Software: PyCharm
 from .models import User
 from ..database import db
+from datetime import datetime
 from ..webapi.exceptions import ApiSubExceptions
 
 __author__ = 'blackmatix'
@@ -17,6 +18,8 @@ def user_login(email, password):
     if user:
         if not user.verify_password(password):
             raise ApiSubExceptions.wrong_password
+        user.last_login = datetime.now()
+        user.upsert().commit()
         # TODO 登录成功后的处理
     else:
         raise ApiSubExceptions.wrong_password
