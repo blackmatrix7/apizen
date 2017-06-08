@@ -33,6 +33,7 @@ def new_user(email, user_name, password):
     user = User(email=email, user_name=user_name)
     user.password = password
     user.upsert().commit()
+    # TODO 发送确认邮件
     return user
 
 

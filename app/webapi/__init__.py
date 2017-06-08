@@ -6,15 +6,14 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Blueprint
-
-import app.apizen.version
+from app.apizen.version import register
 from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 
 __author__ = 'blackmatix'
 # 蓝图注册
 webapi = Blueprint('webapi', __name__)
 # Web Api 版本注册
-app.apizen.version.register(ApiMethodsV10, ApiMethodsV11)
+register(ApiMethodsV10, ApiMethodsV11)
 
 # 必须注册完蓝图后才能导入
 from app.webapi import routing

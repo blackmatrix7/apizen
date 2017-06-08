@@ -3,7 +3,7 @@
 # @Time: 2017/6/7 下午11:52
 # @Author: BlackMatrix
 # @Site: https://github.com/blackmatrix7
-# @File: funcext.py
+# @File: flaskext.py
 # @Software: PyCharm
 from datetime import datetime
 from flask.json import JSONEncoder
@@ -11,12 +11,29 @@ from flask.json import JSONEncoder
 __author__ = 'blackmatix'
 
 
+class ApiZen:
+
+    def __init__(self, app=None):
+        self.app = app
+
+    def init_app(self, app):
+        self.app = app
+        datetime_format = self.app.config.get('DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
+        CustomJSONEncoder.datetime_format = datetime_format
+        self.app.json_encoder = CustomJSONEncoder
+
+
+apizen = ApiZen()
+
+
 class CustomJSONEncoder(JSONEncoder):
+
+    datetime_format = None
 
     def default(self, obj):
         try:
             if isinstance(obj, datetime):
-                return obj.strftime('%Y/%m/%d %H:%M:%S')
+                return obj.strftime(CustomJSONEncoder.datetime_format)
             iterable = iter(obj)
         except TypeError:
             pass

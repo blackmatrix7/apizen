@@ -6,12 +6,12 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Flask
-from app.user import user
-from app.oauth import oauth
-from app.database import db
-from app.webapi import webapi
+from app.apizen.flaskext import apizen
 from app.config import configs
-from app.common.funcext import CustomJSONEncoder
+from app.database import db
+from app.oauth import oauth
+from app.user import user
+from app.webapi import webapi
 
 __author__ = 'blackmatrix'
 
@@ -19,9 +19,7 @@ __author__ = 'blackmatrix'
 def create_app(app_config='default'):
 
     app = Flask(__name__)
-
-    app.json_encoder = CustomJSONEncoder
-
+    
     # 读取配置文件
     app.config.from_object(configs[app_config])
     # 蓝图注册
@@ -44,6 +42,7 @@ def register_blueprints(app):
 
 def register_extensions(app):
     db.init_app(app)
+    apizen.init_app(app)
 
 
 if __name__ == '__main__':

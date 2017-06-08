@@ -106,4 +106,4 @@ class ApiSysExceptions(ApiBaseExceptions):
     error_args_type = {'api_code': 1022, 'http_code': 400, 'api_msg': '参数类型错误', 'ex_type': KeyError}
 
 if __name__ == '__main__':
-    raise ApiSysExceptions.error_api_config('你好啊')
+    pass
