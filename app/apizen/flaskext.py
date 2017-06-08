@@ -20,21 +20,21 @@ class ApiZen:
     def init_app(self, app):
         self.app = app
         datetime_format = self.app.config.get('DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
-        CustomJSONEncoder.datetime_format = datetime_format
-        self.app.json_encoder = CustomJSONEncoder
+        ApiZenJSONEncoder.datetime_format = datetime_format
+        self.app.json_encoder = ApiZenJSONEncoder
 
 
 apizen = ApiZen()
 
 
-class CustomJSONEncoder(JSONEncoder):
+class ApiZenJSONEncoder(JSONEncoder):
 
     datetime_format = None
 
     def default(self, obj):
         try:
             if isinstance(obj, datetime):
-                return obj.strftime(CustomJSONEncoder.datetime_format)
+                return obj.strftime(ApiZenJSONEncoder.datetime_format)
             elif isinstance(obj, Decimal):
                 # 不转换为float是为了防止精度丢失
                 return str(obj)
