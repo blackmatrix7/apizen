@@ -5,6 +5,7 @@
 # @Site: https://github.com/blackmatrix7
 # @File: flaskext.py
 # @Software: PyCharm
+from decimal import Decimal
 from datetime import datetime
 from flask.json import JSONEncoder
 
@@ -34,6 +35,9 @@ class CustomJSONEncoder(JSONEncoder):
         try:
             if isinstance(obj, datetime):
                 return obj.strftime(CustomJSONEncoder.datetime_format)
+            elif isinstance(obj, Decimal):
+                # 不转换为float是为了防止精度丢失
+                return str(obj)
             iterable = iter(obj)
         except TypeError:
             pass
