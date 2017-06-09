@@ -14,14 +14,11 @@ __author__ = 'blackmatix'
 
 class ApiZen:
 
-    def __init__(self, app=None):
-        self.app = app
-
-    def init_app(self, app):
-        self.app = app
-        datetime_format = self.app.config.get('DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
+    @staticmethod
+    def init_app(app):
+        datetime_format = app.config.get('DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
-        self.app.json_encoder = ApiZenJSONEncoder
+        app.json_encoder = ApiZenJSONEncoder
 
 
 apizen = ApiZen()
