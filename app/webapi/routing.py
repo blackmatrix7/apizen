@@ -50,7 +50,8 @@ def api_routing(v=None, method=None):
                         request_params=request_args)
     if isinstance(result, ModelMixin):
         result = result.to_dict()
-    return jsonify(format_retinfo(result))
+    retinfo = format_retinfo(result)
+    return jsonify(format_retinfo(retinfo))
 
 
 @webapi.errorhandler(BadRequestKeyError)
