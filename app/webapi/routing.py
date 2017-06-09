@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from flask import jsonify
 from flask import request
-from app.database import ModelMixin
+from app.database import ModelBase
 from app.apizen.methods import Method
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
@@ -48,10 +48,10 @@ def api_routing(v=None, method=None):
                         method_name=_method,
                         request_method=request.method,
                         request_params=request_args)
-    if isinstance(result, ModelMixin):
+    if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
         result = result.to_dict()
     retinfo = format_retinfo(result)
-    return jsonify(format_retinfo(retinfo))
+    return jsonify(retinfo)
 
 
 @webapi.errorhandler(BadRequestKeyError)
