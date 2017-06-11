@@ -7,11 +7,11 @@
 # @Software: PyCharm
 from flask import jsonify
 from flask import request
+from ..webapi import webapi
 from app.database import ModelBase
 from app.apizen.methods import Method
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
-from ..webapi import webapi
 
 __author__ = 'blackmatrix'
 
@@ -39,6 +39,8 @@ def format_retinfo(response=None, err_code=1000,
 def api_routing(v=None, method=None):
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
+    if request.content_type.lower() not in ('appliction/json', 'application/x-www-form-urlencoded'):
+        raise ApiSysExceptions.invalid_content_type
     request_args = request.args.to_dict()
     if request.form:
         request_args.update(request.form.to_dict())
