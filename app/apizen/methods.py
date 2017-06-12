@@ -8,7 +8,7 @@
 import copy
 import json
 from functools import wraps
-from inspect import Signature
+from inspect import Signature, unwrap
 from .version import allversion
 from json import JSONDecodeError
 from inspect import signature, Parameter
@@ -29,8 +29,9 @@ def do_not_format(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        sig = Signature(func)
         return func(*args, **kwargs)
+
+    wrapper.format_retinfo = False
     return wrapper
 
 
@@ -80,6 +81,13 @@ class Method:
             :param request_method:  http请求方式
             :return: 
             """
+            format_retinfo = True
+            allow_anonymous = False
+
+            def check_retinfo(func):
+                nonlocal format_retinfo
+                if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
+                    format_retinfo = False
 
             # 检查版本号
             if version not in allversion:
@@ -103,7 +111,11 @@ class Method:
             elif not callable(methods[method_name].get('func')):
                 raise ApiSysExceptions.error_api_config
 
-            return methods[method_name].get('func')
+            _func = methods[method_name].get('func')
+
+            unwrap(_func, stop=check_retinfo)
+
+            return _func, format_retinfo, allow_anonymous
 
     # 运行接口处理方法，及异常处理
     @staticmethod
@@ -115,9 +127,10 @@ class Method:
         api_method = Method.get(version=version,
                                 method_name=method_name,
                                 request_method=request_method)
+        if hasattr(api_method, 'format_retinfo') and api_method.format_retinfo:
+            print(True)
         # 获取函数方法的参数
-        api_method_sig = signature(api_method)
-        api_method_params = api_method_sig.parameters
+        api_method_params = signature(api_method).parameters
 
         for k, v in api_method_params.items():
             if str(v.kind) == 'VAR_POSITIONAL':
