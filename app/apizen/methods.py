@@ -7,17 +7,33 @@
 # @Software: PyCharm
 import copy
 import json
-from inspect import signature, Parameter
-from json import JSONDecodeError
-
-from .exceptions import ApiSysExceptions
+from functools import wraps
+from inspect import Signature
 from .version import allversion
+from json import JSONDecodeError
+from inspect import signature, Parameter
+from .exceptions import ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
 '''
 接口处理方法的异常判断与执行
 '''
+
+
+def not_format(func):
+    """
+    装饰器，表示接口处理函数返回的值不需要统一的返回格式
+    :param func: 装饰的函数
+    :return:
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # 修改函数签名
+        sig = Signature(func)
+
+        return func(*args, **kwargs)
+    return wrapper
 
 
 class Method:
@@ -102,7 +118,8 @@ class Method:
                                 method_name=method_name,
                                 request_method=request_method)
         # 获取函数方法的参数
-        api_method_params = signature(api_method).parameters
+        api_method_sig = signature(api_method)
+        api_method_params = api_method_sig.parameters
 
         for k, v in api_method_params.items():
             if str(v.kind) == 'VAR_POSITIONAL':
@@ -119,5 +136,4 @@ class Method:
             elif str(v.kind) == 'VAR_KEYWORD':
                 func_args.update({k: v for k, v in request_params.items()
                                   if k not in api_method_params.keys()})
-
         return api_method(**func_args)

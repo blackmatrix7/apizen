@@ -10,7 +10,7 @@ from app.apizen.version import register
 from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 
 __author__ = 'blackmatix'
-# 蓝图注册
+# 创建蓝图
 webapi = Blueprint('webapi', __name__)
 # Web Api 版本注册
 register(ApiMethodsV10, ApiMethodsV11)
