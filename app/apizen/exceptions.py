@@ -104,6 +104,8 @@ class ApiSysExceptions(ApiBaseExceptions):
     invalid_json = {'api_code': 1021, 'http_code': 400, 'api_msg': '无效的json格式', 'ex_type': JSONDecodeError}
     # 参数类型错误
     error_args_type = {'api_code': 1022, 'http_code': 400, 'api_msg': '参数类型错误', 'ex_type': KeyError}
+    # 无效的Content-Type
+    not_acceptable_content_type = {'api_code': 1023, 'http_code': 400, 'api_msg': '不被接受的Content-Type', 'ex_type': ValueError}
 
 if __name__ == '__main__':
     pass
