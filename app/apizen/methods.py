@@ -86,8 +86,11 @@ class Method:
 
             def check_retinfo(func):
                 nonlocal format_retinfo
+                nonlocal allow_anonymous
                 if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
                     format_retinfo = False
+                if hasattr(func, 'allow_anonymous') and func.allow_anonymous is True:
+                    allow_anonymous = True
 
             # 检查版本号
             if version not in allversion:
@@ -113,6 +116,7 @@ class Method:
 
             _func = methods[method_name].get('func')
 
+            # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
             unwrap(_func, stop=check_retinfo)
 
             return _func, format_retinfo, allow_anonymous
