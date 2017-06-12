@@ -39,7 +39,9 @@ def format_retinfo(response=None, err_code=1000,
 def api_routing(v=None, method=None):
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
-    if request.content_type.lower() not in ('appliction/json', 'application/x-www-form-urlencoded'):
+    if request.method.lower() == 'post' \
+            and (request.content_type is None
+                 or request.content_type.lower() not in ('appliction/json', 'application/x-www-form-urlencoded')):
         raise ApiSysExceptions.not_acceptable_content_type
     request_args = request.args.to_dict()
     if request.form:

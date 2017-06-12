@@ -21,7 +21,7 @@ __author__ = 'blackmatrix'
 '''
 
 
-def not_format(func):
+def do_not_format(func):
     """
     装饰器，表示接口处理函数返回的值不需要统一的返回格式
     :param func: 装饰的函数
@@ -29,9 +29,7 @@ def not_format(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # 修改函数签名
         sig = Signature(func)
-
         return func(*args, **kwargs)
     return wrapper
 
