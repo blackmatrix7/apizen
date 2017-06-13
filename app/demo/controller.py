@@ -30,7 +30,6 @@ class ApiDemo:
         self.value = None
 
     @staticmethod
-    @do_not_format
     @test_decorator
     def set_user(user_id: int, name: str, mark: float=None, age: int=19):
         """

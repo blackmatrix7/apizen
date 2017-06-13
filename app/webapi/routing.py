@@ -48,15 +48,13 @@ def api_routing(v=None, method=None):
         request_args.update(request.form.to_dict())
     if request.json:
         request_args.update(request.json.to_dict())
-    api_func, *_ = Method.get(version=_v,
-                              method_name=_method,
-                              request_method=request.method)
-
+    api_func, is_format, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
     result = Method.run(api_func, request_params=request_args)
     if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
         result = result.to_dict()
-    retinfo = format_retinfo(result)
-    return jsonify(retinfo)
+    if is_format:
+        result = format_retinfo(result)
+    return jsonify(result)
 
 
 @webapi.errorhandler(BadRequestKeyError)
