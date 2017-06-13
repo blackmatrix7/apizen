@@ -17,15 +17,15 @@ __author__ = 'blackmatrix'
 
 
 cfg_name = os.environ.get('APIZEN_CFG', 'default')
-flask_app = create_app(cfg_name)
-migrate = Migrate(flask_app, db)
-manager = Manager(flask_app)
+app = create_app(cfg_name)
+migrate = Migrate(app, db)
+manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 
 @manager.command
 def devserver():
-    flask_app.run()
+    app.run()
 
 
 @manager.command
