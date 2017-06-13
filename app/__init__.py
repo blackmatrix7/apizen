@@ -6,12 +6,12 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Flask
-from app.apizen.flaskext import apizen
-from app.config import configs
-from app.database import db
-from app.oauth import oauth
 from app.user import user
+from app.oauth import oauth
+from app.database import db
 from app.webapi import webapi
+from app.config import configs
+from app.apizen.flaskext import apizen
 
 __author__ = 'blackmatrix'
 
