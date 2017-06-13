@@ -24,6 +24,11 @@ manager.add_command('db', MigrateCommand)
 
 
 @manager.command
+def devserver():
+    app.run()
+
+
+@manager.command
 def initadmin(email, user_name, password):
     new_user(email, user_name, password)
 
