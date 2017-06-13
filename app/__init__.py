@@ -12,16 +12,18 @@ from app.database import db
 from app.webapi import webapi
 from app.config import configs
 from app.apizen.flaskext import apizen
-
+from flask_environments import Environments
 __author__ = 'blackmatrix'
 
 
 def create_app(app_config='default'):
 
     app = Flask(__name__)
-    
+
     # 读取配置文件
-    app.config.from_object(configs[app_config])
+    env = Environments(app, var_name='config', default_env='devcfg')
+    env.from_object('app.config')
+    # app.config.from_object(configs[app_config])
     # 蓝图注册
     register_blueprints(app)
     # 扩展注册

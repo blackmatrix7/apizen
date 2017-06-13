@@ -58,14 +58,27 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
+
+    HOST = '0.0.0.0'
+    PORT = 8020
+    WORKS = 5
+
+    SITE_NAME = 'Api Zen'
+    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
     DEBUG = False
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+devcfg = DevConfig
+testcfg = TestConfig
+prodcfg = ProdConfig
+default = DevConfig
+
 configs = {
-    'devcfg': DevConfig,
-    'testcfg': TestConfig,
-    'prodcfg': ProdConfig,
-    'default': DevConfig
+    'devcfg': devcfg,
+    'testcfg': testcfg,
+    'prodcfg': prodcfg,
+    'default': default
 }
 
 
