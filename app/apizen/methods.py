@@ -37,9 +37,6 @@ def do_not_format(func):
 
 class Method:
 
-    def __init__(self):
-        super().__init__()
-
     @staticmethod
     def convert(key, value, default_value, type_hints):
         converter = {
@@ -84,7 +81,7 @@ class Method:
             format_retinfo = True
             allow_anonymous = False
 
-            def check_retinfo(func):
+            def check_decorator(func):
                 nonlocal format_retinfo
                 nonlocal allow_anonymous
                 if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
@@ -117,20 +114,16 @@ class Method:
             _func = methods[method_name].get('func')
 
             # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
-            unwrap(_func, stop=check_retinfo)
+            unwrap(_func, stop=check_decorator)
 
             return _func, format_retinfo, allow_anonymous
 
     # 运行接口处理方法，及异常处理
     @staticmethod
-    def run(version, method_name, request_method, request_params):
+    def run(api_method, request_params):
 
         # 最终传递给接口处理方法的全部参数
         func_args = {}
-        # 获取接口处理方法
-        api_method = Method.get(version=version,
-                                method_name=method_name,
-                                request_method=request_method)
         if hasattr(api_method, 'format_retinfo') and api_method.format_retinfo:
             print(True)
         # 获取函数方法的参数

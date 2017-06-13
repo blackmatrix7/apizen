@@ -48,10 +48,11 @@ def api_routing(v=None, method=None):
         request_args.update(request.form.to_dict())
     if request.json:
         request_args.update(request.json.to_dict())
-    result = Method.run(version=_v,
-                        method_name=_method,
-                        request_method=request.method,
-                        request_params=request_args)
+    api_func, *_ = Method.get(version=_v,
+                              method_name=_method,
+                              request_method=request.method)
+
+    result = Method.run(api_func, request_params=request_args)
     if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
         result = result.to_dict()
     retinfo = format_retinfo(result)
