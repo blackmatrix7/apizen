@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2017/5/28 21:49
-# @Author  : BlackMatrix
-# @Site    : 
-# @File    : routing.py
+# @Time : 2017/5/28 21:49
+# @Author : BlackMatrix
+# @Site :
+# @File : routing.py
 # @Software: PyCharm
 from flask import jsonify
 from flask import request
@@ -37,23 +37,36 @@ def format_retinfo(response=None, err_code=1000,
 
 @webapi.route(r'/router/rest', methods=['GET', 'POST'])
 def api_routing(v=None, method=None):
+
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
-    if request.method.lower() == 'post' \
-            and (request.content_type is None
-                 or request.content_type.lower() not in ('appliction/json', 'application/x-www-form-urlencoded')):
-        raise ApiSysExceptions.not_acceptable_content_type
+
+    # 检查 content-type
+    if request.method == 'POST':
+        if request.content_type is None:
+            raise ApiSysExceptions.missing_content_type
+        if 'application/json' not in request.content_type \
+                and 'application/x-www-form-urlencoded' not in request.content_type:
+            raise ApiSysExceptions.unacceptable_content_type
+
+    # 获取请求参数，参数优先级 json > form > querystring
     request_args = request.args.to_dict()
     if request.form:
         request_args.update(request.form.to_dict())
     if request.json:
         request_args.update(request.json.to_dict())
+
+    # 获取接口处理函数，及接口部分配置
     api_func, is_format, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
+
+    # 将请求参数传入接口处理函数并运行
     result = Method.run(api_func, request_params=request_args)
+
     if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
         result = result.to_dict()
     if is_format:
         result = format_retinfo(result)
+
     return jsonify(result)
 
 
