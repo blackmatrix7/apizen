@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from app import create_app
 from app.database import db
-from flask_script import Manager, Server
+from flask_script import Manager
 from app.database.models import *
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand

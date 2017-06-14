@@ -68,9 +68,6 @@ class ModelMixin(db.Model):
             columns = self.columns
         return {c: getattr(self, c) for c in columns}
 
-    def to_json(self):
-        pass
-
 
 if __name__ == '__main__':
     pass
