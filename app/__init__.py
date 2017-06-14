@@ -16,6 +16,8 @@ from app.apizen.flaskext import apizen
 
 __author__ = 'blackmatrix'
 
+migrate = Migrate()
+
 
 def create_app(app_config='default'):
 
@@ -42,10 +44,9 @@ def register_blueprints(app):
 
 
 def register_extensions(app):
-    migrate = Migrate()
     db.init_app(app)
     apizen.init_app(app)
-    migrate.init_app(app=app, db=db)
+    migrate.init_app(app, db)
 
 
 if __name__ == '__main__':
