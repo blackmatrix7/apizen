@@ -20,6 +20,7 @@ class User(ModelBase, ModelMixin):
     password_hash = db.Column(db.String(200))
     last_login = db.Column(db.DateTime)
     is_enable = db.Column(db.Boolean, default=True)
+    description = db.Column(db.Text, nullable=True)
 
     clients = db.relationship(Client, backref='user', lazy='dynamic', order_by=Client.id)
 

@@ -5,26 +5,23 @@
 # @Site    : 
 # @File    : manage.py
 # @Software: PyCharm
-import os
 from app import create_app
 from app.database import db
 from flask_script import Manager
 from app.database.models import *
 from app.user.controller import new_user
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import MigrateCommand
 
 __author__ = 'blackmatrix'
 
-
-cfg_name = os.environ.get('APIZEN_CFG', 'default')
-app = create_app(cfg_name)
-migrate = Migrate(app, db)
-manager = Manager(app)
+manager = Manager(create_app)
 manager.add_command('db', MigrateCommand)
+manager.add_option('-c', '--config', dest='app_config', required=False)
 
 
 @manager.command
 def devserver():
+    app = manager.app
     app.run()
 
 

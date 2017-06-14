@@ -11,8 +11,9 @@ from app.oauth import oauth
 from app.database import db
 from app.webapi import webapi
 from app.config import configs
+from flask_migrate import Migrate
 from app.apizen.flaskext import apizen
-from flask_environments import Environments
+
 __author__ = 'blackmatrix'
 
 
@@ -21,8 +22,6 @@ def create_app(app_config='default'):
     app = Flask(__name__)
 
     # 读取配置文件
-    # env = Environments(app, var_name='-config', default_env='devcfg')
-    # env.from_object('app.config')
     app.config.from_object(configs[app_config])
     # 蓝图注册
     register_blueprints(app)
@@ -43,8 +42,10 @@ def register_blueprints(app):
 
 
 def register_extensions(app):
+    migrate = Migrate()
     db.init_app(app)
     apizen.init_app(app)
+    migrate.init_app(app=app, db=db)
 
 
 if __name__ == '__main__':
