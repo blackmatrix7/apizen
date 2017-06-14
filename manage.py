@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from app import create_app
 from app.database import db
-from flask_script import Manager
+from flask_script import Manager, Server
 from app.database.models import *
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
@@ -20,9 +20,9 @@ manager.add_option('-c', '--config', dest='app_config', required=False)
 
 
 @manager.command
-def devserver():
+def runserver():
     app = manager.app
-    app.run()
+    app.run(host=app.config['HOST'],  port=app.config['PORT'])
 
 
 @manager.command

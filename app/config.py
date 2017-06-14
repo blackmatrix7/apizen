@@ -19,7 +19,6 @@ class BaseConfig:
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
-    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
 
     SQLALCHEMY_BINDS = {
 
@@ -46,26 +45,24 @@ class BaseConfig:
 
 class DevConfig(BaseConfig):
     DEBUG = True
+    TESTING = False
     PORT = 8080
-    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
-    # SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class TestConfig(BaseConfig):
-    DEBUG = True
+    DEBUG = False
     TESTING = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProdConfig(BaseConfig):
 
-    HOST = '0.0.0.0'
-    PORT = 8020
+    PORT = 8080
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
-    SERVER_NAME = '127.0.0.1:{0}'.format(PORT)
     DEBUG = False
+    TESTING = False
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
