@@ -56,7 +56,6 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-
     PORT = 8080
     WORKS = 5
 
