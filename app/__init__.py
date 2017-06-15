@@ -25,10 +25,9 @@ class CustomManager(Manager):
 
         def __call__(self, app=None, **kwargs):
             """
-            This procedure is called with the App instance (if this is a
-            sub-Manager) and any options. 
-    
-            If your sub-Manager does not override this, any values for options will get lost.
+            重载Manager为了去除Options will be ignored.的警告
+            如果由flask-script的Manger创建app，和很多扩展结合使用
+            都非常不方便。
             """
             if app is None:
                 app = self.app
@@ -51,6 +50,7 @@ def create_app(app_config=None):
     if app_config is None:
         app_config = sys.argv[1][sys.argv[1].index('=') + 1:] if len(sys.argv) >= 1 else 'default'
     app.config.from_object(configs[app_config])
+    
     # 蓝图注册
     register_blueprints(app)
     # 扩展注册
