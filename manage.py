@@ -6,6 +6,7 @@
 # @File    : manage.py
 # @Software: PyCharm
 import sys
+from celery import Celery
 import app.database.models
 from app.database import db
 from app.user.controller import new_user
@@ -21,6 +22,10 @@ else:
     app_config = 'default'
 
 flask_app = create_app(app_config)
+
+# Celery
+celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
+celery.conf.update(flask_app.config)
 
 # Flask-Script
 manager = CustomManager(flask_app)

@@ -28,6 +28,7 @@ def user_login(email, password):
         raise ApiSubExceptions.wrong_password
 
 
+@celery.task
 def new_user(email, user_name, password):
     if User.get_by_email(email):
         raise ApiSubExceptions.email_registered
