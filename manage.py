@@ -24,8 +24,9 @@ else:
 flask_app = create_app(app_config)
 
 # Celery
-celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
-celery.conf.update(flask_app.config)
+import os
+flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
+flask_celery.conf.update(flask_app.config)
 
 # Flask-Script
 manager = CustomManager(flask_app)
