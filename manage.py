@@ -36,7 +36,8 @@ manager.add_option('-e', '--env', dest='app_config', required=False)
 
 @manager.command
 def devserver():
-    flask_app.run(host=flask_app.config['HOST'],  port=flask_app.config['PORT'])
+    flask_app.run(host=flask_app.config['HOST'],
+                  port=flask_app.config['PORT'])
 
 
 @manager.command
@@ -56,12 +57,18 @@ def dropdb():
 
 @manager.command
 def celeryworks():
-    os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
+    flask_celery.start(['worker'])
+    # os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
 
 
 @manager.command
 def runserver():
-    os.system('env=devcfg gunicorn -k gevent -w 4 -b 127.0.0.1:8080 manage:flask_app')
+    cmd = 'env={config} gunicorn -k gevent -w {workers} -b {host}:{port} manage:flask_app'.format(
+        config=app_config,
+        workers=flask_app.config['WORKS'],
+        host=flask_app.config['HOST'],
+        port=flask_app.config['PORT'])
+    os.system(cmd)
 
 
 if __name__ == '__main__':
