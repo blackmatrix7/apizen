@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Time  : 2017/6/16 22:34
 # @Author  : BlackMatrix
-# @Site : 
+# @Site :
 # @File : celery_demo.py
 # @Software: PyCharm
 import time
 from celery import Celery
 
-app = Celery('celery_demo',  backend='redis://10.10.10.100:6379/0', broker='redis://10.10.10.100:6379/0')
+app = Celery('tasks', backend='redis://10.10.10.100:6379/0', broker='redis://10.10.10.100:6379/0')
 
 
 @app.task

@@ -56,9 +56,9 @@ def dropdb():
 
 
 @manager.command
-def celeryworks():
-    flask_celery.start(['worker'])
-    # os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
+def celery():
+    # flask_celery.start(['worker'])
+    os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
 
 
 @manager.command
