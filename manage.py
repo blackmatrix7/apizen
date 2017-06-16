@@ -19,13 +19,13 @@ __author__ = 'blackmatrix'
 if sys.argv and len(sys.argv) >= 1 and '-env' in sys.argv[1]:
     app_config = sys.argv[1][sys.argv[1].find('=') + 1:]
 else:
-    app_config = 'default'
+    app_config = None
 
 flask_app = create_app(app_config)
 
 # Celery
 import os
-flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
+flask_celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
 flask_celery.conf.update(flask_app.config)
 
 # Flask-Script
@@ -52,6 +52,11 @@ def createdb():
 @manager.command
 def dropdb():
     db.drop_all()
+
+
+@manager.command
+def celeryworks():
+    flask_celery.start()
 
 if __name__ == '__main__':
     manager.run()
