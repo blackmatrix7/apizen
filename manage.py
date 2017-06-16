@@ -5,6 +5,7 @@
 # @Site    : 
 # @File    : manage.py
 # @Software: PyCharm
+import os
 import sys
 from celery import Celery
 import app.database.models
@@ -24,7 +25,6 @@ else:
 flask_app = create_app(app_config)
 
 # Celery
-import os
 flask_celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
 flask_celery.conf.update(flask_app.config)
 
@@ -35,7 +35,7 @@ manager.add_option('-e', '--env', dest='app_config', required=False)
 
 
 @manager.command
-def runserver():
+def devserver():
     flask_app.run(host=flask_app.config['HOST'],  port=flask_app.config['PORT'])
 
 
@@ -56,7 +56,13 @@ def dropdb():
 
 @manager.command
 def celeryworks():
-    flask_celery.start()
+    os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
+
+
+@manager.command
+def runserver():
+    os.system('env=devcfg gunicorn -k gevent -w 4 -b 127.0.0.1:8080 manage:flask_app')
+
 
 if __name__ == '__main__':
     manager.run()
