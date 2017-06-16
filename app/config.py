@@ -20,18 +20,16 @@ class BaseConfig:
 
     SITE_NAME = 'Api Zen'
 
-    SQLALCHEMY_BINDS = {
-
-    }
-
+    # DataBase Config
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
     MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
     MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
     MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
     MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
 
+    # SQLAlchemy
+    SQLALCHEMY_BINDS = {}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
         MARIADB_USER,
         MARIADB_PASS,
@@ -40,7 +38,20 @@ class BaseConfig:
         MARIADB_DB
     )
 
+    # API ZEN
     DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
+
+    # Celery
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+    # Flask Mail
+    MAIL_SERVER = None
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = 'flask@example.com'
 
 
 class DevConfig(BaseConfig):
@@ -64,6 +75,7 @@ class ProdConfig(BaseConfig):
     TESTING = False
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
 devcfg = DevConfig
 testcfg = TestConfig

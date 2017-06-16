@@ -9,6 +9,7 @@ from .models import User
 from ..database import db
 from datetime import datetime
 from ..webapi.exceptions import ApiSubExceptions
+from manage import celery
 
 __author__ = 'blackmatix'
 

@@ -14,13 +14,15 @@ from app import create_app, CustomManager
 
 __author__ = 'blackmatrix'
 
-
+# command line env
 if sys.argv and len(sys.argv) >= 1 and '-env' in sys.argv[1]:
     app_config = sys.argv[1][sys.argv[1].find('=') + 1:]
 else:
     app_config = 'default'
 
 flask_app = create_app(app_config)
+
+# Flask-Script
 manager = CustomManager(flask_app)
 manager.add_command('db', MigrateCommand)
 manager.add_option('-e', '--env', dest='app_config', required=False)
