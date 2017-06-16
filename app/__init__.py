@@ -15,6 +15,7 @@ from app.webapi import webapi
 from flask_script import Manager
 from flask_migrate import Migrate
 from app.apizen.flaskext import apizen
+from flask_environments import Environments
 
 __author__ = 'blackmatrix'
 
@@ -25,7 +26,7 @@ class CustomManager(Manager):
 
         def __call__(self, app=None, **kwargs):
             """
-            重载Manager为了去除Options will be ignored.的警告
+            自定义Manager为了去除Options will be ignored.的警告
             如果由flask-script的Manger创建app，和很多扩展结合使用
             都非常不方便。
             """
@@ -48,9 +49,14 @@ def create_app(app_config=None):
 
     # 读取配置文件
     if app_config is None:
-        app_config = sys.argv[1][sys.argv[1].index('=') + 1:] if len(sys.argv) >= 1 else 'default'
-    app.config.from_object(configs[app_config])
-    
+        if sys.argv and len(sys.argv) >= 1 \
+                and '-config' in sys.argv[1][: sys.argv[1].index('=')]:
+            app_config = sys.argv[1][sys.argv[1].index('=') + 1:]
+            app.config.from_object(configs[app_config])
+        else:
+            env = Environments(app, var_name='config', default_env='None')
+            env.from_object('app.config')
+
     # 蓝图注册
     register_blueprints(app)
     # 扩展注册

@@ -5,8 +5,8 @@
 # @Site    : 
 # @File    : manage.py
 # @Software: PyCharm
+import app.database.models
 from app.database import db
-from app.database.models import *
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
 from app import create_app, CustomManager
