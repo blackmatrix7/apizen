@@ -8,7 +8,7 @@
 import time
 from celery import Celery
 
-app = Celery('celery_demo',  backend='redis://xxx.xxx.xxx.xxx:6379/0', broker='redis://xxx.xxx.xxx.xxx:6379/0')
+app = Celery('celery_demo',  backend='redis://10.10.10.100:6379/0', broker='redis://10.10.10.100:6379/0')
 
 
 @app.task
