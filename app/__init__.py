@@ -49,13 +49,10 @@ def create_app(app_config=None):
 
     # 读取配置文件
     if app_config is None:
-        if sys.argv and len(sys.argv) >= 1 \
-                and '-config' in sys.argv[1][: sys.argv[1].index('=')]:
-            app_config = sys.argv[1][sys.argv[1].index('=') + 1:]
-            app.config.from_object(configs[app_config])
-        else:
-            env = Environments(app, var_name='config', default_env='None')
-            env.from_object('app.config')
+        env = Environments(app, var_name='env', default_env='None')
+        env.from_object('app.config')
+    else:
+        app.config.from_object(configs[app_config])
 
     # 蓝图注册
     register_blueprints(app)
