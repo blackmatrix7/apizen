@@ -25,7 +25,7 @@ else:
 flask_app = create_app(app_config)
 
 # Celery
-flask_celery = Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL'])
+flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
 flask_celery.conf.update(flask_app.config)
 
 # Flask-Script
@@ -58,7 +58,7 @@ def dropdb():
 @manager.command
 def celery():
     # flask_celery.start(['worker'])
-    os.system('env=devcfg celery -A manage.flask_celery worker --loglevel=info')
+    os.system('celery -A manage.flask_celery worker --loglevel=info')
 
 
 @manager.command
