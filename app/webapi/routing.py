@@ -5,10 +5,9 @@
 # @Site :
 # @File : routing.py
 # @Software: PyCharm
-from flask import jsonify
-from flask import request
 from ..webapi import webapi
 from app.database import ModelBase
+from flask import g, request, jsonify
 from app.apizen.methods import Method
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
@@ -68,6 +67,12 @@ def api_routing(v=None, method=None):
         result = format_retinfo(result)
 
     return jsonify(result)
+
+
+@webapi.before_app_request
+def before_app_request():
+    from flask import g
+    g.headers = request.environ
 
 
 @webapi.errorhandler(BadRequestKeyError)
