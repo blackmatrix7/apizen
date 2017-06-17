@@ -7,6 +7,7 @@
 # @Software: PyCharm
 import os
 import sys
+from celery import Celery
 import app.database.models
 from app.database import db
 from app.user.controller import new_user
@@ -27,6 +28,10 @@ flask_app = create_app(app_config)
 manager = CustomManager(flask_app)
 manager.add_command('db', MigrateCommand)
 manager.add_option('-e', '--env', dest='app_config', required=False)
+
+# Celery
+flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
+flask_celery.conf.update(flask_app.config)
 
 
 @manager.command
