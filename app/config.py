@@ -44,6 +44,8 @@ class BaseConfig:
     # Celery
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+    CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
 
     # Flask Mail
     MAIL_SERVER = None
