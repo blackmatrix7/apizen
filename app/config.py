@@ -48,12 +48,13 @@ class BaseConfig:
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
 
     # Flask Mail
-    MAIL_SERVER = None
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = 25
+    MAIL_USE_TLS = False
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = 'flask@example.com'
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
+    SUBJECT_PREFIX = '[ApiZen]'
 
 
 class DevConfig(BaseConfig):

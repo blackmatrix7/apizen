@@ -29,6 +29,7 @@ manager = CustomManager(flask_app)
 manager.add_command('db', MigrateCommand)
 manager.add_option('-e', '--env', dest='app_config', required=False)
 
+
 # Celery
 flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
 flask_celery.conf.update(flask_app.config)
@@ -68,6 +69,7 @@ def runserver():
         host=flask_app.config['HOST'],
         port=flask_app.config['PORT'])
     os.system(cmd)
+
 
 if __name__ == '__main__':
     manager.run()

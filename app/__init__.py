@@ -10,16 +10,21 @@ from flask import Flask
 from app.user import user
 from app.oauth import oauth
 from app.database import db
-from app.config import configs
+from flask_mail import Mail
 from app.webapi import webapi
+from app.config import configs
 from flask_script import Manager
 from flask_migrate import Migrate
-from app.apizen.flaskext import apizen
+from app.apizen.flaskext import ApiZen
 from flask_environments import Environments
 
 __author__ = 'blackmatrix'
 
 migrate = Migrate()
+apizen = ApiZen()
+
+# Flask-Mail
+mail = Mail()
 
 
 class CustomManager(Manager):
@@ -74,6 +79,7 @@ def register_blueprints(app):
 
 def register_extensions(app):
     db.init_app(app)
+    mail.init_app(app)
     apizen.init_app(app)
     migrate.init_app(app, db)
 
