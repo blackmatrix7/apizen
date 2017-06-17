@@ -22,7 +22,6 @@ __author__ = 'blackmatrix'
 
 migrate = Migrate()
 apizen = ApiZen()
-
 # Flask-Mail
 mail = Mail()
 

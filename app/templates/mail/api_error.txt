@@ -1,3 +1,8 @@
-请求接口: {{ method }}
-接口版本: {{ v }}
-发生时间: {{ datetime_ }}
+WebApi请求异常
+
+Api Method: {{ api_method }}
+Api Version: {{ api_version }}
+Http Host: {{ HTTP_HOST }}
+Http User Agent: {{ HTTP_USER_AGENT }}
+
+这是一封由Api Zen系统发出的邮件,请勿回复。

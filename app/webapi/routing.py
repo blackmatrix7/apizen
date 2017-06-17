@@ -20,11 +20,11 @@ def format_retinfo(response=None, err_code=1000,
                    api_msg='执行成功', dev_msg=None):
     """
     格式化接口返回结果
-    :param err_code: 
-    :param api_msg: 
-    :param dev_msg: 
-    :param response: 
-    :return: 
+    :param err_code:
+    :param api_msg:
+    :param dev_msg:
+    :param response:
+    :return:
     """
     return {
         'meta': {
