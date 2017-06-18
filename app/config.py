@@ -48,7 +48,7 @@ class BaseConfig:
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
 
     # Flask Mail
-    ADMIN_EMAIL = ['huangxupeng@vcansenior.cn']
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = 25
     MAIL_USE_TLS = False

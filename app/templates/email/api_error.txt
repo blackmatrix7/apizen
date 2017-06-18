@@ -2,6 +2,9 @@ WebApi Request Error
 
 Api Method: {{ api_method }}
 Api Version: {{ api_version }}
+Request Time: {{ request_time }}
+Response Time: {{ response_time }}
+Time Consuming: {{ time_consuming }}
 
 *****************************************
 Request Environ:
@@ -27,7 +30,6 @@ Request Form: {{ request_form }}
 Request Json: {{ request_json }}
 
 *****************************************
-
 Response:
 
 Charset: {{ response_environ.charset }}

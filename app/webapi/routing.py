@@ -69,6 +69,7 @@ def api_routing(v=None, method=None):
 
     g.result = result
     g.status_code = 200
+    return jsonify(result), 200
 
 
 @webapi.before_app_request
@@ -80,6 +81,9 @@ def before_app_request():
                                'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
                                'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
                                'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
+    g.request_time = datetime.now()
+    g.api_method = request.args['method']
+    g.api_version = request.args['v']
     g.request_environ = request_form
     g.request_form = request.form.to_dict() if request.form else None
     g.request_json = request.json.to_dict() if request.json else None
@@ -92,19 +96,21 @@ def after_app_request(param):
                         'content_type': param.content_type,
                         'content_encoding': param.content_encoding,
                         'mimetype': param.mimetype,
-                        'response': g.result,
+                        'response': g.result if hasattr(g, 'result') else None,
                         'status': param.status,
                         'status_code': param.status_code}
-    from app.email import send_mail
-    send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api 请求异常', 'api_error',
-              request_form=g.request_form, request_json=g.request_json,
-              request_environ=g.request_environ, response_environ=response_environ)
-    return jsonify(g.result)
-
-
-# @webapi.teardown_app_request
-# def teardown_app_request(param):
-#     return jsonify(g.result), g.status_code
+    g.response_time = datetime.now()
+    time_consuming = g.response_time - g.request_time
+    if param.status_code >= 400:
+        from app.email import send_mail
+        send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
+                  request_form=g.request_form, request_json=g.request_json,
+                  request_environ=g.request_environ, response_environ=response_environ,
+                  api_method=g.api_method, api_version=g.api_version,
+                  request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
+                  response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),
+                  time_consuming=time_consuming)
+    return param
 
 
 @webapi.errorhandler(BadRequestKeyError)
