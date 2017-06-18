@@ -6,9 +6,10 @@
 # @File : routing.py
 # @Software: PyCharm
 from ..webapi import webapi
+from datetime import datetime
 from app.database import ModelBase
-from flask import g, request, jsonify
 from app.apizen.methods import Method
+from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
 
@@ -71,8 +72,32 @@ def api_routing(v=None, method=None):
 
 @webapi.before_app_request
 def before_app_request():
-    from flask import g
-    g.headers = request.environ
+    request_form = {key.lower(): value for key, value in request.environ.items()
+                    if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
+                               'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
+                               'HTTP_USER_AGENT', 'PATH_INFO', 'QUERY_STRING',
+                               'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
+                               'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
+                               'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
+    g.request_environ = request_form
+    g.request_form = request.form.to_dict() if request.form else None
+    g.request_json = request.json.to_dict() if request.json else None
+
+
+@webapi.after_app_request
+def after_app_request(param):
+    response_environ = {'charset': param.charset,
+                        'content_length': param.content_length,
+                        'content_type': param.content_type,
+                        'content_encoding': param.content_encoding,
+                        'mimetype': param.mimetype,
+                        'response': g.result,
+                        'status': param.status,
+                        'status_code': param.status_code}
+    from app.email import send_mail
+    send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api 请求异常', 'api_error',
+              request_form=g.request_form, request_json=g.request_json,
+              request_environ=g.request_environ, response_environ=response_environ)
 
 
 @webapi.errorhandler(BadRequestKeyError)
@@ -97,6 +122,8 @@ def bad_request(ex):
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message)
+    g.result = retinfo
+    # g.status_code = api_ex.status_code
     return jsonify(retinfo), api_ex.status_code
 
 
