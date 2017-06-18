@@ -74,38 +74,38 @@ def api_routing(v=None, method=None):
 
 @webapi.before_app_request
 def before_app_request():
-    request_form = {key.lower(): value for key, value in request.environ.items()
-                    if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
-                               'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
-                               'HTTP_USER_AGENT', 'PATH_INFO', 'QUERY_STRING',
-                               'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
-                               'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
-                               'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
+    request_param = {key.lower(): value for key, value in request.environ.items()
+                     if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
+                                'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
+                                'HTTP_USER_AGENT', 'PATH_INFO', 'QUERY_STRING',
+                                'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
+                                'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
+                                'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
     g.request_time = datetime.now()
     g.api_method = request.args['method']
     g.api_version = request.args['v']
-    g.request_environ = request_form
+    g.request_environ = request_param
     g.request_form = request.form.to_dict() if request.form else None
     g.request_json = request.json.to_dict() if request.json else None
 
 
 @webapi.after_app_request
 def after_app_request(param):
-    response_environ = {'charset': param.charset,
-                        'content_length': param.content_length,
-                        'content_type': param.content_type,
-                        'content_encoding': param.content_encoding,
-                        'mimetype': param.mimetype,
-                        'response': g.result if hasattr(g, 'result') else None,
-                        'status': param.status,
-                        'status_code': param.status_code}
+    response_param = {'charset': param.charset,
+                      'content_length': param.content_length,
+                      'content_type': param.content_type,
+                      'content_encoding': param.content_encoding,
+                      'mimetype': param.mimetype,
+                      'response': g.result if hasattr(g, 'result') else None,
+                      'status': param.status,
+                      'status_code': param.status_code}
     g.response_time = datetime.now()
     time_consuming = g.response_time - g.request_time
     if param.status_code >= 400 and not current_app.config['DEBUG']:
         from app.email import send_mail
         send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
                   request_form=g.request_form, request_json=g.request_json,
-                  request_environ=g.request_environ, response_environ=response_environ,
+                  request_environ=g.request_environ, response_environ=response_param,
                   api_method=g.api_method, api_version=g.api_version,
                   request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
                   response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),

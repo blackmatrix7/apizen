@@ -19,6 +19,7 @@ class BaseConfig:
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
+    LOGGER_NAME = 'Api Zen'
 
     # DataBase Config
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
