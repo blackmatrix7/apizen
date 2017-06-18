@@ -71,13 +71,11 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    PORT = 8080
-    WORKS = 5
-
-    SITE_NAME = 'Api Zen'
     DEBUG = False
     TESTING = False
-
+    PORT = 8080
+    WORKS = 5
+    SITE_NAME = 'Api Zen'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
