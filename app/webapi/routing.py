@@ -67,7 +67,8 @@ def api_routing(v=None, method=None):
     if is_format:
         result = format_retinfo(result)
 
-    return jsonify(result)
+    g.result = result
+    g.status_code = 200
 
 
 @webapi.before_app_request
@@ -98,6 +99,12 @@ def after_app_request(param):
     send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api 请求异常', 'api_error',
               request_form=g.request_form, request_json=g.request_json,
               request_environ=g.request_environ, response_environ=response_environ)
+    return jsonify(g.result)
+
+
+# @webapi.teardown_app_request
+# def teardown_app_request(param):
+#     return jsonify(g.result), g.status_code
 
 
 @webapi.errorhandler(BadRequestKeyError)
@@ -123,7 +130,7 @@ def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message)
     g.result = retinfo
-    # g.status_code = api_ex.status_code
+    g.status_code = api_ex.status_code
     return jsonify(retinfo), api_ex.status_code
 
 
