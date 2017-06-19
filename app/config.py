@@ -18,7 +18,7 @@ class BaseConfig:
     PORT = 8080
     WORKS = 5
 
-    SITE_NAME = 'Api Zen'
+    SITE_NAME = 'ApiZen'
     LOGGER_NAME = 'Api Zen'
 
     # DataBase Config
@@ -77,7 +77,7 @@ class ProdConfig(BaseConfig):
     TESTING = False
     PORT = 8080
     WORKS = 5
-    SITE_NAME = 'Api Zen'
+    SITE_NAME = 'ApiZen'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 

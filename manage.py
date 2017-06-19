@@ -7,7 +7,7 @@
 # @Software: PyCharm
 import os
 import sys
-import logging
+import logging.config
 from celery import Celery
 import app.database.models
 from app.database import db
@@ -25,14 +25,11 @@ else:
 
 flask_app = create_app(app_config)
 
-# initi logger
-if flask_app.config['DEBUG'] is True:
-    flask_app.logger.setLevel(logging.DEBUG)
-else:
-    flask_app.logger.setLevel(logging.INFO)
-
+# Flask-Logger
 if not os.path.exists('logs'):
     os.mkdir('logs')
+flask_app.logger.info('logging config init')
+logging.config.fileConfig('logging.cfg')
 
 # Flask-Script
 manager = CustomManager(flask_app)
