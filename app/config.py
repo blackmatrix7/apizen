@@ -19,6 +19,7 @@ class BaseConfig:
     WORKS = 5
 
     SITE_NAME = 'Api Zen'
+    LOGGER_NAME = 'Api Zen'
 
     # DataBase Config
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
@@ -44,14 +45,18 @@ class BaseConfig:
     # Celery
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+    CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
 
     # Flask Mail
-    MAIL_SERVER = None
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = 25
+    MAIL_USE_TLS = False
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = 'flask@example.com'
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_USERNAME')
+    SUBJECT_PREFIX = '[ApiZen]'
 
 
 class DevConfig(BaseConfig):
@@ -67,13 +72,11 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    PORT = 8080
-    WORKS = 5
-
-    SITE_NAME = 'Api Zen'
     DEBUG = False
     TESTING = False
-
+    PORT = 8080
+    WORKS = 5
+    SITE_NAME = 'Api Zen'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 

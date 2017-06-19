@@ -21,9 +21,6 @@ class ApiZen:
         app.json_encoder = ApiZenJSONEncoder
 
 
-apizen = ApiZen()
-
-
 class ApiZenJSONEncoder(JSONEncoder):
 
     datetime_format = None

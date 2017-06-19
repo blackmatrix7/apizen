@@ -20,24 +20,23 @@ __author__ = 'blackmatrix'
 if sys.argv and len(sys.argv) >= 1 and '-env' in sys.argv[1]:
     app_config = sys.argv[1][sys.argv[1].find('=') + 1:]
 else:
-    app_config = None
+    app_config = 'default'
 
 flask_app = create_app(app_config)
-
-# Celery
-flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
-flask_celery.conf.update(flask_app.config)
 
 # Flask-Script
 manager = CustomManager(flask_app)
 manager.add_command('db', MigrateCommand)
 manager.add_option('-e', '--env', dest='app_config', required=False)
 
+# Celery
+flask_celery = Celery(flask_app.name, broker=os.environ.get('CELERY_BROKER_URL'))
+flask_celery.conf.update(flask_app.config)
+
 
 @manager.command
 def devserver():
-    flask_app.run(host=flask_app.config['HOST'],
-                  port=flask_app.config['PORT'])
+    flask_app.run(host=flask_app.config['HOST'],  port=flask_app.config['PORT'])
 
 
 @manager.command
@@ -57,8 +56,8 @@ def dropdb():
 
 @manager.command
 def celery():
-    # flask_celery.start(['worker'])
-    os.system('celery -A manage.flask_celery worker --loglevel=info')
+    cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
+    os.system(cmd)
 
 
 @manager.command
