@@ -54,7 +54,7 @@ def api_routing(v=None, method=None):
     if request.form:
         request_args.update(request.form.to_dict())
     if request.json:
-        request_args.update(request.json.to_dict())
+        request_args.update(request.json)
 
     # 获取接口处理函数，及接口部分配置
     api_func, is_format, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
@@ -86,7 +86,7 @@ def before_app_request():
     g.api_version = request.args['v']
     g.request_environ = request_param
     g.request_form = request.form.to_dict() if request.form else None
-    g.request_json = request.json.to_dict() if request.json else None
+    g.request_json = request.json if request.json else None
 
 
 @webapi.after_app_request
