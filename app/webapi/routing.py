@@ -72,8 +72,8 @@ def api_routing(v=None, method=None):
     return jsonify(result), 200
 
 
-@webapi.before_app_request
-def before_app_request():
+@webapi.before_request
+def before_request():
     request_param = {key.lower(): value for key, value in request.environ.items()
                      if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
                                 'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
@@ -89,8 +89,8 @@ def before_app_request():
     g.request_json = request.json if request.json else None
 
 
-@webapi.after_app_request
-def after_app_request(param):
+@webapi.after_request
+def after_request(param):
     response_param = {'charset': param.charset,
                       'content_length': param.content_length,
                       'content_type': param.content_type,
