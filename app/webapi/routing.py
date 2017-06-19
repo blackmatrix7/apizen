@@ -101,15 +101,15 @@ def after_app_request(param):
                       'status_code': param.status_code}
     g.response_time = datetime.now()
     time_consuming = g.response_time - g.request_time
-    if param.status_code >= 400 and not current_app.config['DEBUG']:
-        from app.email import send_mail
-        send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
-                  request_form=g.request_form, request_json=g.request_json,
-                  request_environ=g.request_environ, response_environ=response_param,
-                  api_method=g.api_method, api_version=g.api_version,
-                  request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
-                  response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),
-                  time_consuming=time_consuming)
+    if param.status_code >= 200:
+        from app.tasks import send_mail_async
+        send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
+                              request_form=g.request_form, request_json=g.request_json,
+                              request_environ=g.request_environ, response_param=response_param,
+                              api_method=g.api_method, api_version=g.api_version,
+                              request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
+                              response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),
+                              time_consuming=time_consuming)
     return param
 
 

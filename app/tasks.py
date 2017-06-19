@@ -5,8 +5,16 @@
 # @Site : 
 # @File : tasks.py
 # @Software: PyCharm
+from app.email import send_mail
+from manage import flask_celery
 
 __author__ = 'blackmatrix'
+
+
+@flask_celery.task
+def send_mail_async(mail_to, subject, template, **kwargs):
+    send_mail(mail_to, subject, template, **kwargs)
+
 
 if __name__ == '__main__':
     pass

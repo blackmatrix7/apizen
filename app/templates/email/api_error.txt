@@ -32,14 +32,14 @@ Request Json: {{ request_json }}
 *****************************************
 Response:
 
-Charset: {{ response_environ.charset }}
-Content Length: {{ response_environ.content_length }}
-Content Type: {{ response_environ.content_type }}
-Content enconding: {{ response_environ.content_encoding }}
-Mimetype: {{ response_environ.mimetype }}
-Resonse: {{ response_environ.response }}
-Status: {{ response_environ.status }}
-Status Code: {{ response_environ.status_code }}
+Charset: {{ response_param.charset }}
+Content Length: {{ response_param.content_length }}
+Content Type: {{ response_param.content_type }}
+Content enconding: {{ response_param.content_encoding }}
+Mimetype: {{ response_param.mimetype }}
+Resonse: {{ response_param.response }}
+Status: {{ response_param.status }}
+Status Code: {{ response_param.status_code }}
 
 ******************************************
 

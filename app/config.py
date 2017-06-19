@@ -47,6 +47,7 @@ class BaseConfig:
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
+    CELERY_IMPORTS = ('app.tasks', )
 
     # Flask Mail
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
