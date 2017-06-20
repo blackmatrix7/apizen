@@ -41,13 +41,15 @@ class _Float(_Typed):
 Float = _Typed()
 
 
-class _Dict(_Typed):
+class _DictAndList(_Typed):
     expected_type = dict
 
     def __call__(self, key, value):
         return json.loads(value) if isinstance(value, str) else value
 
-Dict = _Dict()
+Dict = _DictAndList()
+
+List = _DictAndList()
 
 if __name__ == '__main__':
     test = {'key': {'value': 'a', 'hello': 'python'}, 'test': 1}
