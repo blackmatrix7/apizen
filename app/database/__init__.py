@@ -22,11 +22,6 @@ class ModelBase(db.Model):
     updated_time = db.Column(db.DateTime, default=datetime.now,
                              onupdate=datetime.now)
 
-    def __init__(self, **kwargs):
-        columns = [c.name for c in self.__table__.columns]
-        super().__init__(**{attr: value for attr, value in kwargs.items()
-                            if attr in columns})
-
 
 class ModelMixin(db.Model):
 
