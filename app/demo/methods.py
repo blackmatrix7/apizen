@@ -34,7 +34,9 @@ class DemoApiMethods(ApiMethodsBase):
         # 停用API
         'matrix.api.api-stop': {'func': demo.raise_error, 'enable': False},
         # 自定义一个异常信息
-        'matrix.api.custom-error': {'func': demo.custom_error}
+        'matrix.api.custom-error': {'func': demo.custom_error},
+        # 保存到数据库
+        'matrix.api.save-db': {'func': save_to_db}
     }
 
 if __name__ == '__main__':
