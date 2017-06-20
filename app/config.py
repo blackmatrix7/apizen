@@ -48,6 +48,8 @@ class BaseConfig:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
     CELERY_IMPORTS = ('app.tasks', )
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.default'
 
     # Flask Mail
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
@@ -65,11 +67,19 @@ class DevConfig(BaseConfig):
     TESTING = False
     PORT = 8080
 
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.dev'
+
 
 class TestConfig(BaseConfig):
     DEBUG = False
     TESTING = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.test'
 
 
 class ProdConfig(BaseConfig):
@@ -77,8 +87,11 @@ class ProdConfig(BaseConfig):
     TESTING = False
     PORT = 8080
     WORKS = 5
-    SITE_NAME = 'ApiZen'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.test'
 
 
 devcfg = DevConfig
