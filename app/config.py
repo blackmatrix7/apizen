@@ -91,7 +91,7 @@ class ProdConfig(BaseConfig):
 
     # Celery
     # 默认队列
-    CELERY_DEFAULT_QUEUE = 'celery@apizen.test'
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.prod'
 
 
 devcfg = DevConfig
