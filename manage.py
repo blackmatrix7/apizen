@@ -28,16 +28,15 @@ flask_app = create_app(app_config)
 # Flask-Logger
 if not os.path.exists('logs'):
     os.mkdir('logs')
+# 默认级别为ERROR，设置为DEBUG，记录INFO和DEBUG级别的日志
+logging.basicConfig(level=logging.DEBUG)
 fh = logging.FileHandler('logs/manage.log')
-fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)s]')
 fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 flask_app.logger.addHandler(fh)
 flask_app.logger.addHandler(ch)
-
 
 # Flask-Script
 manager = CustomManager(flask_app)

@@ -21,7 +21,7 @@ class BaseConfig:
     SITE_NAME = 'ApiZen'
     LOGGER_NAME = 'Api Zen'
 
-    # DataBase Config
+    # 数据配置
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
     MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
     MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
@@ -65,7 +65,23 @@ class BaseConfig:
 class DevConfig(BaseConfig):
     DEBUG = True
     TESTING = False
+
+    # 端口号
     PORT = 8080
+
+    # 数据库配置
+    MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
+    MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
+    MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
+    MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
+    MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
+        MARIADB_USER,
+        MARIADB_PASS,
+        MARIADB_HOST,
+        MARIADB_PORT,
+        MARIADB_DB
+    )
 
     # Celery
     # 默认队列
@@ -75,7 +91,23 @@ class DevConfig(BaseConfig):
 class TestConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # 端口号
+    PORT = 8080
+
+    # 数据库配置
+    MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
+    MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
+    MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
+    MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
+    MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
+        MARIADB_USER,
+        MARIADB_PASS,
+        MARIADB_HOST,
+        MARIADB_PORT,
+        MARIADB_DB
+    )
 
     # Celery
     # 默认队列
@@ -85,6 +117,8 @@ class TestConfig(BaseConfig):
 class ProdConfig(BaseConfig):
     DEBUG = False
     TESTING = False
+
+    # 端口号
     PORT = 8080
     WORKS = 5
     SQLALCHEMY_TRACK_MODIFICATIONS = False
