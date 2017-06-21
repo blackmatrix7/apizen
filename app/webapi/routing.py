@@ -86,7 +86,7 @@ def before_request():
     g.api_version = request.args['v']
     g.request_environ = request_param
     g.request_form = request.form.to_dict() if request.form else None
-    g.request_json = request.json if request.json else None
+    g.request_json = request.json if request.is_json else None
 
 
 @webapi.after_request
