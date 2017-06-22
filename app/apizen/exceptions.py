@@ -108,6 +108,8 @@ class ApiSysExceptions(ApiBaseExceptions):
     missing_content_type = {'api_code': 1023, 'http_code': 400, 'api_msg': '缺少Content-Type', 'ex_type': Exception}
     # 不被接受的Content-Type
     unacceptable_content_type = {'api_code': 1024, 'http_code': 400, 'api_msg': '不被接受的Content-Type', 'ex_type': Exception}
+    # 无效的请求
+    bad_request = {'api_code': 1024, 'http_code': 400, 'api_msg': '无效的请求', 'ex_type': Exception}
 
 if __name__ == '__main__':
     pass

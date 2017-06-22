@@ -14,6 +14,7 @@ from app.database import db
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
 from app import create_app, CustomManager
+from logging.handlers import TimedRotatingFileHandler
 
 __author__ = 'blackmatrix'
 
@@ -21,7 +22,7 @@ __author__ = 'blackmatrix'
 if sys.argv and len(sys.argv) >= 1 and '-env' in sys.argv[1]:
     app_config = sys.argv[1][sys.argv[1].find('=') + 1:]
 else:
-    app_config = 'default'
+    app_config = None
 
 flask_app = create_app(app_config)
 
@@ -30,7 +31,7 @@ if not os.path.exists('logs'):
     os.mkdir('logs')
 # 默认级别为ERROR，设置为DEBUG，记录INFO和DEBUG级别的日志
 logging.basicConfig(level=logging.DEBUG)
-fh = logging.FileHandler('logs/manage.log')
+fh = TimedRotatingFileHandler('logs/manage.log', 'midnight', 1, 10)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)s]')
 fh.setFormatter(formatter)

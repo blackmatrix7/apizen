@@ -29,7 +29,8 @@ def format_retinfo(response=None, err_code=1000,
     return {
         'meta': {
                 'code': err_code,
-                'message': '{0}: {1}'.format(api_msg, dev_msg) if dev_msg else api_msg
+                'message': '{0}: {1}'.format(api_msg, dev_msg)
+                if current_app.config['DEBUG'] and dev_msg else api_msg
             },
         'respone': response
     }
@@ -37,7 +38,6 @@ def format_retinfo(response=None, err_code=1000,
 
 @webapi.route(r'/router/rest', methods=['GET', 'POST'])
 def api_routing(v=None, method=None):
-
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
 
@@ -53,7 +53,7 @@ def api_routing(v=None, method=None):
     request_args = request.args.to_dict()
     if request.form:
         request_args.update(request.form.to_dict())
-    if request.json:
+    if request.is_json and request.json:
         request_args.update(request.json)
 
     # 获取接口处理函数，及接口部分配置
@@ -84,9 +84,9 @@ def before_request():
     g.request_time = datetime.now()
     g.api_method = request.args['method']
     g.api_version = request.args['v']
-    g.request_environ = request_param
+    g.request_param = request_param
     g.request_form = request.form.to_dict() if request.form else None
-    g.request_json = request.json if request.is_json else None
+    g.request_json = request.get_json() if request.is_json else None
 
 
 @webapi.after_request
@@ -101,15 +101,19 @@ def after_request(param):
                       'status_code': param.status_code}
     g.response_time = datetime.now()
     time_consuming = g.response_time - g.request_time
+    log_info = {'api_method': g.get('api_method'), 'api_version': g.get('api_version'),
+                'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
+                'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
+                'response_param': response_param,
+                'request_time': g.get('request_time').strftime(current_app.config['DATETIME_FORMAT']),
+                'response_time': g.get('response_time').strftime(current_app.config['DATETIME_FORMAT']),
+                'time_consuming': time_consuming}
     if param.status_code >= 400 and current_app.config['DEBUG'] is False:
         from app.tasks import send_mail_async
-        send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
-                              request_form=g.request_form, request_json=g.request_json,
-                              request_environ=g.request_environ, response_param=response_param,
-                              api_method=g.api_method, api_version=g.api_version,
-                              request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
-                              response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),
-                              time_consuming=time_consuming)
+        send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error', **log_info)
+        current_app.logger.error(log_info)
+    else:
+        current_app.logger.debug(log_info)
     return param
 
 
@@ -124,11 +128,11 @@ def missing_arguments(ex):
 
 @webapi.errorhandler(BadRequest)
 def bad_request(ex):
-    if 'Failed to decode JSON object' in ex.description:
-        api_ex = ApiSysExceptions.invalid_json
-        retinfo = format_retinfo(err_code=api_ex.err_code,
-                                 api_msg=api_ex.message)
-        return jsonify(retinfo), api_ex.status_code
+    api_ex = ApiSysExceptions.bad_request
+    retinfo = format_retinfo(err_code=api_ex.err_code,
+                             api_msg=api_ex.message,
+                             dev_msg=ex.description)
+    return jsonify(retinfo), api_ex.status_code
 
 
 @webapi.errorhandler(ApiException)
