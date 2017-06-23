@@ -13,6 +13,7 @@ from .version import allversion
 from json import JSONDecodeError
 from inspect import signature, Parameter
 from .exceptions import ApiSysExceptions
+from app.apizen.types import Typed
 
 __author__ = 'blackmatrix'
 
@@ -45,17 +46,18 @@ class Method:
                     'str': lambda: str(_arg_value),
                     'list': lambda: json.loads(_arg_value) if isinstance(value, str) else _arg_value,
                     'dict': lambda: json.loads(_arg_value) if isinstance(value, str) else _arg_value,
-                    'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(value, str) else _arg_value)
-                }
+                    'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(value, str) else _arg_value)}
         try:
             _arg_value = copy.copy(value)
-            type_hints_name = type_hints.__name__.lower()
-            if _arg_value != default_value \
-                    and type_hints != Parameter.empty \
-                    and type_hints_name in converter:
-                _arg_value = converter[type_hints_name]()
-                if not isinstance(_arg_value, type_hints):
-                    raise ValueError
+            if _arg_value != default_value and isinstance(type_hints, Typed):
+                _arg_value = type_hints(value)
+            # type_hints_name = type_hints.__name__.lower()
+            # if _arg_value != default_value \
+            #         and type_hints != Parameter.empty \
+            #         and type_hints_name in converter:
+            #     _arg_value = converter[type_hints_name]()
+            # if not isinstance(_arg_value, type_hints):
+            #     raise ValueError
         # JSONDecodeError是ValueError的子类
         # 如果不先做解析异常的判断，会显示参数类型错误，虽然看起来也没什么不对
         except JSONDecodeError:
