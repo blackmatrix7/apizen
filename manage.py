@@ -69,20 +69,20 @@ def dropdb():
     db.drop_all()
 
 
-@manager.command
-def celery():
-    cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
-    os.system(cmd)
-
-
-@manager.command
-def runserver():
-    cmd = 'env={config} gunicorn -k gevent -w {workers} -b {host}:{port} manage:flask_app'.format(
-        config=app_config,
-        workers=flask_app.config['WORKS'],
-        host=flask_app.config['HOST'],
-        port=flask_app.config['PORT'])
-    os.system(cmd)
+# @manager.command
+# def celery():
+#     cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
+#     os.system(cmd)
+#
+#
+# @manager.command
+# def runserver():
+#     cmd = 'env={config} gunicorn -k gevent -w {workers} -b {host}:{port} manage:flask_app'.format(
+#         config=app_config,
+#         workers=flask_app.config['WORKS'],
+#         host=flask_app.config['HOST'],
+#         port=flask_app.config['PORT'])
+#     os.system(cmd)
 
 
 if __name__ == '__main__':
