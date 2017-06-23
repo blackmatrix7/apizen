@@ -11,9 +11,9 @@ from functools import wraps
 from inspect import Signature, unwrap
 from .version import allversion
 from json import JSONDecodeError
+from app.apizen.types import Typed
 from inspect import signature, Parameter
 from .exceptions import ApiSysExceptions
-from app.apizen.types import Typed
 
 __author__ = 'blackmatrix'
 
@@ -50,7 +50,7 @@ class Method:
         try:
             _arg_value = copy.copy(value)
             if _arg_value != default_value and isinstance(type_hints, Typed):
-                _arg_value = type_hints(value)
+                _arg_value = type_hints(value=value)
             # type_hints_name = type_hints.__name__.lower()
             # if _arg_value != default_value \
             #         and type_hints != Parameter.empty \

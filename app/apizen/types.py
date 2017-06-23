@@ -10,11 +10,17 @@ import copy
 from app.database import db
 from datetime import datetime
 from functools import partial
+from abc import ABCMeta, abstractmethod
 __author__ = 'blackmatrix'
 
 
-class Typed:
+class Typed(metaclass=ABCMeta):
 
+    @abstractmethod
+    def _convert(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
     def __call__(self, *args, **kwargs):
         pass
 
@@ -61,38 +67,48 @@ class TypeDateTime(Typed):
         _value = copy.copy(value)
         return self.expected_type.strptime(_value, format_) if isinstance(_value, str) else _value
 
-    def __call__(self, format_, value=None):
-        if value is None:
-            return partial(self.__call__, format_=format_)
-        _value = self._convert(format_, value)
+    def __init__(self, format_):
+        self.format_ = format_
+
+    def __call__(self, value=None):
+        _value = self._convert(self.format_, value)
         if isinstance(_value, self.expected_type):
             return _value
         else:
             raise ValueError
 
-
-class TypeDict(TypeBase):
-    __name__ = 'Dict'
-    expected_type = dict
-
-    def __call__(self, value):
-        return json.loads(value) if isinstance(value, str) else value
-
-
-class TypeList:
-
-    def __call__(self, typed, value):
-        if isinstance(typed, db.Model):
-            return typed(**value)
-        else:
-            return typed(value)
+#
+# class TypeList(Typed):
+#     __name__ = 'List'
+#     expected_type = list
+#
+#     def _convert(self, type_, value):
+#         _value = copy.copy(value)
+#         return self.expected_type(list)
+#
+#     def __call__(self, type_, value):
+#         if value is None:
+#             return partial(self.__call__, typed=type_)
+#         if isinstance(value, db.Model):
+#             return type_(**value)
+#         else:
+#             return type_(value)
+#
+#
+# class TypeDict(TypeBase):
+#     __name__ = 'Dict'
+#     expected_type = dict
+#
+#     def __call__(self, value):
+#         return json.loads(value) if isinstance(value, str) else value
 
 
 Integer = TypeInteger()
 String = TypeString()
 Float = TypeFloat()
-Dict = TypeDict()
-List = TypeList()
+DateTime = TypeDateTime
+# Dict = TypeDict()
+# List = TypeList()
 
 
 if __name__ == '__main__':
