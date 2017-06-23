@@ -6,50 +6,59 @@
 # @File: types.py
 # @Software: PyCharm
 import json
-from app.apizen.exceptions import ApiSysExceptions
+from app.database import db
 __author__ = 'blackmatrix'
 
 
-class _Typed:
+class Typed:
     expected_type = type(None)
 
-    def __call__(self, key, value):
-        try:
-            return self.expected_type(value)
-        except ValueError:
-            raise ApiSysExceptions.error_args_type('{0}：{1} <{2}>'.format(ApiSysExceptions.error_args_type.message, key, self.expected_type))
+    def __call__(self, value):
+        return self.expected_type(value)
 
 
-class _Integer(_Typed):
+class TypeInteger(Typed):
     expected_type = int
 
-    def __call__(self, key, value):
+    def __call__(self, value):
         return int(value) if isinstance(value, str) else value
 
-Integer = _Integer()
+Integer = TypeInteger()
 
 
-class _String(_Typed):
+class TypeString(Typed):
     expected_type = str
 
-String = _String()
+String = TypeString()
 
 
-class _Float(_Typed):
+class TypeFloat(Typed):
     expected_type = float
 
-Float = _Typed()
+Float = TypeFloat()
 
 
-class _DictAndList(_Typed):
+class TypeDict(Typed):
     expected_type = dict
 
-    def __call__(self, key, value):
+    def __call__(self, value):
         return json.loads(value) if isinstance(value, str) else value
 
-Dict = _DictAndList()
 
-List = _DictAndList()
+Dict = TypeDict()
+
+
+class TypeList:
+
+    def __call__(self, typed, value):
+        if isinstance(typed, db.Model):
+            return typed(**value)
+        else:
+            return typed(value)
+
+
+List = TypeList()
+
 
 if __name__ == '__main__':
     test = {'key': {'value': 'a', 'hello': 'python'}, 'test': 1}
