@@ -32,7 +32,7 @@ class TypeBase(Typed):
         _value = copy.copy(value)
         return self.expected_type(_value)
 
-    def __call__(self, value):
+    def __call__(self, *, value):
         _value = self._convert(value)
         if isinstance(_value, self.expected_type):
             return _value
@@ -67,15 +67,34 @@ class TypeDateTime(Typed):
         _value = copy.copy(value)
         return self.expected_type.strptime(_value, format_) if isinstance(_value, str) else _value
 
-    def __init__(self, format_):
-        self.format_ = format_
-
-    def __call__(self, value=None):
-        _value = self._convert(self.format_, value)
-        if isinstance(_value, self.expected_type):
+    def __call__(self, format_=None,  *, value=None):
+        if value is None:
+            self.format_ = format_
+            return self
+        _value = self._convert(self.format_ , value)
+        if isinstance(_value, datetime):
             return _value
         else:
             raise ValueError
+
+
+# class TypeDateTime(Typed):
+#     __name__ = 'DateTime'
+#     expected_type = datetime
+#
+#     def _convert(self, format_, value):
+#         _value = copy.copy(value)
+#         return self.expected_type.strptime(_value, format_) if isinstance(_value, str) else _value
+#
+#     def __init__(self, format_):
+#         self.format_ = format_
+#
+#     def __call__(self, value=None):
+#         _value = self._convert(self.format_, value)
+#         if isinstance(_value, self.expected_type):
+#             return _value
+#         else:
+#             raise ValueError
 
 #
 # class TypeList(Typed):
@@ -106,7 +125,7 @@ class TypeDateTime(Typed):
 Integer = TypeInteger()
 String = TypeString()
 Float = TypeFloat()
-DateTime = TypeDateTime
+DateTime = TypeDateTime()
 # Dict = TypeDict()
 # List = TypeList()
 

@@ -14,6 +14,7 @@ from json import JSONDecodeError
 from app.apizen.types import Typed
 from inspect import signature, Parameter
 from .exceptions import ApiSysExceptions
+from functools import partial
 
 __author__ = 'blackmatrix'
 
@@ -49,6 +50,10 @@ class Method:
                     'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(value, str) else _arg_value)}
         try:
             _arg_value = copy.copy(value)
+            # if isinstance(type_hints, partial):
+            #     raw_type_hints = type_hints.func
+            # else:
+            #     raw_type_hints = type_hints
             if _arg_value != default_value and isinstance(type_hints, Typed):
                 _arg_value = type_hints(value=value)
             # type_hints_name = type_hints.__name__.lower()
