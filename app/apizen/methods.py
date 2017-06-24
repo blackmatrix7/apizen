@@ -5,16 +5,12 @@
 # @Site    : 
 # @File    : controller.py
 # @Software: PyCharm
-import copy
-import json
 from functools import wraps
-from inspect import Signature, unwrap
+from inspect import unwrap
 from .version import allversion
-from json import JSONDecodeError
-from app.apizen.types import Typed
+from app.apizen.types import convert
 from inspect import signature, Parameter
 from .exceptions import ApiSysExceptions
-from functools import partial
 
 __author__ = 'blackmatrix'
 
@@ -38,41 +34,6 @@ def do_not_format(func):
 
 
 class Method:
-
-    @staticmethod
-    def convert(key, value, default_value, type_hints):
-        converter = {
-                    'int': lambda: int(_arg_value) if isinstance(value, str) else _arg_value,
-                    'float': lambda: float(_arg_value),
-                    'str': lambda: str(_arg_value),
-                    'list': lambda: json.loads(_arg_value) if isinstance(value, str) else _arg_value,
-                    'dict': lambda: json.loads(_arg_value) if isinstance(value, str) else _arg_value,
-                    'tuple': lambda: tuple(json.loads(_arg_value) if isinstance(value, str) else _arg_value)}
-        try:
-            _arg_value = copy.copy(value)
-            # if isinstance(type_hints, partial):
-            #     raw_type_hints = type_hints.func
-            # else:
-            #     raw_type_hints = type_hints
-            if _arg_value != default_value and isinstance(type_hints, Typed):
-                _arg_value = type_hints(value=value)
-            # type_hints_name = type_hints.__name__.lower()
-            # if _arg_value != default_value \
-            #         and type_hints != Parameter.empty \
-            #         and type_hints_name in converter:
-            #     _arg_value = converter[type_hints_name]()
-            # if not isinstance(_arg_value, type_hints):
-            #     raise ValueError
-        # JSONDecodeError是ValueError的子类
-        # 如果不先做解析异常的判断，会显示参数类型错误，虽然看起来也没什么不对
-        except JSONDecodeError:
-            raise ApiSysExceptions.invalid_json
-        except ValueError:
-            api_ex = ApiSysExceptions.error_args_type
-            api_ex.message = '{0}：{1} <{2}>'.format(ApiSysExceptions.error_args_type.message, key, type_hints.__name__)
-            raise api_ex
-        else:
-            return _arg_value
 
     # 获取api处理函数及相关异常判断
     @staticmethod
@@ -145,9 +106,9 @@ class Method:
                         missing_arguments = ApiSysExceptions.missing_arguments
                         missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
                         raise missing_arguments
-                    func_args[k] = Method.convert(k, v.default, v.default, v.annotation)
+                    func_args[k] = convert(k, v.default, v.default, v.annotation)
                 else:
-                    func_args[k] = Method.convert(k, request_params.get(k), v.default, v.annotation)
+                    func_args[k] = convert(k, request_params.get(k), v.default, v.annotation)
             elif str(v.kind) == 'VAR_KEYWORD':
                 func_args.update({k: v for k, v in request_params.items()
                                   if k not in api_method_params.keys()})
