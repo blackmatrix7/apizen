@@ -15,18 +15,17 @@ from abc import ABCMeta, abstractmethod
 __author__ = 'blackmatrix'
 
 
-class Typed(metaclass=ABCMeta):
-
+class IType(metaclass=ABCMeta):
+    """
+    自动类型转换需要实现IType接口，提供__call__方法，接受一个KeyOnly的参数value
+    并进行类型转换，返回转换后的值，无法转换时，抛出ValueError
+    """
     @abstractmethod
-    def _convert(self, *args, **kwargs):
+    def __call__(self, *, value):
         pass
 
-    @abstractmethod
-    def __call__(self, *args, **kwargs):
-        pass
 
-
-class TypeBase(Typed):
+class TypeBase(IType):
     expected_type = type(None)
 
     def _convert(self, value):
@@ -57,7 +56,7 @@ class Float(TypeBase):
     expected_type = float
 
 
-class DateTime(Typed):
+class DateTime(IType):
     expected_type = datetime
 
     def _convert(self, format_, value):
@@ -67,7 +66,7 @@ class DateTime(Typed):
     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
         self.format_ = format_
 
-    def __call__(self, value=None):
+    def __call__(self, *, value):
         _value = self._convert(self.format_, value)
         if isinstance(_value, self.expected_type):
             return _value
@@ -86,11 +85,13 @@ def convert(key, value, default_value, type_hints):
                 str: String,
                 datetime: DateTime
             }.get(type_hints, type_hints)
-            if issubclass(_type_hints, Typed):
-                _type_hints = _type_hints()
-            if isinstance(_type_hints, Typed):
-                type_ = _type_hints.__class__.__name__
-                value = _type_hints(value=value)
+            if issubclass(_type_hints, IType):
+                instance = _type_hints()
+            else:
+                instance = _type_hints
+            if isinstance(instance, IType):
+                type_ = instance.__class__.__name__
+                value = instance(value=value)
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json
     except ValueError:
@@ -101,7 +102,7 @@ def convert(key, value, default_value, type_hints):
         return value
 
 #
-# class TypeList(Typed):
+# class TypeList(IType):
 #     __name__ = 'List'
 #     expected_type = list
 #
