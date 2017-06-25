@@ -105,6 +105,19 @@ class List(IType):
             raise ValueError
 
 
+def _convert(type_hints, value):
+    if issubclass(type_hints, IType):
+        instance = type_hints()
+    else:
+        instance = type_hints
+    if isinstance(instance, IType):
+        type_ = instance.__class__.__name__
+        value = instance(value=value)
+    else:
+        type_ = 'Unknown'
+    return type_, value
+
+
 def convert(key, value, default_value, type_hints):
     type_ = 'Unknown'
     try:
@@ -118,13 +131,7 @@ def convert(key, value, default_value, type_hints):
                 dict: Dict,
                 datetime: DateTime
             }.get(type_hints, type_hints)
-            if issubclass(_type_hints, IType):
-                instance = _type_hints()
-            else:
-                instance = _type_hints
-            if isinstance(instance, IType):
-                type_ = instance.__class__.__name__
-                value = instance(value=value)
+            type_, value = _convert(_type_hints, value)
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json
     except ValueError:
