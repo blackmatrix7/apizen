@@ -75,7 +75,6 @@ class DateTime(IType):
 
 
 class Dict(IType):
-    __name__ = 'Dict'
     expected_type = dict
 
     @staticmethod
@@ -84,6 +83,22 @@ class Dict(IType):
 
     def __call__(self, *, value):
         _value = self._convert(value)
+        if isinstance(_value, self.expected_type):
+            return _value
+        else:
+            raise ValueError
+
+
+class List(IType):
+    expected_type = list
+
+    def __init__(self, type_=None):
+        self.typed_ = type_
+
+    def __call__(self, *, value):
+        _value = json.loads(value) if isinstance(value, str) else value
+        if self.typed_ is not None:
+            _value = list(map(lambda item: self.typed_(item), _value))
         if isinstance(_value, self.expected_type):
             return _value
         else:
@@ -116,32 +131,6 @@ def convert(key, value, default_value, type_hints):
         raise api_ex
     else:
         return value
-
-
-#
-# class TypeList(IType):
-#     __name__ = 'List'
-#     expected_type = list
-#
-#     def _convert(self, type_, value):
-#         _value = copy.copy(value)
-#         return self.expected_type(list)
-#
-#     def __call__(self, type_, value):
-#         if value is None:
-#             return partial(self.__call__, typed=type_)
-#         if isinstance(value, db.Model):
-#             return type_(**value)
-#         else:
-#             return type_(value)
-#
-#
-# class TypeDict(TypeBase):
-#     __name__ = 'Dict'
-#     expected_type = dict
-#
-#     def __call__(self, value):
-#         return json.loads(value) if isinstance(value, str) else value
 
 
 if __name__ == '__main__':
