@@ -9,6 +9,7 @@ from ..webapi import webapi
 from datetime import datetime
 from app.database import ModelBase
 from app.apizen.methods import Method
+from json import JSONDecodeError
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
@@ -86,7 +87,10 @@ def before_request():
     g.api_version = request.args['v']
     g.request_param = request_param
     g.request_form = request.form.to_dict() if request.form else None
-    g.request_json = request.get_json() if request.is_json else None
+    try:
+        g.request_json = request.get_json() if request.is_json else None
+    except Exception:
+        raise ApiSysExceptions.invalid_json
 
 
 @webapi.after_request
@@ -100,7 +104,7 @@ def after_request(param):
                       'status': param.status,
                       'status_code': param.status_code}
     g.response_time = datetime.now()
-    time_consuming = g.response_time - g.request_time
+    time_consuming = str(g.response_time - g.request_time)
     log_info = {'api_method': g.get('api_method'), 'api_version': g.get('api_version'),
                 'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
                 'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
