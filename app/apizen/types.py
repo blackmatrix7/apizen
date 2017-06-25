@@ -106,10 +106,7 @@ class List(IType):
 
 
 def _convert(type_hints, value):
-    if issubclass(type_hints, IType):
-        instance = type_hints()
-    else:
-        instance = type_hints
+    instance = type_hints() if issubclass(type_hints, IType) else type_hints
     if isinstance(instance, IType):
         type_ = instance.__class__.__name__
         value = instance(value=value)
