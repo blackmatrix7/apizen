@@ -114,6 +114,8 @@ def convert(key, value, default_value, type_hints):
                 int: Integer,
                 float: Float,
                 str: String,
+                list: List,
+                dict: Dict,
                 datetime: DateTime
             }.get(type_hints, type_hints)
             if issubclass(_type_hints, IType):
