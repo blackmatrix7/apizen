@@ -8,7 +8,7 @@
 from .controller import *
 from ..apizen.version import ApiMethodsBase
 
-__author__ = 'blackmatix'
+__author__ = 'blackmatrix'
 
 
 class DemoApiMethods(ApiMethodsBase):
