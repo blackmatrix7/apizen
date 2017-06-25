@@ -52,7 +52,7 @@ class BaseConfig:
     CELERY_DEFAULT_QUEUE = 'celery@apizen.default'
 
     # Flask Mail
-    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '').split(',')
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = 25
     MAIL_USE_TLS = False

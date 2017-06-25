@@ -9,7 +9,7 @@ from functools import wraps
 from app.apizen.methods import do_not_format
 from .models import DemoChild, DemoParent
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.types import Integer, String, Float, DateTime
+from app.apizen.types import Integer, String, Float, DateTime, Dict
 
 __author__ = 'blackmatix'
 
@@ -122,6 +122,11 @@ class ApiDemo:
         :return:  返回调用结果
         """
         return {"value": value, "kwargs": kwargs}
+
+    # json 转 dict
+    @staticmethod
+    def json_to_dict(user: Dict):
+        return user
 
 demo = ApiDemo()
 

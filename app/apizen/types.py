@@ -74,6 +74,22 @@ class DateTime(IType):
             raise ValueError
 
 
+class Dict(IType):
+    __name__ = 'Dict'
+    expected_type = dict
+
+    @staticmethod
+    def _convert(value):
+        return json.loads(value) if isinstance(value, str) else value
+
+    def __call__(self, *, value):
+        _value = self._convert(value)
+        if isinstance(_value, self.expected_type):
+            return _value
+        else:
+            raise ValueError
+
+
 def convert(key, value, default_value, type_hints):
     type_ = 'Unknown'
     try:
@@ -100,6 +116,7 @@ def convert(key, value, default_value, type_hints):
         raise api_ex
     else:
         return value
+
 
 #
 # class TypeList(IType):

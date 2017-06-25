@@ -35,6 +35,8 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.api-stop': {'func': demo.raise_error, 'enable': False},
         # 自定义一个异常信息
         'matrix.api.custom-error': {'func': demo.custom_error},
+        # JSON 转 Dict
+        'matrix.api.json-to-dict': {'func': demo.json_to_dict},
         # 保存到数据库
         'matrix.api.save-db': {'func': save_to_db}
     }
