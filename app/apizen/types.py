@@ -74,7 +74,7 @@ class DateTime(IType):
             raise ValueError
 
 
-class Dict(IType):
+class Dict(IType, dict):
     expected_type = dict
 
     @staticmethod
@@ -89,7 +89,7 @@ class Dict(IType):
             raise ValueError
 
 
-class List(IType):
+class List(IType, list):
     expected_type = list
 
     def __init__(self, type_=None):

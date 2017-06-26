@@ -26,8 +26,9 @@ def test_decorator(func):
     return wrapper
 
 
-def save_to_db(data: DemoParent):
-    data.save().comit()
+def save_to_db(data: Dict):
+    spam = DemoParent(**data)
+    return spam
 
 
 class ApiDemo:

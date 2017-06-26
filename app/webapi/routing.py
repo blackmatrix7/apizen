@@ -150,10 +150,13 @@ def api_exception(api_ex):
 
 @webapi.errorhandler(Exception)
 def other_exception(ex):
-    api_ex = ApiSysExceptions.system_error
-    retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
-                             dev_msg=ex)
-    g.result = retinfo
-    g.status_code = api_ex.status_code
-    return jsonify(retinfo), api_ex.status_code
+    if not current_app.config['DEBUG']:
+        api_ex = ApiSysExceptions.system_error
+        retinfo = format_retinfo(err_code=api_ex.err_code,
+                                 api_msg=api_ex.message,
+                                 dev_msg=ex)
+        g.result = retinfo
+        g.status_code = api_ex.status_code
+        return jsonify(retinfo), api_ex.status_code
+    else:
+        raise ex
