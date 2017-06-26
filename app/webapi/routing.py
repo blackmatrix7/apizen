@@ -9,7 +9,6 @@ from ..webapi import webapi
 from datetime import datetime
 from app.database import ModelBase
 from app.apizen.methods import Method
-from json import JSONDecodeError
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
