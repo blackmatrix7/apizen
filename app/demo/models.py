@@ -5,11 +5,11 @@
 # @Site : 
 # @File : models.py
 # @Software: PyCharm
-from app.database import ModelBase, ModelMixin, db
+from app.database import ModelBase, db
 __author__ = 'blackmatrix'
 
 
-class DemoParent(ModelBase, ModelMixin):
+class DemoParent(ModelBase):
 
     __tablename__ = 'demo_parent'
 
@@ -17,7 +17,7 @@ class DemoParent(ModelBase, ModelMixin):
     children = db.relationship('DemoChild', backref='demo_parent')
 
 
-class DemoChild(ModelBase, ModelMixin):
+class DemoChild(ModelBase):
 
     __tablename__ = 'demo_child'
 
