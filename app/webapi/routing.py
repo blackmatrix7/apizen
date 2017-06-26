@@ -123,29 +123,38 @@ def after_request(param):
 
 @webapi.errorhandler(BadRequestKeyError)
 def missing_arguments(ex):
-    api_ex = ApiSysExceptions.missing_arguments
-    retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
-                             dev_msg=','.join(ex.args))
-    return jsonify(retinfo), api_ex.status_code
+    if not current_app.config['DEBUG']:
+        api_ex = ApiSysExceptions.missing_arguments
+        retinfo = format_retinfo(err_code=api_ex.err_code,
+                                 api_msg=api_ex.message,
+                                 dev_msg=','.join(ex.args))
+        return jsonify(retinfo), api_ex.status_code
+    else:
+        raise ex
 
 
 @webapi.errorhandler(BadRequest)
 def bad_request(ex):
-    api_ex = ApiSysExceptions.bad_request
-    retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
-                             dev_msg=ex.description)
-    return jsonify(retinfo), api_ex.status_code
+    if not current_app.config['DEBUG']:
+        api_ex = ApiSysExceptions.bad_request
+        retinfo = format_retinfo(err_code=api_ex.err_code,
+                                 api_msg=api_ex.message,
+                                 dev_msg=ex.description)
+        return jsonify(retinfo), api_ex.status_code
+    else:
+        raise ex
 
 
 @webapi.errorhandler(ApiException)
 def api_exception(api_ex):
-    retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message)
-    g.result = retinfo
-    g.status_code = api_ex.status_code
-    return jsonify(retinfo), api_ex.status_code
+    if not current_app.config['DEBUG']:
+        retinfo = format_retinfo(err_code=api_ex.err_code,
+                                 api_msg=api_ex.message)
+        g.result = retinfo
+        g.status_code = api_ex.status_code
+        return jsonify(retinfo), api_ex.status_code
+    else:
+        raise api_ex
 
 
 @webapi.errorhandler(Exception)
