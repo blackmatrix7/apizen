@@ -9,23 +9,23 @@ Time Consuming: {{ time_consuming }}
 *****************************************
 Request Environ:
 
-Http Host: {{ request_environ.http_host }}
-Server Port: {{ request_environ.server_port }}
-Request Method: {{ request_environ.request_method }}
-Path Info: {{ request_environ.path_info }}
-Content Length: {{ request_environ.content_length }}
-Content Type: {{ request_environ.content_type }}
-Http Accept Language: {{ request_environ.http_accept_language }}
-Http Cookie: {{ request_environ.http_cookie }}
-Http User Agent: {{ request_environ.http_user_agent }}
-Server SoftWare: {{ request_environ.server_software }}
-Remote Addr: {{ request_environ.remote_addr }}
-Remote Port: {{ request_environ.remote_port }}
+Http Host: {{ request_param.http_host }}
+Server Port: {{ request_param.server_port }}
+Request Method: {{ request_param.request_method }}
+Path Info: {{ request_param.path_info }}
+Content Length: {{ request_param.content_length }}
+Content Type: {{ request_param.content_type }}
+Http Accept Language: {{ request_param.http_accept_language }}
+Http Cookie: {{ request_param.http_cookie }}
+Http User Agent: {{ request_param.http_user_agent }}
+Server SoftWare: {{ request_param.server_software }}
+Remote Addr: {{ request_param.remote_addr }}
+Remote Port: {{ request_param.remote_port }}
 
 *****************************************
 Request Data:
 
-Query String: {{ request_environ.query_string }}
+Query String: {{ request_param.query_string }}
 Request Form: {{ request_form }}
 Request Json: {{ request_json }}
 
