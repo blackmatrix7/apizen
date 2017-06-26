@@ -154,4 +154,6 @@ def other_exception(ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message,
                              dev_msg=ex)
+    g.result = retinfo
+    g.status_code = api_ex.status_code
     return jsonify(retinfo), api_ex.status_code
