@@ -63,57 +63,6 @@ class ModelBase(db.Model, ModelMixin):
     created_time = db.Column(db.DateTime, default=datetime.now)
     updated_time = db.Column(db.DateTime, default=datetime.now,
                              onupdate=datetime.now)
-    #
-    # def __init__(self, **kwargs):
-    #     super().__init__(**kwargs)
-    #
-    # @classmethod
-    # def from_dict(cls, **kwargs):
-    #     """
-    #     临时方案,通过参数快速创建model,支持过滤掉多余的参数。
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     a = cls.
-    #     columns = [c.name for c in cls]
-    #     relationships = inspect(cls).relationships
-    #     super().__init__(**{attr: value for attr, value in kwargs.items() if attr in columns})
-
-    # def __init__(self, **kwargs):
-    #     cls = self.__table__
-    #     cls_attrs = dir(self.__class__)
-    #     for attr in cls_attrs:
-    #         value = getattr(self.__class__, attr)
-    #         type_ = type(value)
-    #         print(type_)
-    #     _columns = [c for c in self.__table__.columns]
-    #     columns = [c.name for c in self.__table__.columns]
-    #     relationships = inspect(self.__class__).relationships
-    #     for attr, value in relationships.items():
-    #         loc = locals()
-    #         print(attr, value)
-
-        # relationships = [key for key, value in inspect(self.__class__).relationships.items()]
-        # args = {attr: value for attr, value in kwargs.items() if (attr in columns)}
-        # args.update({attr: value for attr, value in kwargs.items() if (attr in relationships)})
-        # super().__init__(**args)
-        # loc = locals()
-        # for attr, value in relationships.items():
-        #     print(attr, value)
-        # table_kw = {attr: attr(**value) for attr, value in relationships.items() if attr in kwargs}
-        # super().__init__(**{attr: value for attr, value in kwargs.items()
-        #                     if attr in columns})
-
-    # def __init__(self, *args, **kwargs):
-    #     model(**{key: value
-    #                 for key, value in data.items()
-    #                 if key in model.__table__.columns})
-    #     table = self.__table__
-    #     columns = table.columns
-    #     temp = table.__dict__
-    #     from sqlalchemy.inspection import inspect
-    #     table_relationships = inspect(self.__class__).relationships
-    #     print(columns)
 
 
 if __name__ == '__main__':

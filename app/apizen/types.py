@@ -11,7 +11,7 @@ from datetime import datetime
 from json import JSONDecodeError
 from .exceptions import ApiSysExceptions
 from abc import ABCMeta, abstractmethod
-
+from app.database import db
 __author__ = 'blackmatrix'
 
 
@@ -92,17 +92,32 @@ class Dict(IType, dict):
 class List(IType, list):
     expected_type = list
 
-    def __init__(self, type_=None):
-        self.typed_ = type_
+    # 暂时去掉对List内类型的支持
+    # def __init__(self, type_=None):
+    #     self.typed_ = type_
 
     def __call__(self, *, value):
         _value = json.loads(value) if isinstance(value, str) else value
-        if self.typed_ is not None:
-            _value = list(map(lambda item: self.typed_(item), _value))
+        # if self.typed_ is not None:
+        #     _value = list(map(lambda item: self.typed_(item), _value))
         if isinstance(_value, self.expected_type):
             return _value
         else:
             raise ValueError
+
+
+def dict2model(data, model):
+    """
+    实验方案，将dict转换成sqlalchemy model，不能处理 relationship
+    :param data: 
+    :param model: 
+    :return: 
+    """
+    if isinstance(data, str):
+        data = json.loads(data)
+    result = model(**{key: value for key, value in data.items() if key in model.__table__.columns})
+    result.raw_data = data
+    return result
 
 
 def _convert(type_hints, value):
@@ -110,6 +125,9 @@ def _convert(type_hints, value):
     if isinstance(instance, IType):
         type_ = instance.__class__.__name__
         value = instance(value=value)
+    elif issubclass(type_hints, db.Model):
+        value = dict2model(value, type_hints)
+        type_ = 'Dict'
     else:
         type_ = 'Unknown'
     return type_, value

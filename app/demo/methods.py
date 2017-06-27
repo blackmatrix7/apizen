@@ -38,7 +38,7 @@ class DemoApiMethods(ApiMethodsBase):
         # JSON 转 Dict
         'matrix.api.json-to-dict': {'func': demo.json_to_dict},
         # 保存到数据库
-        'matrix.api.save-db': {'func': save_to_db}
+        'matrix.api.save-db': {'func': temp_func}
     }
 
 if __name__ == '__main__':

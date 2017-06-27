@@ -11,7 +11,7 @@ from app.database import ModelBase, ModelMixin, db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-class User(ModelBase, ModelMixin):
+class User(ModelBase):
 
     __tablename__ = 'user'
 
@@ -21,8 +21,6 @@ class User(ModelBase, ModelMixin):
     last_login = db.Column(db.DateTime)
     is_enable = db.Column(db.Boolean, default=True)
     description = db.Column(db.Text, nullable=True)
-
-    clients = db.relationship(Client, backref='user', lazy='dynamic', order_by=Client.id)
 
     @classmethod
     def get_by_email(cls, email):
