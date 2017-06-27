@@ -6,8 +6,8 @@
 # @File: controller.py
 # @Software: PyCharm
 from functools import wraps
-from app.apizen.methods import do_not_format
 from .models import DemoChild, DemoParent
+from app.apizen.methods import do_not_format
 from app.webapi.exceptions import ApiSubExceptions
 from app.apizen.types import Integer, String, Float, DateTime, Dict
 
