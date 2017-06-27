@@ -26,12 +26,8 @@ def test_decorator(func):
     return wrapper
 
 
-def save_to_db(data):
-    return None
-
-
-def temp_func(data):
-    return None
+def save_to_db():
+    return 123
 
 
 class ApiDemo:
