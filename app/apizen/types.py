@@ -108,13 +108,12 @@ class List(IType, list):
 
 def dict2model(data, model):
     """
-    实验方案，将dict转换成sqlalchemy model，不能处理 relationship
-    :param data: 
+    实验性功能，将dict转换成sqlalchemy model，不能处理 relationship
+    :param data:
     :param model: 
     :return: 
     """
-    if isinstance(data, str):
-        data = json.loads(data)
+    data = json.loads(data) if isinstance(data, str) else data
     result = model(**{key: value for key, value in data.items() if key in model.__table__.columns})
     result.raw_data = data
     return result
