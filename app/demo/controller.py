@@ -26,8 +26,10 @@ def test_decorator(func):
     return wrapper
 
 
-def save_to_db():
-    return 123
+def save_to_db(data: DemoParent):
+    # 获取未转换之前的数据
+    raw_data = data.raw_data
+    return data
 
 
 class ApiDemo:

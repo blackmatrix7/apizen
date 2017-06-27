@@ -128,7 +128,7 @@ def missing_arguments(ex):
                              api_msg=api_ex.message,
                              dev_msg=','.join(ex.args))
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
-        raise api_ex
+        raise ex
     else:
         return jsonify(retinfo), api_ex.status_code
 
@@ -140,7 +140,7 @@ def bad_request(ex):
                              api_msg=api_ex.message,
                              dev_msg=ex.description)
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
-        raise api_ex
+        raise ex
     else:
         return jsonify(retinfo), api_ex.status_code
 
@@ -166,6 +166,6 @@ def other_exception(ex):
     g.result = retinfo
     g.status_code = api_ex.status_code
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
-        raise api_ex
+        raise ex
     else:
         return jsonify(retinfo), api_ex.status_code
