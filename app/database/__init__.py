@@ -16,6 +16,8 @@ db = SQLAlchemy()
 
 class ModelMixin:
 
+    __slots__ = ()
+
     __abstract__ = True
 
     def __getitem__(self, item):
@@ -44,29 +46,16 @@ class ModelMixin:
     def get_by_id(cls, id_):
         return db.session.query(cls).filter(cls.id == int(id_)).first()
 
-    @classmethod
-    def from_dict(cls, **kwargs):
-        """
-        临时方案,通过参数快速创建model,支持过滤掉多余的参数。
-        :param kwargs:
-        :return:
-        """
-        columns = [c.name for c in cls.__table__.columns]
-        relationships = inspect(cls).relationships
-        super().__init__(**{attr: value for attr, value in kwargs.items() if attr in (columns, relationships)})
-
     def to_dict(self, columns=None):
         """
         将SQLALCHEMY MODEL 转换成 dict
         :param columns: dict 的 key, 如果为None, 则返回全部列
         :return:
         """
-        if columns is None:
-            columns = self.columns
-        return {c: getattr(self, c) for c in columns}
+        return {c: getattr(self, c) for c in (columns if columns else self.columns)}
 
 
-class ModelBase(ModelMixin, db.Model):
+class ModelBase(db.Model, ModelMixin):
 
     __abstract__ = True
 
@@ -74,13 +63,35 @@ class ModelBase(ModelMixin, db.Model):
     created_time = db.Column(db.DateTime, default=datetime.now)
     updated_time = db.Column(db.DateTime, default=datetime.now,
                              onupdate=datetime.now)
+    #
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #
+    # @classmethod
+    # def from_dict(cls, **kwargs):
+    #     """
+    #     临时方案,通过参数快速创建model,支持过滤掉多余的参数。
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     a = cls.
+    #     columns = [c.name for c in cls]
+    #     relationships = inspect(cls).relationships
+    #     super().__init__(**{attr: value for attr, value in kwargs.items() if attr in columns})
 
-    def __init__(self, **kwargs):
-        columns = [c.name for c in self.__table__.columns]
-        relationships = inspect(self.__class__).relationships
-        for attr, value in relationships.items():
-            loc = locals()
-            print(attr, value)
+    # def __init__(self, **kwargs):
+    #     cls = self.__table__
+    #     cls_attrs = dir(self.__class__)
+    #     for attr in cls_attrs:
+    #         value = getattr(self.__class__, attr)
+    #         type_ = type(value)
+    #         print(type_)
+    #     _columns = [c for c in self.__table__.columns]
+    #     columns = [c.name for c in self.__table__.columns]
+    #     relationships = inspect(self.__class__).relationships
+    #     for attr, value in relationships.items():
+    #         loc = locals()
+    #         print(attr, value)
 
         # relationships = [key for key, value in inspect(self.__class__).relationships.items()]
         # args = {attr: value for attr, value in kwargs.items() if (attr in columns)}

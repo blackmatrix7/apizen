@@ -5,7 +5,7 @@
 # @Site : 
 # @File : models.py
 # @Software: PyCharm
-from app.database import ModelBase, db
+from app.database import ModelMixin, ModelBase, db
 __author__ = 'blackmatrix'
 
 
