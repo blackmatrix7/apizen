@@ -7,7 +7,6 @@
 # @Software: PyCharm
 from ..webapi import webapi
 from datetime import datetime
-from app.database import ModelBase
 from app.apizen.methods import Method
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
@@ -62,8 +61,6 @@ def api_routing(v=None, method=None):
     # 将请求参数传入接口处理函数并运行
     result = Method.run(api_func, request_params=request_args)
 
-    if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
-        result = result.to_dict()
     if is_format:
         result = format_retinfo(result)
 

@@ -29,7 +29,7 @@ def test_decorator(func):
 def save_to_db(data: DemoParent):
     # 获取未转换之前的数据
     raw_data = data.raw_data
-    return data
+    return data.to_dict(), raw_data
 
 
 class ApiDemo:
