@@ -41,6 +41,7 @@ class TypeBase(IType):
 
 
 class Integer(TypeBase):
+    __name__ = 'Integer'
     expected_type = int
 
     def _convert(self, value):
@@ -49,14 +50,17 @@ class Integer(TypeBase):
 
 
 class String(TypeBase):
+    __name__ = 'String'
     expected_type = str
 
 
 class Float(TypeBase):
+    __name__ = 'Float'
     expected_type = float
 
 
 class DateTime(IType):
+    __name__ = 'DateTime'
     expected_type = datetime
 
     def _convert(self, format_, value):
@@ -75,6 +79,7 @@ class DateTime(IType):
 
 
 class Dict(IType, dict):
+    __name__ = 'Dict'
     expected_type = dict
 
     @staticmethod
@@ -90,6 +95,7 @@ class Dict(IType, dict):
 
 
 class List(IType, list):
+    __name__ = 'List'
     expected_type = list
 
     # 暂时去掉对List内类型的支持
@@ -110,8 +116,8 @@ def dict2model(data, model):
     """
     实验性功能，将dict转换成sqlalchemy model，不能处理 relationship
     :param data:
-    :param model: 
-    :return: 
+    :param model:
+    :return:
     """
     data = json.loads(data) if isinstance(data, str) else data
     result = model(**{key: value for key, value in data.items() if key in model.__table__.columns})
@@ -122,18 +128,13 @@ def dict2model(data, model):
 def _convert(type_hints, value):
     instance = type_hints() if issubclass(type_hints, IType) else type_hints
     if isinstance(instance, IType):
-        type_ = instance.__class__.__name__
         value = instance(value=value)
     elif issubclass(type_hints, db.Model):
         value = dict2model(value, type_hints)
-        type_ = 'Dict'
-    else:
-        type_ = 'Unknown'
-    return type_, value
+    return value
 
 
 def convert(key, value, default_value, type_hints):
-    type_ = 'Unknown'
     try:
         if value != default_value:
             # 系统级别 type hints 兼容 （兼顾历史接口代码）
@@ -145,12 +146,12 @@ def convert(key, value, default_value, type_hints):
                 dict: Dict,
                 datetime: DateTime
             }.get(type_hints, type_hints)
-            type_, value = _convert(_type_hints, value)
+            value = _convert(_type_hints, value)
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json
     except ValueError:
         api_ex = ApiSysExceptions.error_args_type
-        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, type_)
+        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, type_hints.__name__)
         raise api_ex
     else:
         return value
