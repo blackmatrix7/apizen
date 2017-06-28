@@ -46,7 +46,13 @@ class Integer(TypeBase):
 
     def _convert(self, value):
         _value = copy.copy(value)
-        return int(_value) if isinstance(_value, str) else _value
+        if isinstance(_value, str):
+            if _value.strip() == '':
+                return None
+            else:
+                return int(_value)
+        else:
+            return _value
 
 
 class String(TypeBase):
