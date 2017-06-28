@@ -9,7 +9,7 @@ from functools import wraps
 from .models import DemoChild, DemoParent
 from app.apizen.methods import do_not_format
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.types import Integer, String, Float, DateTime, Dict
+from app.apizen.schema import Integer, String, Float, Dict
 
 __author__ = 'blackmatix'
 
@@ -45,7 +45,7 @@ class ApiDemo:
 
     @staticmethod
     @test_decorator
-    def set_user(user_id: Integer, name: String,  datetime: DateTime('%Y-%m-%d %H:%M:%S'), mark: Float=None, age: Integer=19):
+    def set_user(user_id: Integer, name: String, datetime, mark: Float=None, age: Integer=19):
         """
         测试装饰器对获取函数参数的影响，及接口参数判断说明
         :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
