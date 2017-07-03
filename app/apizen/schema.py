@@ -12,7 +12,6 @@ from app.database import db
 from json import JSONDecodeError
 from datetime import date, datetime
 from .exceptions import ApiSysExceptions
-from abc import ABCMeta, abstractmethod
 
 __author__ = 'blackmatrix'
 
@@ -26,9 +25,6 @@ __author__ = 'blackmatrix'
 
 
 class Typed:
-
-    # def __new__(cls, *args, **kwargs):
-    #     return object.__new__(ITypeBase, *args)
 
     @staticmethod
     def convert(*, value):
