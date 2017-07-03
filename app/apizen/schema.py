@@ -25,7 +25,7 @@ __author__ = 'blackmatrix'
 """
 
 
-class TypeBase:
+class Typed:
 
     # def __new__(cls, *args, **kwargs):
     #     return object.__new__(ITypeBase, *args)
@@ -38,10 +38,14 @@ class TypeBase:
 class TypeMeta(type):
 
     def __new__(mcs, classname, supers, clsdict):
-        return type.__new__(mcs, classname, (TypeBase, object), clsdict)
+        return type.__new__(mcs, classname, (Typed, object), clsdict)
 
 
-class Integer(int, metaclass=TypeMeta):
+class TypeBase(metaclass=TypeMeta):
+    pass
+
+
+class Integer(int, TypeBase):
 
     @staticmethod
     def convert(*, value):
@@ -55,7 +59,7 @@ class Integer(int, metaclass=TypeMeta):
             return _value
 
 
-class String(str, metaclass=TypeMeta):
+class String(str, TypeBase):
     __name__ = 'String'
 
     @staticmethod
@@ -64,7 +68,7 @@ class String(str, metaclass=TypeMeta):
         return str(_value)
 
 
-class Float(float, metaclass=TypeMeta):
+class Float(float, TypeBase):
     __name__ = 'Float'
 
     @staticmethod
@@ -73,28 +77,41 @@ class Float(float, metaclass=TypeMeta):
         return float(_value)
 
 
-class Dict(dict, metaclass=TypeMeta):
+class Dict(dict, TypeBase):
     __name__ = 'Dict'
 
     @staticmethod
     def convert(*, value):
-        return json.loads(value) if isinstance(value, str) else value
+        _value = copy.copy(value)
+        _value = json.loads(_value) if isinstance(_value, str) else _value
+        if isinstance(_value, dict):
+            return _value
+        else:
+            raise ValueError
 
 
-class List(list, metaclass=TypeMeta):
+class List(list, TypeBase):
     __name__ = 'List'
 
     @staticmethod
     def convert(*, value):
-        return json.loads(value) if isinstance(value, str) else value
+        _value = copy.copy(value)
+        _value = json.loads(_value) if isinstance(_value, str) else _value
+        if isinstance(_value, list):
+            return _value
+        else:
+            raise ValueError
 
 
-class DateTime(date, metaclass=TypeMeta):
+class DateTime(TypeBase, date):
     __name__ = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
         return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
+
+    # def __new__(cls, *args, **kwargs):
+    #     return super().__new__(*args, **kwargs)
 
     # 因为在元类中，对超类的继承关系做了变动，这样导致的后果是很难通过编写__new__方法正确的创建类实例
     # 所以暂时无法解决 __new__ 和 __init__ 函数签名不一致的警告
@@ -127,8 +144,8 @@ def convert(key, value, default_value, type_hints):
                 list: List,
                 dict: Dict
             }.get(type_hints, type_hints)
-            instance = type_hints if isinstance(_type_hints, TypeBase) else type_hints() if issubclass(_type_hints, TypeBase) else object()
-            if isinstance(instance, TypeBase):
+            instance = type_hints if isinstance(_type_hints, Typed) else type_hints() if issubclass(_type_hints, Typed) else object()
+            if isinstance(instance, Typed):
                 value = instance.convert(value=value)
             elif issubclass(type_hints, db.Model):
                 value = dict2model(value, type_hints)
