@@ -11,17 +11,18 @@ import types
 from app.database import db
 from json import JSONDecodeError
 from datetime import date, datetime
-from types import MethodType
 from .exceptions import ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
 """
-一定要继承自某个内建类型，是为了避免Pycharm的警告信息
-强迫症看着烦，继承内建类型这层关系，在元类部分被暂时忽略
-掉了。
-什么时候Pycharm不显示这个弱智的警告，就可以把元类和内建类型
-的继承关系给取消了。
+继承自某个内建类型，是为了解决Pycharm关于type hints的警告。
+比如如果在一个函数中，type hints 使用自定义的DateTime，然后在函数内部使用了obj.year的方法，
+因为DateTime本身与内建的datetime类型没有继承关系，并且没有year属性，Pycharm就会提示DateTime类型没有year属性的警告。
+因为type hints在接口参数中大量适用，这样会导致大量的警告信息。
+为了解决这个问题，只好在类继承中，继承自某个内建的类型，然后通过元类，在创建类时，忽略掉内建类型的继承关系。
+什么时候Pycharm不显示这个弱智的警告，就可以把元类和内建类型，
+就可以把内建类型的继承关系给取消了。
 """
 
 
@@ -33,6 +34,9 @@ class Typed:
 
 
 class TypeMeta(type):
+
+    def __init__(cls,  classname, supers, clsdict):
+        type.__init__(cls,  classname, supers, clsdict)
 
     def __new__(mcs, classname, supers, clsdict):
         return type.__new__(mcs, classname, (Typed, object), clsdict)
@@ -124,26 +128,9 @@ class DateTime(TypeBase, date):
         _value = datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
         return _value
 
-    def __new__(cls, format_='%Y-%m-%d %H:%M:%S'):
-        """
-        这堆代码是为了解决Pycharm提示的__new__和__init__函数签名不一致的问题
-        因为要解决Pycharm关于type hints的警告，比如如果在一个函数中，type hints 使用自定义的DateTime，
-        然后在函数内部使用了obj.year的方法，因为DateTime本身与内建的datetime类型没有继承关系，
-        Pycharm就会提示DateTime类型没有year属性的警告，因为type hints在接口参数中大量适用，这样会导致大量的警告信息
-        为了解决这个问题，只好在类继承中，继承自某个内建的类型，然后通过元类，在创建类时，忽略掉内建类型的继承关系。
-        这样又会导致一个很麻烦的问题，就是当想在类内部定义一个__new__方法时，因为类的继承关系被改变了
-        所以直接定义__new__
-        :param format_:
-        :return:
-        """
-        new_class = types.new_class('DateTime', (TypeBase, object), {}, lambda ns: ns.update(
-            format_=format_, __type__=cls.__type__))
-        instance = new_class.__new__(new_class)
-        instance.convert = MethodType(cls.convert, instance)
-        return instance
-
     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
         self.format_ = format_
+        super().__init__()
 
 
 def dict2model(data, model):
