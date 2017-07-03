@@ -18,7 +18,10 @@ __author__ = 'blackmatrix'
 
 """
 一定要继承自某个内建类型，是为了避免Pycharm的警告信息
-强迫症看着烦
+强迫症看着烦，继承内建类型这层关系，在元类部分被暂时忽略
+掉了。
+什么时候Pycharm不显示这个弱智的警告，就可以把元类和内建类型
+的继承关系给取消了。
 """
 
 
@@ -32,13 +35,13 @@ class TypeBase:
         return value
 
 
-class TypedMeta(type):
+class TypeMeta(type):
 
     def __new__(mcs, classname, supers, clsdict):
         return type.__new__(mcs, classname, (TypeBase, object), clsdict)
 
 
-class Integer(int, metaclass=TypedMeta):
+class Integer(int, metaclass=TypeMeta):
 
     @staticmethod
     def convert(*, value):
@@ -52,7 +55,7 @@ class Integer(int, metaclass=TypedMeta):
             return _value
 
 
-class String(str, metaclass=TypedMeta):
+class String(str, metaclass=TypeMeta):
     __name__ = 'String'
 
     @staticmethod
@@ -61,7 +64,7 @@ class String(str, metaclass=TypedMeta):
         return str(_value)
 
 
-class Float(float, metaclass=TypedMeta):
+class Float(float, metaclass=TypeMeta):
     __name__ = 'Float'
 
     @staticmethod
@@ -70,7 +73,7 @@ class Float(float, metaclass=TypedMeta):
         return float(_value)
 
 
-class Dict(dict, metaclass=TypedMeta):
+class Dict(dict, metaclass=TypeMeta):
     __name__ = 'Dict'
 
     @staticmethod
@@ -78,7 +81,7 @@ class Dict(dict, metaclass=TypedMeta):
         return json.loads(value) if isinstance(value, str) else value
 
 
-class List(list, metaclass=TypedMeta):
+class List(list, metaclass=TypeMeta):
     __name__ = 'List'
 
     @staticmethod
@@ -86,17 +89,16 @@ class List(list, metaclass=TypedMeta):
         return json.loads(value) if isinstance(value, str) else value
 
 
-# 暂时无法使用，修改中
-class DateTime(date, metaclass=TypedMeta):
+class DateTime(date, metaclass=TypeMeta):
     __name__ = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
         return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
-    #
-    # def __new__(cls, format_='%Y-%m-%d %H:%M:%S'):
-    #     return super().__new__('%Y-%m-%d %H:%M:%S')
 
+    # 因为在元类中，对超类的继承关系做了变动，这样导致的后果是很难通过编写__new__方法正确的创建类实例
+    # 所以暂时无法解决 __new__ 和 __init__ 函数签名不一致的警告
+    # TODO 解决 __new__ 和 __init__ 函数签名不一致的警告
     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
         self.format_ = format_
 
