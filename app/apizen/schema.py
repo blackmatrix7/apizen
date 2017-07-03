@@ -11,6 +11,7 @@ import types
 from app.database import db
 from json import JSONDecodeError
 from datetime import date, datetime
+from types import MethodType
 from .exceptions import ApiSysExceptions
 
 __author__ = 'blackmatrix'
@@ -42,7 +43,7 @@ class TypeBase(metaclass=TypeMeta):
 
 
 class _Integer(int, TypeBase):
-    __name__ = 'Integer'
+    __type__ = 'Integer'
 
     @staticmethod
     def convert(*, value):
@@ -60,7 +61,7 @@ Integer = _Integer()
 
 
 class _String(str, TypeBase):
-    __name__ = 'String'
+    __type__ = 'String'
 
     @staticmethod
     def convert(*, value):
@@ -72,7 +73,7 @@ String = _String()
 
 
 class _Float(float, TypeBase):
-    __name__ = 'Float'
+    __type__ = 'Float'
 
     @staticmethod
     def convert(*, value):
@@ -84,7 +85,7 @@ Float = _Float()
 
 
 class _Dict(dict, TypeBase):
-    __name__ = 'Dict'
+    __type__ = 'Dict'
 
     @staticmethod
     def convert(*, value):
@@ -100,7 +101,7 @@ Dict = _Dict()
 
 
 class _List(list, TypeBase):
-    __name__ = 'List'
+    __type__ = 'List'
 
     @staticmethod
     def convert(*, value):
@@ -116,15 +117,31 @@ List = _List()
 
 
 class DateTime(TypeBase, date):
-    __name__ = 'DateTime'
+    __type__ = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
-        return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
+        _value = datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
+        return _value
 
-    # 因为在元类中，对超类的继承关系做了变动，这样导致的后果是很难通过编写__new__方法正确的创建类实例
-    # 所以暂时无法解决 __new__ 和 __init__ 函数签名不一致的警告
-    # TODO 解决 __new__ 和 __init__ 函数签名不一致的警告
+    def __new__(cls, format_='%Y-%m-%d %H:%M:%S'):
+        """
+        这堆代码是为了解决Pycharm提示的__new__和__init__函数签名不一致的问题
+        因为要解决Pycharm关于type hints的警告，比如如果在一个函数中，type hints 使用自定义的DateTime，
+        然后在函数内部使用了obj.year的方法，因为DateTime本身与内建的datetime类型没有继承关系，
+        Pycharm就会提示DateTime类型没有year属性的警告，因为type hints在接口参数中大量适用，这样会导致大量的警告信息
+        为了解决这个问题，只好在类继承中，继承自某个内建的类型，然后通过元类，在创建类时，忽略掉内建类型的继承关系。
+        这样又会导致一个很麻烦的问题，就是当想在类内部定义一个__new__方法时，因为类的继承关系被改变了
+        所以直接定义__new__
+        :param format_:
+        :return:
+        """
+        new_class = types.new_class('DateTime', (TypeBase, object), {}, lambda ns: ns.update(
+            format_=format_, __type__=cls.__type__))
+        instance = new_class.__new__(new_class)
+        instance.convert = MethodType(cls.convert, instance)
+        return instance
+
     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
         self.format_ = format_
 
@@ -163,7 +180,7 @@ def convert(key, value, default_value, type_hints):
         raise ApiSysExceptions.invalid_json
     except ValueError:
         api_ex = ApiSysExceptions.error_args_type
-        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, type_hints.__name__)
+        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, type_hints.__type__)
         raise api_ex
     else:
         return value
