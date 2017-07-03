@@ -45,7 +45,8 @@ class TypeBase(metaclass=TypeMeta):
     pass
 
 
-class Integer(int, TypeBase):
+class _Integer(int, TypeBase):
+    __name__ = 'Integer'
 
     @staticmethod
     def convert(*, value):
@@ -59,7 +60,10 @@ class Integer(int, TypeBase):
             return _value
 
 
-class String(str, TypeBase):
+Integer = _Integer()
+
+
+class _String(str, TypeBase):
     __name__ = 'String'
 
     @staticmethod
@@ -68,7 +72,10 @@ class String(str, TypeBase):
         return str(_value)
 
 
-class Float(float, TypeBase):
+String = _String()
+
+
+class _Float(float, TypeBase):
     __name__ = 'Float'
 
     @staticmethod
@@ -77,7 +84,10 @@ class Float(float, TypeBase):
         return float(_value)
 
 
-class Dict(dict, TypeBase):
+Float = _Float()
+
+
+class _Dict(dict, TypeBase):
     __name__ = 'Dict'
 
     @staticmethod
@@ -90,7 +100,10 @@ class Dict(dict, TypeBase):
             raise ValueError
 
 
-class List(list, TypeBase):
+Dict = _Dict()
+
+
+class _List(list, TypeBase):
     __name__ = 'List'
 
     @staticmethod
@@ -103,15 +116,15 @@ class List(list, TypeBase):
             raise ValueError
 
 
+List = _List()
+
+
 class DateTime(TypeBase, date):
     __name__ = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
         return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
-
-    # def __new__(cls, *args, **kwargs):
-    #     return super().__new__(*args, **kwargs)
 
     # 因为在元类中，对超类的继承关系做了变动，这样导致的后果是很难通过编写__new__方法正确的创建类实例
     # 所以暂时无法解决 __new__ 和 __init__ 函数签名不一致的警告
