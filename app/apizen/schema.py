@@ -13,24 +13,32 @@ from json import JSONDecodeError
 from datetime import date, datetime
 from .exceptions import ApiSysExceptions
 from abc import ABCMeta, abstractmethod
+
 __author__ = 'blackmatrix'
 
+"""
+一定要继承自某个内建类型，是为了避免Pycharm的警告信息
+强迫症看着烦
+"""
 
-class ITypeBase(metaclass=ABCMeta):
 
-    def __new__(cls, cls_name, *args, **kwargs):
-        return type.__new__(cls, cls_name, (object, ), {})
+class TypeBase:
 
-    def __init__(self, *args, **kwargs):
-        pass
+    # def __new__(cls, *args, **kwargs):
+    #     return object.__new__(ITypeBase, *args)
 
     @staticmethod
-    @abstractmethod
     def convert(*, value):
-        pass
+        return value
 
 
-class Integer(int, ITypeBase):
+class TypedMeta(type):
+
+    def __new__(mcs, classname, supers, clsdict):
+        return type.__new__(mcs, classname, (TypeBase, object), clsdict)
+
+
+class Integer(int, metaclass=TypedMeta):
 
     @staticmethod
     def convert(*, value):
@@ -44,7 +52,7 @@ class Integer(int, ITypeBase):
             return _value
 
 
-class String(str, ITypeBase):
+class String(str, metaclass=TypedMeta):
     __name__ = 'String'
 
     @staticmethod
@@ -53,7 +61,7 @@ class String(str, ITypeBase):
         return str(_value)
 
 
-class Float(float, ITypeBase):
+class Float(float, metaclass=TypedMeta):
     __name__ = 'Float'
 
     @staticmethod
@@ -62,7 +70,7 @@ class Float(float, ITypeBase):
         return float(_value)
 
 
-class Dict(dict, ITypeBase):
+class Dict(dict, metaclass=TypedMeta):
     __name__ = 'Dict'
 
     @staticmethod
@@ -70,7 +78,7 @@ class Dict(dict, ITypeBase):
         return json.loads(value) if isinstance(value, str) else value
 
 
-class List(list, ITypeBase):
+class List(list, metaclass=TypedMeta):
     __name__ = 'List'
 
     @staticmethod
@@ -78,20 +86,19 @@ class List(list, ITypeBase):
         return json.loads(value) if isinstance(value, str) else value
 
 
-# class DateTime(ITypeBase, date):
-#     __name__ = 'DateTime'
-#
-#     def convert(self, *, value=None):
-#         _value = copy.copy(value)
-#         return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
-#
-#     # def __new__(cls, format_='%Y-%m-%d %H:%M:%S'):
-#     #     new_cls = types.new_class('DateTime', bases=(ITypeBase, object))
-#     #     return new_cls
-#
-#     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
-#         self.format_ = format_
-#         super().__init__(format_=format_)
+# 暂时无法使用，修改中
+class DateTime(date, metaclass=TypedMeta):
+    __name__ = 'DateTime'
+
+    def convert(self, *, value=None):
+        _value = copy.copy(value)
+        return datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
+    #
+    # def __new__(cls, format_='%Y-%m-%d %H:%M:%S'):
+    #     return super().__new__('%Y-%m-%d %H:%M:%S')
+
+    def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
+        self.format_ = format_
 
 
 def dict2model(data, model):
@@ -107,15 +114,6 @@ def dict2model(data, model):
     return result
 
 
-def _convert(type_hints, value):
-    instance = type_hints() if issubclass(type_hints, ITypeBase) else type_hints
-    if isinstance(instance, ITypeBase):
-        value = instance.convert(value=value)
-    elif issubclass(type_hints, db.Model):
-        value = dict2model(value, type_hints)
-    return value
-
-
 def convert(key, value, default_value, type_hints):
     try:
         if value != default_value:
@@ -127,7 +125,12 @@ def convert(key, value, default_value, type_hints):
                 list: List,
                 dict: Dict
             }.get(type_hints, type_hints)
-            value = _convert(_type_hints, value)
+            instance = type_hints if isinstance(_type_hints, TypeBase) else type_hints() if issubclass(_type_hints, TypeBase) else object()
+            if isinstance(instance, TypeBase):
+                value = instance.convert(value=value)
+            elif issubclass(type_hints, db.Model):
+                value = dict2model(value, type_hints)
+            return value
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json
     except ValueError:
