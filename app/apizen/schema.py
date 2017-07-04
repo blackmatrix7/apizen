@@ -52,14 +52,11 @@ class _Integer(int, TypeBase):
     @staticmethod
     def convert(*, value):
         _value = copy.copy(value)
-        if isinstance(_value, str):
-            if _value.strip() == '':
-                return None
-            else:
-                return int(_value)
-        else:
+        _value = int(_value) if isinstance(_value, str) else _value
+        if isinstance(_value, int):
             return _value
-
+        else:
+            raise ValueError
 
 Integer = _Integer()
 
