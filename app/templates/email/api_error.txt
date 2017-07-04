@@ -28,6 +28,7 @@ Request Data:
 Query String: {{ request_param.query_string }}
 Request Form: {{ request_form }}
 Request Json: {{ request_json }}
+Request RawData: {{ request_raw_data }}
 
 *****************************************
 Response:

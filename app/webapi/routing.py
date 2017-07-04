@@ -80,6 +80,7 @@ def before_request():
                                 'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
                                 'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
                                 'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
+    g.request_raw_data = request.get_data().decode('utf8')
     g.request_time = datetime.now()
     g.api_method = request.args['method']
     g.api_version = request.args['v']
@@ -106,7 +107,7 @@ def after_request(param):
     log_info = {'api_method': g.get('api_method'), 'api_version': g.get('api_version'),
                 'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
                 'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
-                'response_param': response_param,
+                'response_param': response_param, 'request_raw_data': g.request_raw_data,
                 'request_time': g.get('request_time').strftime(current_app.config['DATETIME_FORMAT']),
                 'response_time': g.get('response_time').strftime(current_app.config['DATETIME_FORMAT']),
                 'time_consuming': time_consuming}
