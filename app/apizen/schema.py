@@ -120,7 +120,7 @@ class _List(list, TypeBase):
 List = _List()
 
 
-class DateTime(TypeBase, date):
+class DateTime(TypeBase, datetime):
     __type__ = 'DateTime'
 
     def convert(self, *, value=None):
