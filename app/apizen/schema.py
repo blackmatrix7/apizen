@@ -16,12 +16,11 @@ __author__ = 'blackmatrix'
 
 """
 继承自某个内建类型，是为了解决Pycharm关于type hints的警告。
-比如如果在一个函数中，type hints 使用自定义的DateTime，然后在函数内部使用了obj.year的方法，
+比如在一个函数中，type hints 使用自定义的DateTime，然后在函数内部使用了obj.year的方法，
 因为DateTime本身与内建的datetime类型没有继承关系，并且没有year属性，Pycharm就会提示DateTime类型没有year属性的警告。
 因为type hints在接口参数中大量适用，这样会导致大量的警告信息。
 为了解决这个问题，只好在类继承中，继承自某个内建的类型，然后通过元类，在创建类时，忽略掉内建类型的继承关系。
-什么时候Pycharm不显示这个弱智的警告，就可以把元类和内建类型，
-就可以把内建类型的继承关系给取消了。
+什么时候Pycharm不显示这个弱智的警告，就可以把内建类型的继承关系给取消了。
 """
 
 
