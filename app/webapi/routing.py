@@ -66,7 +66,9 @@ def api_routing(v=None, method=None):
 
     g.result = result
     g.status_code = 200
-    return jsonify(result), 200
+    resp = jsonify(result)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp, 200
 
 
 @webapi.before_request
@@ -127,7 +129,9 @@ def missing_arguments(ex):
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
         raise ex
     else:
-        return jsonify(retinfo), api_ex.status_code
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(BadRequest)
@@ -139,7 +143,9 @@ def bad_request(ex):
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
         raise ex
     else:
-        return jsonify(retinfo), api_ex.status_code
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(ApiException)
@@ -151,7 +157,9 @@ def api_exception(api_ex):
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
         raise api_ex
     else:
-        return jsonify(retinfo), api_ex.status_code
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(Exception)
@@ -165,4 +173,6 @@ def other_exception(ex):
     if current_app.config['DEBUG'] and api_ex.status_code >= 500:
         raise ex
     else:
-        return jsonify(retinfo), api_ex.status_code
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
