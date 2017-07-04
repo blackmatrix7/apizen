@@ -39,52 +39,52 @@ class Method:
     @staticmethod
     def get(version, method_name, request_method):
 
-            """
-            获取api处理函数及相关异常判断
-            :param version:  接口版本
-            :param method_name:  方法名
-            :param request_method:  http请求方式
-            :return: 
-            """
-            is_format = True
-            allow_anonymous = False
+        """
+        获取api处理函数及相关异常判断
+        :param version:  接口版本
+        :param method_name:  方法名
+        :param request_method:  http请求方式
+        :return:
+        """
+        is_format = True
+        allow_anonymous = False
 
-            def check_decorator(func):
-                nonlocal is_format
-                nonlocal allow_anonymous
-                if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
-                    is_format = False
-                if hasattr(func, 'allow_anonymous') and func.allow_anonymous is True:
-                    allow_anonymous = True
+        def check_decorator(func):
+            nonlocal is_format
+            nonlocal allow_anonymous
+            if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
+                is_format = False
+            if hasattr(func, 'allow_anonymous') and func.allow_anonymous is True:
+                allow_anonymous = True
 
-            # 检查版本号
-            if version not in allversion:
-                raise ApiSysExceptions.unsupported_version
-            # 检查版本是否停用
-            elif not allversion[version].get('enable', True):
-                raise ApiSysExceptions.version_stop
+        # 检查版本号
+        if version not in allversion:
+            raise ApiSysExceptions.unsupported_version
+        # 检查版本是否停用
+        elif not allversion[version].get('enable', True):
+            raise ApiSysExceptions.version_stop
 
-            methods = getattr(allversion[version]['methods'], 'api_methods')
+        methods = getattr(allversion[version]['methods'], 'api_methods')
 
-            # 检查方法名是否存在
-            if method_name not in methods:
-                raise ApiSysExceptions.invalid_method
-            # 检查方法是否停用
-            elif not methods[method_name].get('enable', True):
-                raise ApiSysExceptions.api_stop
-            # 检查方法是否允许以某种请求方式调用
-            elif request_method.lower() not in methods[method_name].get('methods', ['get', 'post']):
-                raise ApiSysExceptions.not_allowed_request
-            # 检查函数是否可调用
-            elif not callable(methods[method_name].get('func')):
-                raise ApiSysExceptions.error_api_config
+        # 检查方法名是否存在
+        if method_name not in methods:
+            raise ApiSysExceptions.invalid_method
+        # 检查方法是否停用
+        elif not methods[method_name].get('enable', True):
+            raise ApiSysExceptions.api_stop
+        # 检查方法是否允许以某种请求方式调用
+        elif request_method.lower() not in methods[method_name].get('methods', ['get', 'post']):
+            raise ApiSysExceptions.not_allowed_request
+        # 检查函数是否可调用
+        elif not callable(methods[method_name].get('func')):
+            raise ApiSysExceptions.error_api_config
 
-            _func = methods[method_name].get('func')
+        _func = methods[method_name].get('func')
 
-            # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
-            unwrap(_func, stop=check_decorator)
+        # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
+        unwrap(_func, stop=check_decorator)
 
-            return _func, is_format, allow_anonymous
+        return _func, is_format, allow_anonymous
 
     # 运行接口处理方法，及异常处理
     @staticmethod
