@@ -7,7 +7,6 @@
 # @Software: PyCharm
 from ..webapi import webapi
 from datetime import datetime
-from app.database import ModelBase
 from app.apizen.methods import Method
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
@@ -29,7 +28,8 @@ def format_retinfo(response=None, err_code=1000,
     return {
         'meta': {
                 'code': err_code,
-                'message': '{0}: {1}'.format(api_msg, dev_msg) if dev_msg else api_msg
+                'message': '{0}: {1}'.format(api_msg, dev_msg)
+                if current_app.config['DEBUG'] and dev_msg else api_msg
             },
         'respone': response
     }
@@ -37,7 +37,6 @@ def format_retinfo(response=None, err_code=1000,
 
 @webapi.route(r'/router/rest', methods=['GET', 'POST'])
 def api_routing(v=None, method=None):
-
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
 
@@ -53,8 +52,8 @@ def api_routing(v=None, method=None):
     request_args = request.args.to_dict()
     if request.form:
         request_args.update(request.form.to_dict())
-    if request.json:
-        request_args.update(request.json.to_dict())
+    if request.is_json and request.json:
+        request_args.update(request.json)
 
     # 获取接口处理函数，及接口部分配置
     api_func, is_format, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
@@ -62,18 +61,18 @@ def api_routing(v=None, method=None):
     # 将请求参数传入接口处理函数并运行
     result = Method.run(api_func, request_params=request_args)
 
-    if isinstance(result, ModelBase) and hasattr(result, 'to_dict'):
-        result = result.to_dict()
     if is_format:
         result = format_retinfo(result)
 
     g.result = result
     g.status_code = 200
-    return jsonify(result), 200
+    resp = jsonify(result)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp, 200
 
 
-@webapi.before_app_request
-def before_app_request():
+@webapi.before_request
+def before_request():
     request_param = {key.lower(): value for key, value in request.environ.items()
                      if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
                                 'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
@@ -81,16 +80,20 @@ def before_app_request():
                                 'SERVER_PROTOCOL', 'REQUEST_METHOD', 'HTTP_HOST',
                                 'SERVER_PORT', 'SERVER_SOFTWARE', 'REMOTE_ADDR',
                                 'REMOTE_PORT', 'HTTP_ACCEPT_LANGUAGE')}
+    g.request_raw_data = request.get_data().decode('utf8')
     g.request_time = datetime.now()
     g.api_method = request.args['method']
     g.api_version = request.args['v']
-    g.request_environ = request_param
+    g.request_param = request_param
     g.request_form = request.form.to_dict() if request.form else None
-    g.request_json = request.json.to_dict() if request.json else None
+    try:
+        g.request_json = request.get_json() if request.is_json else None
+    except Exception:
+        raise ApiSysExceptions.invalid_json
 
 
-@webapi.after_app_request
-def after_app_request(param):
+@webapi.after_request
+def after_request(param):
     response_param = {'charset': param.charset,
                       'content_length': param.content_length,
                       'content_type': param.content_type,
@@ -100,16 +103,21 @@ def after_app_request(param):
                       'status': param.status,
                       'status_code': param.status_code}
     g.response_time = datetime.now()
-    time_consuming = g.response_time - g.request_time
-    if param.status_code >= 400 and not current_app.config['DEBUG']:
-        from app.email import send_mail
-        send_mail(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error',
-                  request_form=g.request_form, request_json=g.request_json,
-                  request_environ=g.request_environ, response_environ=response_param,
-                  api_method=g.api_method, api_version=g.api_version,
-                  request_time=g.request_time.strftime(current_app.config['DATETIME_FORMAT']),
-                  response_time=g.response_time.strftime(current_app.config['DATETIME_FORMAT']),
-                  time_consuming=time_consuming)
+    time_consuming = str(g.response_time - g.request_time)
+    log_info = {'api_method': g.get('api_method'), 'api_version': g.get('api_version'),
+                'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
+                'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
+                'response_param': response_param, 'request_raw_data': g.request_raw_data,
+                'request_time': g.get('request_time').strftime(current_app.config['DATETIME_FORMAT']),
+                'response_time': g.get('response_time').strftime(current_app.config['DATETIME_FORMAT']),
+                'time_consuming': time_consuming}
+    if param.status_code >= 400:
+        if current_app.config['DEBUG'] is False:
+            from app.tasks import send_mail_async
+            send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error', **log_info)
+        current_app.logger.error(log_info)
+    else:
+        current_app.logger.debug(log_info)
     return param
 
 
@@ -119,16 +127,26 @@ def missing_arguments(ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message,
                              dev_msg=','.join(ex.args))
-    return jsonify(retinfo), api_ex.status_code
+    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+        raise ex
+    else:
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(BadRequest)
 def bad_request(ex):
-    if 'Failed to decode JSON object' in ex.description:
-        api_ex = ApiSysExceptions.invalid_json
-        retinfo = format_retinfo(err_code=api_ex.err_code,
-                                 api_msg=api_ex.message)
-        return jsonify(retinfo), api_ex.status_code
+    api_ex = ApiSysExceptions.bad_request
+    retinfo = format_retinfo(err_code=api_ex.err_code,
+                             api_msg=api_ex.message,
+                             dev_msg=ex.description)
+    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+        raise ex
+    else:
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(ApiException)
@@ -137,7 +155,12 @@ def api_exception(api_ex):
                              api_msg=api_ex.message)
     g.result = retinfo
     g.status_code = api_ex.status_code
-    return jsonify(retinfo), api_ex.status_code
+    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+        raise api_ex
+    else:
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code
 
 
 @webapi.errorhandler(Exception)
@@ -146,4 +169,11 @@ def other_exception(ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.message,
                              dev_msg=ex)
-    return jsonify(retinfo), api_ex.status_code
+    g.result = retinfo
+    g.status_code = api_ex.status_code
+    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+        raise ex
+    else:
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, api_ex.status_code

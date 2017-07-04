@@ -18,10 +18,10 @@ class BaseConfig:
     PORT = 8080
     WORKS = 5
 
-    SITE_NAME = 'Api Zen'
+    SITE_NAME = 'ApiZen'
     LOGGER_NAME = 'Api Zen'
 
-    # DataBase Config
+    # 数据配置
     MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
     MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
     MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
@@ -47,9 +47,12 @@ class BaseConfig:
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
+    CELERY_IMPORTS = ('app.tasks', )
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.default'
 
     # Flask Mail
-    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL').split(',')
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '').split(',')
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = 25
     MAIL_USE_TLS = False
@@ -62,22 +65,67 @@ class BaseConfig:
 class DevConfig(BaseConfig):
     DEBUG = True
     TESTING = False
+
+    # 端口号
     PORT = 8080
+
+    # 数据库配置
+    MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
+    MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
+    MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
+    MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
+    MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
+        MARIADB_USER,
+        MARIADB_PASS,
+        MARIADB_HOST,
+        MARIADB_PORT,
+        MARIADB_DB
+    )
+
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.dev'
 
 
 class TestConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # 端口号
+    PORT = 8080
+
+    # 数据库配置
+    MARIADB_HOST = os.environ.get('MARIADB_HOST', '127.0.0.1')
+    MARIADB_PORT = os.environ.get('MARIADB_PORT', 3306)
+    MARIADB_USER = os.environ.get('MARIADB_USER', 'apizen')
+    MARIADB_PASS = os.environ.get('MARIADB_PASS', 'apizen')
+    MARIADB_DB = os.environ.get('MARIADB_DB', 'apizen')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}?charset=utf8'.format(
+        MARIADB_USER,
+        MARIADB_PASS,
+        MARIADB_HOST,
+        MARIADB_PORT,
+        MARIADB_DB
+    )
+
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.test'
 
 
 class ProdConfig(BaseConfig):
     DEBUG = False
     TESTING = False
+
+    # 端口号
     PORT = 8080
     WORKS = 5
-    SITE_NAME = 'Api Zen'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Celery
+    # 默认队列
+    CELERY_DEFAULT_QUEUE = 'celery@apizen.prod'
 
 
 devcfg = DevConfig

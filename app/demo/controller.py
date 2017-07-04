@@ -6,8 +6,10 @@
 # @File: controller.py
 # @Software: PyCharm
 from functools import wraps
+from .models import DemoChild, DemoParent
 from app.apizen.methods import do_not_format
 from app.webapi.exceptions import ApiSubExceptions
+from app.apizen.schema import Integer, String, Float, Dict, DateTime
 
 __author__ = 'blackmatix'
 
@@ -24,6 +26,18 @@ def test_decorator(func):
     return wrapper
 
 
+def save_to_db(data: DemoParent):
+    """
+    实验性功能,自动将接口调用者传入的json字符串转换为SQLalchemy Model
+    JSON中与Model不匹配的Key将被忽略,同时可以通过raw_
+    :param data:
+    :return:
+    """
+    # 获取未转换之前的数据
+    raw_data = data.raw_data
+    return data.to_dict(), raw_data
+
+
 class ApiDemo:
 
     def __init__(self):
@@ -31,17 +45,18 @@ class ApiDemo:
 
     @staticmethod
     @test_decorator
-    def set_user(user_id: int, name: str, mark: float=None, age: int=19):
+    def set_user(user_id: Integer, name: String, datetime: DateTime('%Y/%m/%d'), mark: Float=None, age: Integer=19):
         """
         测试装饰器对获取函数参数的影响，及接口参数判断说明
         :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
         :param age:  年龄，必填，原因同上
         :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
         :param mark:  分数
+        :param datetime:  分数
         :return:  返回测试结果
         """
         return [
-            {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
+            {'user_id': user_id,  'name': name, 'age': age, 'mark': mark, 'year': datetime.year}
         ]
 
     # 演示静态方法调用
@@ -115,6 +130,11 @@ class ApiDemo:
         :return:  返回调用结果
         """
         return {"value": value, "kwargs": kwargs}
+
+    # json 转 dict
+    @staticmethod
+    def json_to_dict(user: Dict):
+        return user
 
 demo = ApiDemo()
 

@@ -5,7 +5,6 @@
 # @Site    : 
 # @File    : __init__.py.py
 # @Software: PyCharm
-import sys
 from flask import Flask
 from app.user import user
 from app.oauth import oauth
@@ -28,23 +27,23 @@ mail = Mail()
 
 class CustomManager(Manager):
 
-        def __call__(self, app=None, **kwargs):
-            """
-            自定义Manager为了去除Options will be ignored.的警告
-            如果由flask-script的Manger创建app，和很多扩展结合使用
-            都非常不方便。
-            """
+    def __call__(self, app=None, **kwargs):
+        """
+        自定义Manager为了去除Options will be ignored.的警告
+        如果由flask-script的Manger创建app，和很多扩展结合使用
+        都非常不方便。
+        """
+        if app is None:
+            app = self.app
             if app is None:
-                app = self.app
-                if app is None:
-                    raise Exception("There is no app here. This is unlikely to work.")
+                raise Exception("There is no app here. This is unlikely to work.")
 
-            if isinstance(app, Flask):
-                return app
-
-            app = app(**kwargs)
-            self.app = app
+        if isinstance(app, Flask):
             return app
+
+        app = app(**kwargs)
+        self.app = app
+        return app
 
 
 def create_app(app_config=None):

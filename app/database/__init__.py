@@ -7,28 +7,16 @@
 # @Software: PyCharm
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.inspection import inspect
 
 __author__ = 'blackmatrix'
 
 db = SQLAlchemy()
 
 
-class ModelBase(db.Model):
+class ModelMixin:
 
-    __abstract__ = True
-
-    id = db.Column(db.Integer, primary_key=True, index=True)
-    created_time = db.Column(db.DateTime, default=datetime.now)
-    updated_time = db.Column(db.DateTime, default=datetime.now,
-                             onupdate=datetime.now)
-
-    def __init__(self, **kwargs):
-        columns = [c.name for c in self.__table__.columns]
-        super().__init__(**{attr: value for attr, value in kwargs.items()
-                            if attr in columns})
-
-
-class ModelMixin(db.Model):
+    __slots__ = ()
 
     __abstract__ = True
 
@@ -64,9 +52,17 @@ class ModelMixin(db.Model):
         :param columns: dict 的 key, 如果为None, 则返回全部列
         :return:
         """
-        if columns is None:
-            columns = self.columns
-        return {c: getattr(self, c) for c in columns}
+        return {c: getattr(self, c) for c in (columns if columns else self.columns)}
+
+
+class ModelBase(db.Model, ModelMixin):
+
+    __abstract__ = True
+
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    created_time = db.Column(db.DateTime, default=datetime.now)
+    updated_time = db.Column(db.DateTime, default=datetime.now,
+                             onupdate=datetime.now)
 
 
 if __name__ == '__main__':
