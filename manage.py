@@ -31,6 +31,7 @@ if not os.path.exists('logs'):
     os.mkdir('logs')
 # 默认级别为ERROR，设置为DEBUG，记录INFO和DEBUG级别的日志
 logging.basicConfig(level=logging.DEBUG)
+# TODO 解决多进程日志问题
 fh = TimedRotatingFileHandler('logs/manage.log', 'midnight', 1, 10)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)s]')
