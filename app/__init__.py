@@ -30,7 +30,7 @@ class CustomManager(Manager):
     def __call__(self, app=None, **kwargs):
         """
         自定义Manager为了去除Options will be ignored.的警告
-        如果由flask-script的Manger创建app，和很多扩展结合使用
+        如果由flask-script的Manager创建app，和很多扩展结合使用
         都非常不方便。
         """
         if app is None:
