@@ -7,6 +7,7 @@
 # @Software: PyCharm
 from flask_mail import Message
 from app.extensions import mail
+from manage import flask_app
 from flask import render_template, current_app
 
 __author__ = 'blackmatix'
@@ -14,7 +15,6 @@ __author__ = 'blackmatix'
 
 def send_mail(mail_to, subject, template, **kwargs):
     # 在函数内部导入flask_app，避免交叉引用
-    from manage import flask_app
     # TODO 判断mail_to 必须是List
     with flask_app.app_context():
         _subject = '{0} {1}'.format(current_app.config['SUBJECT_PREFIX'], subject)

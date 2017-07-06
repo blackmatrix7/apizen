@@ -8,7 +8,6 @@
 from ..webapi import webapi
 from datetime import datetime
 from app.apizen.methods import Method
-from app.tasks import send_mail_async
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
@@ -113,8 +112,8 @@ def after_request(param):
                 'response_time': g.get('response_time').strftime(current_app.config['DATETIME_FORMAT']),
                 'time_consuming': time_consuming}
     if param.status_code >= 400:
-        if current_app.config['DEBUG'] is False:
-            send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error', **log_info)
+        from app.tasks import send_mail_async
+        send_mail_async.delay(current_app.config['ADMIN_EMAIL'], 'Web Api Request Error', 'api_error', **log_info)
         current_app.logger.error(log_info)
     else:
         current_app.logger.debug(log_info)
