@@ -8,7 +8,6 @@
 import os
 import sys
 import logging.config
-from celery import Celery
 import app.database.models
 from app.database import db
 from app.user.controller import new_user
@@ -46,10 +45,6 @@ manager = CustomManager(flask_app)
 manager.add_command('db', MigrateCommand)
 manager.add_option('-e', '--env', dest='app_config', required=False)
 
-# Celery
-flask_celery = Celery(flask_app.name, broker=flask_app.config.get('CELERY_BROKER_URL'))
-flask_celery.conf.update(flask_app.config)
-
 
 @manager.command
 def devserver():
@@ -73,8 +68,11 @@ def dropdb():
 
 # @manager.command
 # def celery():
-#     cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
-#     os.system(cmd)
+    # from app.extensions import celery as celery_app
+    # with flask_app.app_context():
+    #     celery_app.start('-A runcelery.celery worker --loglevel=info')
+    # cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
+    # os.system(cmd)
 #
 #
 # @manager.command

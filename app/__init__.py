@@ -9,20 +9,17 @@ from flask import Flask
 from app.user import user
 from app.oauth import oauth
 from app.database import db
-from flask_mail import Mail
 from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
 from flask_migrate import Migrate
 from app.apizen.flaskext import ApiZen
 from flask_environments import Environments
-
+from app.extensions import mail, celery
 __author__ = 'blackmatrix'
 
 migrate = Migrate()
 apizen = ApiZen()
-# Flask-Mail
-mail = Mail()
 
 
 class CustomManager(Manager):
@@ -30,7 +27,7 @@ class CustomManager(Manager):
     def __call__(self, app=None, **kwargs):
         """
         自定义Manager为了去除Options will be ignored.的警告
-        如果由flask-script的Manger创建app，和很多扩展结合使用
+        如果由flask-script的Manager创建app，和很多扩展结合使用
         都非常不方便。
         """
         if app is None:
@@ -80,6 +77,7 @@ def register_extensions(app):
     mail.init_app(app)
     apizen.init_app(app)
     migrate.init_app(app, db)
+    celery.config_from_object(app.config)
 
 
 if __name__ == '__main__':
