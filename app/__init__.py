@@ -14,7 +14,7 @@ from app.config import configs
 from flask_script import Manager
 from flask_migrate import Migrate
 from flask_environments import Environments
-from app.extensions import mail, celery, apizen
+from app.exts import mail, celery, apizen
 
 __author__ = 'blackmatrix'
 

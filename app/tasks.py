@@ -6,7 +6,7 @@
 # @File : tasks.py
 # @Software: PyCharm
 from app.email import send_mail
-from app.extensions import celery
+from app.exts import celery
 
 __author__ = 'blackmatrix'
 

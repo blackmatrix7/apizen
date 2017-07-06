@@ -5,7 +5,7 @@
 # @Site : https://github.com/blackmatrix7
 # @File : models.py
 # @Software: PyCharm
-from app.extensions import db
+from app.exts import db
 from app.database import ModelBase, ModelMixin
 
 __author__ = 'blackmatix'

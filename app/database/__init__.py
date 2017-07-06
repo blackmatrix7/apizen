@@ -6,7 +6,7 @@
 # @File : __init__.py
 # @Software: PyCharm
 from datetime import datetime
-from app.extensions import db
+from app.exts import db
 
 __author__ = 'blackmatrix'
 

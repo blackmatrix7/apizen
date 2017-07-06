@@ -6,7 +6,7 @@
 # @File: email.py
 # @Software: PyCharm
 from flask_mail import Message
-from app.extensions import mail
+from app.exts import mail
 from manage import flask_app
 from flask import render_template, current_app
 
