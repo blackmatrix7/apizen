@@ -13,7 +13,7 @@ from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
 from flask_environments import Environments
-from app.exts import mail, celery, apizen, migrate
+from app.exts import mail, celery, apizen, migrate, manager
 
 __author__ = 'blackmatrix'
 
@@ -72,6 +72,7 @@ def register_extensions(app):
     db.init_app(app)
     mail.init_app(app)
     apizen.init_app(app)
+    manager.init_app(app)
     migrate.init_app(app, db)
     celery.config_from_object(app.config)
 

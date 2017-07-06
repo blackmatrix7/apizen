@@ -12,6 +12,7 @@ import app.database.models
 from app.database import db
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
+from app.exts import manager
 from app import create_app, CustomManager
 from cloghandler import ConcurrentRotatingFileHandler
 
@@ -39,11 +40,6 @@ fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 flask_app.logger.addHandler(fh)
 flask_app.logger.addHandler(ch)
-
-# Flask-Script
-manager = CustomManager(flask_app)
-manager.add_command('db', MigrateCommand)
-manager.add_option('-e', '--env', dest='app_config', required=False)
 
 
 @manager.command
