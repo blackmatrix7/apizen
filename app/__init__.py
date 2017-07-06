@@ -77,7 +77,7 @@ def register_extensions(app):
     mail.init_app(app)
     apizen.init_app(app)
     migrate.init_app(app, db)
-    # celery.config_from_object(app.config)
+    celery.config_from_object(app.config)
 
 
 if __name__ == '__main__':

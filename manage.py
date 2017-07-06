@@ -10,7 +10,6 @@ import sys
 import logging.config
 import app.database.models
 from app.database import db
-from app.extensions import celery
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
 from app import create_app, CustomManager
