@@ -7,6 +7,7 @@
 # @Software: PyCharm
 from celery import Celery
 from flask_mail import Mail
+from flask_migrate import Migrate
 from app.apizen.flaskext import ApiZen
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,6 +15,9 @@ __author__ = 'blackmatrix'
 
 # SQLAlchemy
 db = SQLAlchemy()
+
+# Flask-Migrate
+migrate = Migrate()
 
 # ApiZen
 apizen = ApiZen()

@@ -12,13 +12,10 @@ from app.database import db
 from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
-from flask_migrate import Migrate
 from flask_environments import Environments
-from app.exts import mail, celery, apizen
+from app.exts import mail, celery, apizen, migrate
 
 __author__ = 'blackmatrix'
-
-migrate = Migrate()
 
 
 class CustomManager(Manager):
