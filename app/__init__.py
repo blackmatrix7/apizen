@@ -71,11 +71,10 @@ def register_blueprints(app):
 def register_extensions(app):
     db.init_app(app)
     mail.init_app(app)
+    celery.init_app(app)
     apizen.init_app(app)
     manager.init_app(app)
     migrate.init_app(app, db)
-    celery.config_from_object(app.config)
-
 
 if __name__ == '__main__':
     pass

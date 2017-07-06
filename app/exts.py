@@ -43,6 +43,12 @@ class CustomManager(Manager):
         self.add_option('-e', '--env', dest='app_config', required=False)
 
 
+class CustomCelery(Celery):
+
+    def init_app(self, app):
+        self.config_from_object(app.config)
+
+
 # Flask-Script
 manager = CustomManager()
 
@@ -59,7 +65,7 @@ apizen = ApiZen()
 mail = Mail()
 
 # Celery
-celery = Celery()
+celery = CustomCelery()
 
 
 if __name__ == '__main__':
