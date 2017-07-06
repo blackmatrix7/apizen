@@ -5,10 +5,14 @@
 # @Site : 
 # @File : extensions.py
 # @Software: PyCharm
-from flask_mail import Mail
 from celery import Celery
+from flask_mail import Mail
+from app.apizen.flaskext import ApiZen
 
 __author__ = 'blackmatrix'
+
+# ApiZen
+apizen = ApiZen()
 
 # Flask-Mail
 mail = Mail()

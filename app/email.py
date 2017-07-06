@@ -3,7 +3,7 @@
 # @Time: 2017/7/6 下午10:58
 # @Author: BlackMatrix
 # @Site: https://github.com/blackmatrix7
-# @File: email
+# @File: email.py
 # @Software: PyCharm
 from flask_mail import Message
 from app.extensions import mail
@@ -13,6 +13,7 @@ __author__ = 'blackmatix'
 
 
 def send_mail(mail_to, subject, template, **kwargs):
+    # 在函数内部导入flask_app，避免交叉引用
     from manage import flask_app
     # TODO 判断mail_to 必须是List
     with flask_app.app_context():

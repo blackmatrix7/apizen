@@ -13,13 +13,12 @@ from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
 from flask_migrate import Migrate
-from app.apizen.flaskext import ApiZen
 from flask_environments import Environments
-from app.extensions import mail, celery
+from app.extensions import mail, celery, apizen
+
 __author__ = 'blackmatrix'
 
 migrate = Migrate()
-apizen = ApiZen()
 
 
 class CustomManager(Manager):
