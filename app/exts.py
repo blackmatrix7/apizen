@@ -5,7 +5,7 @@
 # @Site : 
 # @File : extensions.py
 # @Software: PyCharm
-from flask import Flask, current_app
+from flask import Flask
 from celery import Celery
 from flask_mail import Mail
 from flask_script import Manager
