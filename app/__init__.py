@@ -11,32 +11,10 @@ from app.oauth import oauth
 from app.database import db
 from app.webapi import webapi
 from app.config import configs
-from flask_script import Manager
 from flask_environments import Environments
 from app.exts import mail, celery, apizen, migrate
 
 __author__ = 'blackmatrix'
-
-
-class CustomManager(Manager):
-
-    def __call__(self, app=None, **kwargs):
-        """
-        自定义Manager为了去除Options will be ignored.的警告
-        如果由flask-script的Manager创建app，和很多扩展结合使用
-        都非常不方便。
-        """
-        if app is None:
-            app = self.app
-            if app is None:
-                raise Exception("There is no app here. This is unlikely to work.")
-
-        if isinstance(app, Flask):
-            return app
-
-        app = app(**kwargs)
-        self.app = app
-        return app
 
 
 def create_app(app_config=None):
