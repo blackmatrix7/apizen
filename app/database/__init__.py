@@ -6,12 +6,9 @@
 # @File : __init__.py
 # @Software: PyCharm
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.inspection import inspect
+from app.extensions import db
 
 __author__ = 'blackmatrix'
-
-db = SQLAlchemy()
 
 
 class ModelMixin:

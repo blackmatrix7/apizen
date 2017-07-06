@@ -8,8 +8,12 @@
 from celery import Celery
 from flask_mail import Mail
 from app.apizen.flaskext import ApiZen
+from flask_sqlalchemy import SQLAlchemy
 
 __author__ = 'blackmatrix'
+
+# SQLAlchemy
+db = SQLAlchemy()
 
 # ApiZen
 apizen = ApiZen()
