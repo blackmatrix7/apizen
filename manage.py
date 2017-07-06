@@ -10,6 +10,7 @@ import sys
 import logging.config
 import app.database.models
 from app.database import db
+from app.extensions import celery
 from app.user.controller import new_user
 from flask_migrate import MigrateCommand
 from app import create_app, CustomManager
@@ -66,10 +67,13 @@ def dropdb():
     db.drop_all()
 
 
-# @manager.command
-# def celery():
-#     cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
-#     os.system(cmd)
+@manager.command
+def celery():
+    from app.extensions import celery as celery_app
+    with flask_app.app_context():
+        celery_app.start()
+    # cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
+    # os.system(cmd)
 #
 #
 # @manager.command
