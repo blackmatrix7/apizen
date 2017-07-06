@@ -66,11 +66,11 @@ def dropdb():
     db.drop_all()
 
 
-@manager.command
-def celery():
-    from app.extensions import celery as celery_app
-    with flask_app.app_context():
-        celery_app.start()
+# @manager.command
+# def celery():
+    # from app.extensions import celery as celery_app
+    # with flask_app.app_context():
+    #     celery_app.start('-A runcelery.celery worker --loglevel=info')
     # cmd = 'env={config} celery -A manage.flask_celery worker --loglevel=info'.format(config=app_config)
     # os.system(cmd)
 #
