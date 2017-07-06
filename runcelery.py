@@ -7,6 +7,7 @@
 # @Software: PyCharm
 from app import create_app
 from app.extensions import celery
+
 __author__ = 'blackmatix'
 
 flask_app = create_app()
