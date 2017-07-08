@@ -49,6 +49,8 @@ class BaseConfig:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_REDIRECT_STDOUTS_LEVEL = 'INFO'
     CELERY_IMPORTS = ('app.tasks', )
+    # celery worker的并发数
+    CELERYD_CONCURRENCY = 3
     # 默认队列
     CELERY_DEFAULT_QUEUE = 'celery@apizen.default'
 
