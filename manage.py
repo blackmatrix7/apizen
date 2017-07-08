@@ -9,11 +9,10 @@ import os
 import sys
 import logging.config
 import app.database.models
+from app import create_app
 from app.database import db
-from app.user.controller import new_user
-from flask_migrate import MigrateCommand
 from app.exts import manager
-from app import create_app, CustomManager
+from app.user.controller import new_user
 from cloghandler import ConcurrentRotatingFileHandler
 
 __author__ = 'blackmatrix'

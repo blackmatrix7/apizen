@@ -5,9 +5,9 @@
 # @Site: https://github.com/blackmatrix7
 # @File: email.py
 # @Software: PyCharm
-from flask_mail import Message
 from app.exts import mail
 from manage import flask_app
+from flask_mail import Message
 from flask import render_template, current_app
 
 __author__ = 'blackmatix'

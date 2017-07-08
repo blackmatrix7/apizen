@@ -6,8 +6,8 @@
 # @File : extensions.py
 # @Software: PyCharm
 from flask import Flask
-from celery import Celery
 from flask_mail import Mail
+from flask_celery import Celery
 from flask_script import Manager
 from flask_migrate import Migrate
 from app.apizen.flaskext import ApiZen
@@ -65,7 +65,7 @@ apizen = ApiZen()
 mail = Mail()
 
 # Celery
-celery = CustomCelery()
+celery = Celery()
 
 
 if __name__ == '__main__':
