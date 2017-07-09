@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from ..webapi import webapi
 from datetime import datetime
-from app.apizen.methods import Method
+from app.apizen.method import Method
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 from app.apizen.exceptions import ApiException, ApiSysExceptions
