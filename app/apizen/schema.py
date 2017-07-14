@@ -150,7 +150,8 @@ def convert(key, value, default_value, type_hints):
         float: Float,
         str: String,
         list: List,
-        dict: Dict
+        dict: Dict,
+        datetime: DateTime
     }.get(type_hints, type_hints)
     try:
         if value != default_value:
