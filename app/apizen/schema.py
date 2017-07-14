@@ -144,27 +144,27 @@ def dict2model(data, model):
 
 
 def convert(key, value, default_value, type_hints):
+    # 系统级别 type hints 兼容 （兼顾历史接口代码）
+    _type_hints = {
+        int: Integer,
+        float: Float,
+        str: String,
+        list: List,
+        dict: Dict
+    }.get(type_hints, type_hints)
     try:
         if value != default_value:
-            # 系统级别 type hints 兼容 （兼顾历史接口代码）
-            _type_hints = {
-                int: Integer,
-                float: Float,
-                str: String,
-                list: List,
-                dict: Dict
-            }.get(type_hints, type_hints)
-            instance = type_hints if isinstance(_type_hints, Typed) else type_hints() if issubclass(_type_hints, Typed) else object()
+            instance = _type_hints if isinstance(_type_hints, Typed) else _type_hints() if issubclass(_type_hints, Typed) else object()
             if isinstance(instance, Typed):
                 value = instance.convert(value=value)
-            elif issubclass(type_hints, db.Model):
-                value = dict2model(value, type_hints)
+            elif issubclass(_type_hints, db.Model):
+                value = dict2model(value, _type_hints)
             return value
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json
     except ValueError:
         api_ex = ApiSysExceptions.error_args_type
-        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, type_hints.__type__)
+        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, _type_hints.__type__)
         raise api_ex
     else:
         return value
