@@ -17,8 +17,10 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.first-api': {'func': first_api},
         # 接口参数自动判断
         'matrix.api.register_user': {'func': register_user},
-        # 接口参数自动判断
+        # 接口参数类型自动判断
         'matrix.api.register_user_plus': {'func': register_user_plus},
+        # 自定义类型判断方式
+        'matrix.api.validate_email': {'func': validate_email},
         # 抛出一个异常
         'matrix.api.return-err': {'func': demo.raise_error},
         # 错误的函数编写

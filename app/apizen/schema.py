@@ -5,6 +5,7 @@
 # @Site: https://github.com/blackmatrix7/apizen
 # @File: types.py
 # @Software: PyCharm
+import re
 import json
 import copy
 from app.database import db
@@ -64,8 +65,7 @@ class _String(str, TypeBase):
 
     @staticmethod
     def convert(*, value):
-        _value = copy.copy(value)
-        return str(_value)
+        return str(value)
 
 
 class _Float(float, TypeBase):
@@ -129,13 +129,37 @@ class _DateTime(datetime, TypeBase):
         super().__init__()
 
 
+class _Email(str, TypeBase):
+    __type__ = 'Email'
+
+    @staticmethod
+    def convert(*, value):
+        if re.match('^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', value, flags=0):
+            return value
+        else:
+            raise ValueError
+
+
+class _Model(TypeBase):
+
+    def __init__(self, model):
+        self.model = model
+
+    def convert(self, *, value=None):
+        data = json.loads(value) if isinstance(value, str) else value
+        result = self.model(**{key: value for key, value in data.items() if key in self.model.__table__.columns})
+        result.raw_data = data
+        return result
+
 Integer = _Integer()
 List = _List()
 Float = _Float()
 String = _String()
 Dict = _Dict()
-DateTime = _DateTime
 Date = _Date
+Model = _Model
+DateTime = _DateTime
+Email = _Email
 
 
 def dict2model(data, model):
