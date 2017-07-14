@@ -19,6 +19,10 @@ _no_value = object()
 
 class ZenException(Exception):
 
+    """
+    基础异常类，可用于接口返回异常，也可用于普通函数调用时引发异常
+    """
+
     def __init__(self, err_msg, err_code='0000', http_code=500):
         self.err_msg = err_msg
         self.err_code = err_code
@@ -41,6 +45,12 @@ class ZenException(Exception):
 
 
 class ApiException:
+
+    """
+    以描述符进行异常管理：
+    禁止对已经设定的异常信息进行修改
+    读取异常信息时，每次实例化一个全新的异常实例，避免对异常信息的修改影响全局
+    """
 
     def __init__(self, err_code, err_msg, http_code, err_type=Exception):
         self.err_msg = err_msg
