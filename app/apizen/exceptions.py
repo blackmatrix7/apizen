@@ -49,7 +49,7 @@ class ApiException:
         self.http_code = http_code
 
     def __set__(self, instance, value):
-        raise Exception
+        raise AttributeError('禁止修改异常设定')
 
     def __get__(self, instance, owner):
         supers = (ZenException, self.ex_type, Exception) \
