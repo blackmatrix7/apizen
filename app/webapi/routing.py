@@ -56,12 +56,12 @@ def api_routing(v=None, method=None):
         request_args.update(request.json)
 
     # 获取接口处理函数，及接口部分配置
-    api_func, is_format, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
+    api_func, raw_resp, *_ = Method.get(version=_v, method_name=_method, request_method=request.method)
 
     # 将请求参数传入接口处理函数并运行
     result = Method.run(api_func, request_params=request_args)
 
-    if is_format:
+    if raw_resp is False:
         result = format_retinfo(result)
 
     g.result = result

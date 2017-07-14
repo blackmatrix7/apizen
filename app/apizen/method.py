@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2017/5/19 上午9:33
 # @Author  : Matrix
-# @Site    : 
+# @Site    :
 # @File    : controller.py
 # @Software: PyCharm
 from functools import wraps
@@ -19,7 +19,7 @@ __author__ = 'blackmatrix'
 '''
 
 
-def do_not_format(func):
+def raw_response(func):
     """
     装饰器，表示接口处理函数返回的值不需要统一的返回格式
     :param func: 装饰的函数
@@ -29,7 +29,7 @@ def do_not_format(func):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
 
-    wrapper.format_retinfo = False
+    wrapper.raw_response = True
     return wrapper
 
 
@@ -38,7 +38,6 @@ class Method:
     # 获取api处理函数及相关异常判断
     @staticmethod
     def get(version, method_name, request_method):
-
         """
         获取api处理函数及相关异常判断
         :param version:  接口版本
@@ -46,14 +45,14 @@ class Method:
         :param request_method:  http请求方式
         :return:
         """
-        is_format = True
+        raw_resp = False
         allow_anonymous = False
 
         def check_decorator(func):
-            nonlocal is_format
+            nonlocal raw_resp
             nonlocal allow_anonymous
-            if hasattr(func, 'format_retinfo') and func.format_retinfo is False:
-                is_format = False
+            if hasattr(func, 'raw_response') and func.raw_response is True:
+                raw_resp = True
             if hasattr(func, 'allow_anonymous') and func.allow_anonymous is True:
                 allow_anonymous = True
 
@@ -84,7 +83,7 @@ class Method:
         # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
         unwrap(_func, stop=check_decorator)
 
-        return _func, is_format, allow_anonymous
+        return _func, raw_resp, allow_anonymous
 
     # 运行接口处理方法，及异常处理
     @staticmethod
@@ -104,7 +103,7 @@ class Method:
                 if k not in request_params:
                     if v.default is Parameter.empty:
                         missing_arguments = ApiSysExceptions.missing_arguments
-                        missing_arguments.message = '{0}：{1}'.format(missing_arguments.message, k)
+                        missing_arguments.err_msg = '{0}：{1}'.format(missing_arguments.err_msg, k)
                         raise missing_arguments
                     func_args[k] = convert(k, v.default, v.default, v.annotation)
                 else:

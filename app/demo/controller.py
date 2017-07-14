@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from functools import wraps
 from .models import DemoChild, DemoParent
-from app.apizen.method import do_not_format
+from app.apizen.method import raw_response
 from app.webapi.exceptions import ApiSubExceptions
 from app.apizen.schema import Integer, String, Float, Dict, DateTime
 
