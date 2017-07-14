@@ -1,4 +1,4 @@
-# api zen
+# ApiZen
 
 快速将python函数转换成webapi。
 
@@ -122,9 +122,14 @@ class DemoApiMethods(ApiMethodsBase):
 
 ## 接口函数
 
-### 接口参数判断
+### 接口参数
 
-ApiZen会将注册的接口函数的参数自动转换为web api的参数。对于没有默认值的参数，为必填参数；存在默认值的参数为可选参数，当调用者未传入可选参数时，可选参数取默认值。
+ApiZen可以将函数的参数自动转换为web api的参数，并对请求时提交的参数进行判断。
+
+判断遵守以下规则：
+
+1. 对于没有默认值的参数，为必填参数
+2. 存在默认值的参数为可选参数，当调用者未传入可选参数时，可选参数取默认值
 
 编写一个模拟用户注册的函数，并注册为接口名称 matrix.api.register_user
 
@@ -167,9 +172,9 @@ http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.register_user&name
 }
 ```
 
-### 接口参数类型判断
+### 接口参数合法性
 
-ApiZen不仅可以对接口参数是否必填进行判断，还可以对接口参数的值是否符合要求进行判断。
+ApiZen不仅可以对请求接口时提交的参数是否完整进行判断，还可以对接口参数值的合法性进行判断。
 
 继续完善之前编写的模拟注册用户接口，引入ApiZen中的参数类型作为参数的类型注解(Type Hints)，用于对参数合法性进行判断，并加入更多的注册信息。
 
@@ -195,16 +200,48 @@ def register_user_plus(name, age: Integer, birthday: DateTime('%Y/%m/%d'), email
 }
 ```
 
-比较特殊的类型是DateTime，在默认情况下，DateTime会采用Flask配置文件中，DATETIME_FORMAT配置的格式类型，默认为'%Y/%m/%d %H:%M:%S'。
+这个例子中，比较特殊的类型是DateTime，在默认情况下，DateTime会采用默认的日期格式'%Y-%m-%d %H:%M:%S'。
 
-在设定参数类型提示时，可以自定义DateTime格式的类型，如上述例子的DateTime('%Y/%m/%d')，此时会依据自定义的日期格式判断调用者传入的参数是否合法。
+不过在设定参数类型提示时，仍可以自定义DateTime格式的类型，如上述例子的DateTime('%Y/%m/%d')，此时会依据自定义的日期格式判断调用者传入的参数是否合法。
+
+**目前支持判断的参数类型**：
+
+**Integer**
+
+对于字符串类型的参数会尝试进行类型转换，转换成功返回转换后结果，转换失败引发ValueError异常
+
+对于float类型的参数不会进行类型转换，避免精度丢失
+
+**String**
+
+将参数转换成字符串并返回
+
+**Float**
+
+将参数转换成浮点型并返回，无法转换时引发ValueError异常
+
+**Dict**
+
+对于json格式的字符串，尝试转换成dict并返回，如无法转换引发JSONDecodeError异常
+
+**List**
+
+对于json格式的字符串，尝试转换成list并返回，如无法转换引发JSONDecodeError异常
+
+**DateTime**
+
+对于字符串类型，根据设置的日期格式，转换成datetime类型并返回，如无法转换则引发ValueError异常
+
+除ApiZen提供的类型外，也支持使用以下的系统内建类型进行判断：int、float、str、list、dict、datetime。
 
 ### 参数的限制
+
+除ApiZen提供的类型外，也支持使用以下的系统内建类型进行判断：int、float、str、list、dict。
 
 ApiZen在设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
 
 1. 暂时不支持VAR_POSITIONAL类型的参数，即*args
-2. 函数的返回结果可以正常的转换成json和xml
+2. 函数的返回结果可以正常的转换成json
 
 ### 使用装饰器
 
@@ -240,7 +277,9 @@ from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 register(ApiMethodsV10, ApiMethodsV11)
 ```
 
-类属性api_methods为dict，表示这个接口版本支持的接口名称与对应方法。
+### 接口注册
+
+每个接口版本都必须存在类型属性api_methods，每个接口注册时，向api_methods增加相应的item即可。
 
 ```python
 @version('1.0')
@@ -267,14 +306,6 @@ class ApiMethodV10(ApiMethodBase):
 类继承关系即接口继承关系
 
 ```python
-class ApiMethodBase(metaclass=ApiMethodMeta):
-    api_methods = {}
-    support_methods = {
-        'matrix.api.get-user': {'func': api_demo.get_user},
-        'matrix.api.return-err': {'func': api_demo.raise_error}
-    }
-
-
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     api_methods = {
@@ -343,9 +374,9 @@ ApiException接受4个参数，分别为
 
 ### 公共异常
 
-公共异常为框架调用层面的异常，由ApiZen统一提供和管理。当前版本，公共异常信息在app/apizen/exceptions.py下。
+公共异常为框架调用层面的异常，由ApiZen统一提供和管理。
 
-示例
+当前版本，公共异常信息在app/apizen/exceptions.py下。
 
 ```python
 # API 系统层面异常信息
@@ -378,57 +409,70 @@ class ApiSubExceptions:
     email_registered = ApiException(err_code=2005, http_code=400, err_msg='邮箱已注册', err_type=Exception)
 ```
 
-## 接口调用测试
+### 抛出异常
 
-运行run.py
-
-**测试装饰器对获取函数参数的影响，及接口参数判断说明**
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user&user_id=11&age=12&name=jack&mark=92.5
-
-接口处理函数
+在实际业务实现中，可以如下方式直接抛出异常
 
 ```python
-@staticmethod
-@test_decorator
-def set_user(user_id: int, name: str, mark: float, age: int=19):
-    """
-    测试装饰器对获取函数参数的影响，及接口参数判断说明
-    :param user_id:  用户id，必填，当函数参数没有默认值时，接口认为是必填参数
-    :param age:  年龄，必填，原因同上
-    :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
-    :param mark:  分数
-    :return:  返回测试结果
-    """
-    return [
-        {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
-    ]
+from app.webapi.exceptions import ApiSubExceptions
+def raise_error():
+	raise ApiSubExceptions.unknown_error
 ```
 
-返回
+### 自定义异常内容
 
-```json
-{
-    "respone": [
-        {
-            "user_id": 11,
-            "mark": 92.5,
-            "age": 12,
-            "name": "jack"
-        }
-    ],
-    "meta": {
-        "code": 1000,
-        "message": "执行成功"
-    }
-}
+上述的异常中，异常代码、异常信息都是预先设定好的。
+
+对于临时需要改变异常内容的情况，在抛出异常时，可以在异常中传入需要自定义的异常信息。
+
+```python
+from app.webapi.exceptions import ApiSubExceptions
+def custom_error(msg):
+	raise ApiSubExceptions.unknown_error('自定义异常文字')
 ```
 
-**JSON格式调用方式**
+## 接口请求
 
-支持Content-Type为application/json的POST请求
+### 请求的参数
 
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user
+接口请求的参数，分为公共参数和业务参数。
+
+#### 公共参数
+
+公共参数是ApiZen用于判断请求接口、版本号、权限验证等所需的参数。
+
+所有的公共参数以query string传递，目前支持以下参数：
+
+| 参数名    | 必填   | 默认值  | 说明               |
+| ------ | ---- | ---- | ---------------- |
+| v      | 是    | 无    | 接口版本号，当前为1.0     |
+| method | 是    | 无    | 接口方法名            |
+| format | 否    | json | 返回的请求格式，目前支持json |
+| 其他参数   | 否    | 无    | 待完成              |
+
+#### 业务参数
+
+业务参数即每个接口处理函数实现业务逻辑所需的参数。业务参数的配置在上文“接口参数”的设定当中已有详细的说明，不再复述。
+
+业务参数根据接口设定，可以通过querystring或者formdata的形式传递，也可以支持以json的形式传递。
+
+### 两种Content-Type
+
+对于POST的请求方式，在不改动业务代码的前提下，可以同时支持application/json和application/x-www-form-urlencoded两种Content-Type。
+
+#### application/x-www-form-urlencoded
+
+在form data中，以key/value的形式传递接口业务参数。
+
+在此种请求方式下，接口函数的每个参数，都和form data中的key进行匹配。
+
+#### application/json
+
+在body中，以json格式传递接口业务参数。
+
+在此中请求方式下，传入的json格式会被转换成dict，dict第一层的每个key与接口函数参数的名称匹配。
+
+http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.set-user
 
 接口处理函数，同上
 
@@ -459,259 +503,6 @@ POST数据
     ]
 }
 ```
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-users
-
-接口处理函数
-
-```python
-@staticmethod
-def set_users(users: list):
-    def return_users():
-        for user in users:
-            yield {'user_id': user.get('user_id'),  
-                   'name': user.get('name'), 
-                   'age': user.get('age')}
-    return list(return_users())
-```
-
-POST数据
-
-```json
-{
-    "users": [
-        {
-            "id": 1,
-            "age": 22,
-            "name": "张三"
-        },
-        {
-            "id": 2,
-            "age": 23,
-            "name": "李四"
-        },
-        {
-            "id": 3,
-            "age": 24,
-            "name": "王五"
-        }
-    ]
-}
-```
-
-接口返回
-
-```json
-{
-    "respone": [
-        {
-            "user_id": null,
-            "age": 22,
-            "name": "张三"
-        },
-        {
-            "user_id": null,
-            "age": 23,
-            "name": "李四"
-        },
-        {
-            "user_id": null,
-            "age": 24,
-            "name": "王五"
-        }
-    ],
-    "meta": {
-        "code": 1000,
-        "message": "执行成功"
-    }
-}
-```
-
-**实例方法调用**
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.instance-func&value=123
-
-接口处理函数
-
-```python
-def instance_func(self, value):
-    """
-    实例方法调用测试
-    :param value:  必填，任意字符串
-    :return:  返回测试结果
-    """
-    self.value = value
-    return self.value
-```
-
-返回
-
-```json
-{
-    "meta": {
-        "message": "执行成功",
-        "code": 1000
-    },
-    "respone": "123"
-}
-```
-
-**类方法调用**
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.class-func&name=jim
-
-接口处理函数
-
-```python
-@classmethod
-def class_method(cls, name):
-    """
-    类方法调用测试
-    :param name:  姓名，
-    :return:  返回测试结果
-    """
-    return {'name': name}
-```
-
-返回
-
-```json
-{
-    "respone": {
-        "name": "jim"
-    },
-    "meta": {
-        "code": 1000,
-        "message": "执行成功"
-    }
-}
-```
-
-**不规范函数写法：声明为静态方法，却还存在参数self**
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.err-func
-
-接口处理函数
-
-```python
-@staticmethod
-def err_func(self):
-    """
-    模拟错误的函数写法：声明为静态方法，却还存在参数self
-    此时获取函数签名时，会将self作为一个接口的默认参数，如果不传入值会抛出异常
-    :param self: 静态方法的参数，没有默认值，必填，不是实例方法的self参数
-    :return:  返回self的值
-    """
-    return self
-```
-
-返回
-
-```json
-{
-    "meta": {
-        "message": "缺少方法所需参数:self",
-        "code": 1018
-    },
-    "respone": null
-}
-```
-
-**VAR_KEYWORD 参数类型的传值测试**
-
-含有VAR_KEYWORD类型的参数时，框架除了会将全部的k/v作为参数传入，包括框架层面的公共参数，如method、v。
-
-同时此示例演示版本继承的效果，如改成v 1.0无法提示方法不存在，改成v 1.1 v 1.2可以正常访问接口。
-
-http://127.0.0.1:8010/api/router/rest?v=1.1&method=matrix.api.send-kwargs&user_id=11&age=12&value=1
-
-接口处理函数
-
-```python
-@staticmethod
-def send_kwargs(value: str, **kwargs):
-    """
-    VAR_KEYWORD 参数类型的传值测试，传入任意k/wc，会在调用结果中返回
-    :param value:  任意字符串
-    :param kwargs:  键值对
-    :return:  返回调用结果
-    """
-    return {"value": value, "kwargs": kwargs}
-```
-
-返回
-
-```json
-{
-    "respone": {
-        "value": "1",
-        "kwargs": {
-            "method": "matrix.api.send-kwargs",
-            "age": "12",
-            "v": "1.1",
-            "user_id": "11"
-        }
-    },
-    "meta": {
-        "message": "执行成功",
-        "code": 1000
-    }
-}
-```
-
-**抛出特定异常**
-
-http://127.0.0.1:8010/api/router/rest?v=1.1&method=matrix.api.raise-error
-
-接口处理函数
-
-```python
-@staticmethod
-def raise_error():
-    """
-    接口抛出异常的使用说明，抛出异常信息后，会在返回接口的code中显示对应异常的编号，
-    同时，返回的http code 也会根据异常配置中的status_code而改变
-    :return:  返回异常信息
-    """
-    raise ApiSubError.unknown_error
-```
-
-返回
-
-```json
-{
-    "meta": {
-        "code": 2001,
-        "message": "未知异常"
-    },
-    "respone": null
-}
-```
-
-### 接口公共参数
-
-公共参数调用填写在query string中
-
-| 参数名    | 必填   | 默认值  | 说明                 |
-| ------ | ---- | ---- | ------------------ |
-| v      | 是    | 无    | 接口版本号，当前为1.0       |
-| method | 是    | 无    | 接口方法名              |
-| format | 否    | json | 返回的请求格式，支持json、xml |
-| 其他参数   | 否    | 无    | 待完成                |
-
-### 接口业务参数
-
-即请求业务接口需求的参数，支持在query string中传入，也支持以key/value的形式传入(application/x-www-form-urlencoded)，同时支持在body中以json格式传入(application/json)。
-
-当接口函数的参数没有默认值时(如示例函数的user_id，age两个参数)，此参数为必填的参数，转换成web api后，调用需要传入与函数参数同名的参数进行请求，如果未传入同名参数则会抛出code为1018的异常，即”缺少方法所需参数“。
-
-当接口函数的参数存在默认值时(如示例函数的name参数)，此参数为非必填参数，转换为web api后，调用可以不传入name的值，接口函数取参数默认值(如示例函数的”刘峰“)。
-
-| 参数名     | 必填   | 默认值  | 说明      |
-| ------- | ---- | ---- | ------- |
-| user_id | 是    | 无    | 用户id    |
-| age     | 是    | 无    | 用户年龄    |
-| name    | 否    | 刘峰   | 测试的用户名称 |
 
 ## 接口返回
 
