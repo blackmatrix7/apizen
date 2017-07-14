@@ -165,7 +165,7 @@ def convert(key, value, default_value, type_hints):
         raise ApiSysExceptions.invalid_json
     except ValueError:
         api_ex = ApiSysExceptions.error_args_type
-        api_ex.message = '{0}：{1} <{2}>'.format(api_ex.message, key, _type_hints.__type__)
+        api_ex.err_msg = '{0}：{1} <{2}>'.format(api_ex.err_msg, key, _type_hints.__type__)
         raise api_ex
     else:
         return value

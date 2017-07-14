@@ -4,34 +4,30 @@
 
 [TOC]
 
-## 前言
+## 介绍
 
-之前有大量的web api开发工作，如果每个web api都需要注册路由，检查请求参数，则需要进行大量的重复工作，同时过多的路由也不便于管理，且不易做到统一的api返回格式。
+### 前言
 
-所以就有这个想法，能否尽快地将一个python的函数转换成web api，不用重复注册路由，不需要对请求的参数进行检查，能统一api返回格式，支持api版本管理，对一些公共层面的异常进行处理(如请求参数缺失)。
+项目有大量的web api开发工作，如果使用传统的开发方式，需要编写大量的样板代码，如每个web api都需要注册路由，检查请求参数，处理返回结果。
+
+基于上述原因创建此项目，目标是能快速将Python函数转换成web api，统一接口入口，不用重复注册路由，统一对请求的参数进行检查，统一api返回格式，支持api版本管理，对一些公共层面的异常进行处理(如请求参数缺失)。
 
 同时，希望能尽量减少对函数编写的限制，让尽量多的python函数，尽少甚至不做任何修改，只通过简单的添加一个调用名称，可以直接转换成web api。
 
-web api采用统一的请求url： /api/router/rest ，以method参数区分不同的调用方法，这样接口调用方不需要存储大量的接口地址，只需要存储接口调用的方法名。同时，可以统一在接口路由处，添加接口调用日志、接口调用次数限制、ban掉某些ip等功能。
+web api采用统一的请求url： /api/router/rest ，以method参数区分不同的调用方法，这样接口调用方不需要存储大量的接口地址，只需要存储接口调用的方法名。并且，可以统一在接口路由处，添加接口调用日志、接口调用次数限制、ban掉某些ip等功能。
 
-## 特性
+### 特性
 
 1. 统一的web api入口地址，支持接口版本管理及继承
 2. 自动判断请求的参数，自动拦截参数不完整的请求
 3. 支持常用接口参数类型的自动判断及转换，自动拦截参数类型错误的请求
 4. 统一的web api返回格式，提供接口异常代码及详细的异常信息
 5. 在不修改业务代码的前提下，同时支持application/x-www-form-urlencoded、application/json等请求方式
-6. 绝大多数python函数可以直接转成为web api，减少接口开发工作量，专注业务逻辑实现
+6. 绝大多数python函数可以直接转成为web api，减少接口开发的样板代码，专注业务逻辑实现
 
-## 依赖
+### 更新日志
 
-```
-dict2xml==1.5
-six==1.10.0
-tornado==4.5.1
-```
-
-## 更新日志
+2015.07.03 	调整接口参数的类型判断方式
 
 2017.05.17	接口部分参数类型判断（str、int、float、list、dict、tuple）
 
@@ -43,7 +39,7 @@ tornado==4.5.1
 
 2017.05.05	项目初始提交
 
-## 分支说明
+### 分支说明
 
 现在暂时有两个分支：
 
@@ -51,7 +47,7 @@ master 分支，通常是能正常运行的代码
 
 develop 分支，绝大多数都是随手写的，可能含有很多未完成的功能，以及写一半的代码
 
-## 安装
+### 安装
 
 建立虚拟环境
 
@@ -77,9 +73,115 @@ source venv/bin/activate
 deactivate
 ```
 
-## QuickStart
+## 开始
 
 ### 编写接口处理函数
+
+先从编写一个最简单的Python函数开始：在 app/demo/controller.py 中编写一个简单的函数。
+
+```python
+def first_api():
+    return '这是第一个Api例子'
+```
+
+### 将函数注册到系统
+
+函数编写完成后，需要注册到系统的接口列表，并为这个函数取一个唯一的接口名称。
+
+演示项目中，选择在app/demo/methods.py中进行注册
+
+```python
+from .controller import first_api
+class DemoApiMethods(ApiMethodsBase):
+    api_methods = {
+        # 第一个API
+        'matrix.api.first-api': {'func': first_api},
+    	......
+    }
+```
+
+### 启动项目
+
+使用 python manage.py -env=devcfg devserver 命令启动项目
+
+### 访问接口
+
+在浏览器中访问 http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.first-api 
+
+可以得到接口返回结果，至此一个最简单的接口完成。
+
+```Json
+{
+    "meta": {
+        "code": 1000,
+        "message": "执行成功"
+    },
+    "respone": "这是第一个Api例子"
+}
+```
+
+## 进阶
+
+### 接口参数判断
+
+ApiZen会将注册的接口函数的参数自动转换为web api的参数。对于没有默认值的参数，为必填参数；存在默认值的参数为可选参数，当调用者未传入可选参数时，可选参数取默认值。
+
+编写一个模拟用户注册的函数，并注册为接口名称 matrix.api.register_user
+
+```python
+def register_user(name, age, email=None):
+    return {'name': name, 'age': age, 'email': email}
+```
+
+通过get进行请求 http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.register_user
+
+当不传入任何接口参数时，ApiZen抛出缺少参数的异常
+
+```json
+{
+    "meta": {
+        "code": 1018,
+        "message": "缺少方法所需参数：name"
+    },
+    "respone": null
+}
+```
+
+当传入所有必填参数时，能正常处理接口请求并返回结果。
+
+http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.register_user&name=tom&age=19
+
+调用示例中，没有传入email，email取默认值None
+
+```json
+{
+    "meta": {
+        "code": 1000,
+        "message": "执行成功"
+    },
+    "respone": {
+        "age": 19,
+        "email": null,
+        "name": "tom"
+    }
+}
+```
+
+### 接口参数类型判断
+
+ApiZen不仅可以对接口参数是否必填进行判断，还可以对接口参数的值是否符合要求进行判断。
+
+继续完善之前编写的模拟注册用户接口，引入ApiZen中的参数类型作为参数的类型注解(Type Hints)，用于对参数合法性进行判断，并加入更多的注册信息。
+
+```python
+from app.apizen.schema import Integer, String, Float, Dict, DateTime
+def register_user_plus(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'), email=None):
+    return {'name': name, 'age': age, 'birthday': birthday, 'email': email}
+```
+
+
+
+
 
 框架设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
 

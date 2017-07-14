@@ -66,7 +66,7 @@ class BaseConfig:
 
 
 class DevConfig(BaseConfig):
-    DEBUG = False
+    DEBUG = True
     TESTING = True
 
     # 端口号

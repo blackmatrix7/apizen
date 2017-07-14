@@ -13,10 +13,12 @@ __author__ = 'blackmatrix'
 
 class DemoApiMethods(ApiMethodsBase):
     api_methods = {
-        # 第一个demo
-        'matrix.api.set-user': {'func': demo.set_user},
-        # 以list的方式传值
-        'matrix.api.set-users': {'func': demo.set_users},
+        # 第一个API
+        'matrix.api.first-api': {'func': first_api},
+        # 接口参数自动判断
+        'matrix.api.register_user': {'func': register_user},
+        # 接口参数自动判断
+        'matrix.api.register_user_plus': {'func': register_user_plus},
         # 抛出一个异常
         'matrix.api.return-err': {'func': demo.raise_error},
         # 错误的函数编写
