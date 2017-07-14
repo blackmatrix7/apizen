@@ -8,7 +8,7 @@
 from app.exts import db
 from app.database import ModelBase, ModelMixin
 
-__author__ = 'blackmatix'
+__author__ = 'blackmatrix'
 
 
 class Client(ModelBase, ModelMixin):
