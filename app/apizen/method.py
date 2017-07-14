@@ -80,7 +80,7 @@ class Method:
 
         _func = methods[method_name].get('func')
 
-        # 解包，检查是否有不统一格式化输出的装饰器，或运行匿名访问情况
+        # 解包，检查是否有不统一格式化输出的装饰器，或允许匿名访问情况
         unwrap(_func, stop=check_decorator)
 
         return _func, raw_resp, allow_anonymous
