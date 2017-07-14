@@ -52,7 +52,7 @@ class ApiException:
     读取异常信息时，每次实例化一个全新的异常实例，避免对异常信息的修改影响全局
     """
 
-    def __init__(self, err_code, err_msg, http_code, err_type=Exception):
+    def __init__(self, err_code, err_msg, http_code=500, err_type=Exception):
         self.err_msg = err_msg
         self.ex_type = err_type
         self.err_code = err_code

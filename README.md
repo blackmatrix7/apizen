@@ -73,7 +73,7 @@ source venv/bin/activate
 deactivate
 ```
 
-## 开始
+## QuickStart
 
 ### 编写接口处理函数
 
@@ -120,7 +120,7 @@ class DemoApiMethods(ApiMethodsBase):
 }
 ```
 
-## 进阶
+## 接口函数
 
 ### 接口参数判断
 
@@ -199,6 +199,13 @@ def register_user_plus(name, age: Integer, birthday: DateTime('%Y/%m/%d'), email
 
 在设定参数类型提示时，可以自定义DateTime格式的类型，如上述例子的DateTime('%Y/%m/%d')，此时会依据自定义的日期格式判断调用者传入的参数是否合法。
 
+### 参数的限制
+
+ApiZen在设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
+
+1. 暂时不支持VAR_POSITIONAL类型的参数，即*args
+2. 函数的返回结果可以正常的转换成json和xml
+
 ### 使用装饰器
 
 ApiZen通过函数签名获取接口函数参数，以此判断web api调用请求是否符合接口参数要求。
@@ -218,56 +225,20 @@ def test_decorator(func):
     return wrapper
 ```
 
+## 接口管理
 
+### 接口版本
 
-框架设计之初，希望尽少减少对接口处理函数的限制，让实现业务的函数能更加自由，但是仍有一些规定需要在编写函数时遵守：
+接口版本以类的形式存在，每个接口版本为独立的一个类，必须继承自超类ApiMethodBase。
 
-1. 暂时不支持VAR_POSITIONAL类型的参数，即*args
-2. 函数的返回结果可以正常的转换成json和xml
-
-简单的示例
+所有接口版本类，都必须调用进行注册。
 
 ```python
-@staticmethod
-def set_user(user_id: int, name: str, mark: float, age: int=19):
-    return [
-        {'user_id': user_id,  'name': name, 'age': age, 'mark': mark}
-    ]
+from app.apizen.version import register
+from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
+# Web Api 版本注册
+register(ApiMethodsV10, ApiMethodsV11)
 ```
-
-
-
-### 判断接口参数类型
-
-接口路由可以通过Type Hints判断请求参数的类型是否符合要求（Python 3.5 PEP0484）。
-
-对于需要做参数类型检查的函数，需要在参数后标记参数类型，目前能对str、int、float、list、dict、tuple这6种类型做参数检查和部分情况下的转换，其他不支持的类型或无法转换的情况，会直接将参数值传给接口处理函数。
-
-如函数示例中的参数age: int，会对参数是否是int进行检查，如果不是，则尝试转换成int，如果转换失败，会抛出code为1022，参数类型错误的异常。
-
-示例，传入一个浮点型的年龄参数（age=12.2）：
-
-http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user&user_id=11&age=12.2&name=jack&mark=92.5
-
-接口返回参数类型异常，提示age应该为int型
-
-```json
-{
-    "respone": null,
-    "meta": {
-        "code": 1022,
-        "message": "参数类型错误：age <int>"
-    }
-}
-```
-
-对于list、dict、tuple的参数类型，如果请求的参数是字符串，接口路由会尝试作为json字符串进行解析，解析失败会抛出json格式异常的错误，解析成功则比对是否符合参数类型要求，若解析后仍不符合，则抛出参数类型错误的异常。tuple类型会先由json.loads()转换为list，再转换为tuple，不建议标记参数类型为tuple，会增加额外的类型转换。
-
-### 添加调用方法
-
-在webapi/methods.py中添加接口方法名对应的函数。
-
-每个接口版本为独立的一个类，必须继承自超类ApiMethodBase。
 
 类属性api_methods为dict，表示这个接口版本支持的接口名称与对应方法。
 
@@ -275,16 +246,16 @@ http://127.0.0.1:8010/api/router/rest?v=1.0&method=matrix.api.set-user&user_id=1
 @version('1.0')
 class ApiMethodV10(ApiMethodBase):
     api_methods = {
-        'matrix.api.err-func': {'func': api_demo.err_func},
-        'matrix.api.instance-func': {'func': api_demo.instance_func},
-        'matrix.api.send-kwargs': {'func': api_demo.send_kwargs},
-        'matrix.api.raise-error': {'func': api_demo.raise_error},
-        'matrix.api.only-post': {'func': api_demo.raise_error, 'method': ['post']},
-        'matrix.api.api-stop': {'func': api_demo.raise_error, 'enable': False}
+        'matrix.api.err-func': {'func': err_func},
+        'matrix.api.instance-func': {'func': instance_func},
+        'matrix.api.send-kwargs': {'func':send_kwargs},
+        'matrix.api.raise-error': {'func': raise_error},
+        'matrix.api.only-post': {'func': raise_error, 'method': ['post']},
+        'matrix.api.api-stop': {'func':raise_error, 'enable': False}
     }
 ```
 
-1. 'matrix.api.instance-func'为接口的方法名
+1. 'matrix.api.instance-func'为接口的方法名，同一个函数可以对应多个方法名
 2. 'func'为调用接口后需要执行的python函数
 3. ’method‘为接口支持的请求方式，不写method的情况下，默认为同时支持get和post方法。以不支持的请求方式调用接口，会返回1019，不支持的http请求方式的异常
 4. ’enable’为接口方法的启用与禁用，不写enable的情况下，默认为True，即接口启用。调用禁用的接口时，会返回1016，api已停用的异常
@@ -355,43 +326,56 @@ class ApiMethodV10(ApiMethodBase):
 
 此时，再调用这个接口版本时，会返回接口版本已停用的异常信息。
 
-### 接口异常配置
+## 异常配置
 
-接口异常信息在exception.py中，分为公共异常和业务异常。
+接口异常分为公共异常和业务异常。
 
-公共异常写在类ApiSysExceptions中，类属性即为异常信息，异常信息为dict，分别有四个参数：
+异常信息以描述符 ApiException 存储，故所有的系统异常信息都必须以类属性的形式存在。
 
-| 参数          | 说明                  | 必填   | 默认值       |
-| ----------- | ------------------- | ---- | --------- |
-| err_code    | 接口异常时返回的代码，内置部分异常信息 | 是    | 无         |
-| status_code | 接口出现异常时返回的http code | 否    | 500       |
-| message     | 接口异常说明文字            | 是    | 无         |
-| ex_type     | 接口异常类型              | 否    | Exception |
+ApiException接受4个参数，分别为
+
+| 参数        | 说明                  | 必填   | 默认值       |
+| --------- | ------------------- | ---- | --------- |
+| err_code  | 接口异常时返回的代码，内置部分异常信息 | 是    | 无         |
+| http_code | 接口出现异常时返回的http code | 否    | 500       |
+| err_msg   | 接口异常说明文字            | 是    | 无         |
+| err_type  | 接口异常类型              | 否    | Exception |
+
+### 公共异常
+
+公共异常为框架调用层面的异常，由ApiZen统一提供和管理。当前版本，公共异常信息在app/apizen/exceptions.py下。
 
 示例
 
 ```python
-# API 系统层面异常信息，以1000开始
-class ApiSysExceptions(ApiBaseExceptions):
-    # code 1000 为保留编码，代表执行成功
+# API 系统层面异常信息
+class ApiSysExceptions:
+    # code 1000 为保留编码，代表执行成功，异常信息以1001开始
     # 服务不可用
-    missing_system_error = {'api_code': 1001, 'http_code': 403, 'api_msg': '服务不可用', 'ex_type': Exception}
+    missing_system_error = ApiException(err_code=1001, http_code=403, err_msg='服务不可用', err_type=Exception)
     # 限制时间内调用失败次数
-    app_call_limited = {'api_code': 1002, 'http_code': 403, 'api_msg': '限制时间内调用失败次数', 'ex_type': Exception}
+    app_call_limited = ApiException(err_code=1002, http_code=403, err_msg='限制时间内调用失败次数', err_type=Exception)
     # 请求被禁止
-    forbidden_request = {'api_code': 1003, 'http_code': 403, 'api_msg': '请求被禁止', 'ex_type': Exception}
+    forbidden_request = ApiException(err_code=1003, http_code=403, err_msg='请求被禁止', err_type=Exception)
     # 缺少版本参数
-    missing_version = {'api_code': 1004, 'http_code': 400, 'api_msg': '缺少版本参数', 'ex_type': KeyError}
+    missing_version = ApiException(err_code=1004, http_code=400, err_msg='缺少版本参数', err_type=KeyError)
+    # 不支持的版本号
+    unsupported_version = ApiException(err_code=1005, http_code=400, err_msg='不支持的版本号', err_type=ValueError)
 ```
 
-业务异常写在类ApiSubExceptions中，以2001开始，由具体业务开发定义，配置过程与公共异常相同。
+### 业务异常
+
+业务异常的存储位置可由具体的业务场景定制。业务异常的代码以2001开始，配置过程与公共异常相同。
 
 ```python
 # API 子系统（业务）层级执行结果，以2000开始
-class ApiSubExceptions(ApiBaseExceptions):
-    empty_result = {'api_code': 2000, 'http_code': 200, 'api_msg': '查询结果为空', 'ex_type': Exception}
-    unknown_error = {'api_code': 2001, 'http_code': 500, 'api_msg': '未知异常', 'ex_type': Exception}
-    other_error = {'api_code': 2002, 'http_code': 500, 'api_msg': '其它异常', 'ex_type': Exception}
+class ApiSubExceptions:
+    empty_result = ApiException(err_code=2000, http_code=200, err_msg='查询结果为空', err_type=Exception)
+    unknown_error = ApiException(err_code=2001, http_code=500, err_msg='未知异常', err_type=Exception)
+    other_error = ApiException(err_code=2002, http_code=500, err_msg='其它异常', err_type=Exception)
+    user_not_exits = ApiException(err_code=2003, http_code=404, err_msg='用户不存在', err_type=Exception)
+    wrong_password = ApiException(err_code=2004, http_code=400, err_msg='用户名或密码错误', err_type=Exception)
+    email_registered = ApiException(err_code=2005, http_code=400, err_msg='邮箱已注册', err_type=Exception)
 ```
 
 ## 接口调用测试
