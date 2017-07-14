@@ -10,7 +10,7 @@ from datetime import datetime
 from app.apizen.method import Method
 from flask import g, request, jsonify, current_app
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from app.apizen.exceptions import ApiException, ApiSysExceptions
+from app.apizen.exceptions import ZenException, ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
@@ -124,55 +124,55 @@ def after_request(param):
 def missing_arguments(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
+                             api_msg=api_ex.err_msg,
                              dev_msg=','.join(ex.args))
-    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
         raise ex
     else:
         resp = jsonify(retinfo)
         resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.status_code
+        return resp, api_ex.http_code
 
 
 @webapi.errorhandler(BadRequest)
 def bad_request(ex):
     api_ex = ApiSysExceptions.bad_request
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
+                             api_msg=api_ex.err_msg,
                              dev_msg=ex.description)
-    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
         raise ex
     else:
         resp = jsonify(retinfo)
         resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.status_code
+        return resp, api_ex.http_code
 
 
-@webapi.errorhandler(ApiException)
+@webapi.errorhandler(ZenException)
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message)
+                             api_msg=api_ex.err_msg)
     g.result = retinfo
-    g.status_code = api_ex.status_code
-    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+    g.status_code = api_ex.http_code
+    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
         raise api_ex
     else:
         resp = jsonify(retinfo)
         resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.status_code
+        return resp, api_ex.http_code
 
 
 @webapi.errorhandler(Exception)
 def other_exception(ex):
     api_ex = ApiSysExceptions.system_error
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.message,
+                             api_msg=api_ex.err_msg,
                              dev_msg=ex)
     g.result = retinfo
-    g.status_code = api_ex.status_code
-    if current_app.config['DEBUG'] and api_ex.status_code >= 500:
+    g.status_code = api_ex.http_code
+    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
         raise ex
     else:
         resp = jsonify(retinfo)
         resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.status_code
+        return resp, api_ex.http_code
