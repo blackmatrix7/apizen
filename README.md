@@ -10,7 +10,7 @@
 
 项目有大量的web api开发工作，如果使用传统的开发方式，需要编写大量的样板代码，如每个web api都需要注册路由，检查请求参数，处理返回结果。
 
-基于上述原因创建此项目，目标是能快速将Python函数转换成web api，统一接口入口，不用重复注册路由，统一对请求的参数进行检查，统一api返回格式，支持api版本管理，对一些公共层面的异常进行处理(如请求参数缺失)。
+基于上述原因创建ApiZen，目标是能快速将Python函数转换成web api，统一接口入口，不用重复注册路由，统一对请求的参数进行检查，统一api返回格式，支持api版本管理，对一些公共层面的异常进行处理(如请求参数缺失)。
 
 同时，希望能尽量减少对函数编写的限制，让尽量多的python函数，尽少甚至不做任何修改，只通过简单的添加一个调用名称，可以直接转换成web api。
 
@@ -175,11 +175,48 @@ ApiZen不仅可以对接口参数是否必填进行判断，还可以对接口�
 
 ```python
 from app.apizen.schema import Integer, String, Float, Dict, DateTime
-def register_user_plus(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'), email=None):
+def register_user_plus(name, age: Integer, birthday: DateTime('%Y/%m/%d'), email=None):
     return {'name': name, 'age': age, 'birthday': birthday, 'email': email}
 ```
 
+请求接口，注意age传入的值是19.1
 
+ http://127.0.0.1:8080/api/router/rest?v=1.0&method=matrix.api.register_user_plus&name=tom&age=19.1&birthday=2007/12/31
+
+因为age传入的值为19.1，不符合Integer的要求，所以返回异常
+
+```json
+{
+    "meta": {
+        "code": 1022,
+        "message": "参数类型错误：age <Integer>"
+    },
+    "respone": null
+}
+```
+
+比较特殊的类型是DateTime，在默认情况下，DateTime会采用Flask配置文件中，DATETIME_FORMAT配置的格式类型，默认为'%Y/%m/%d %H:%M:%S'。
+
+在设定参数类型提示时，可以自定义DateTime格式的类型，如上述例子的DateTime('%Y/%m/%d')，此时会依据自定义的日期格式判断调用者传入的参数是否合法。
+
+### 使用装饰器
+
+ApiZen通过函数签名获取接口函数参数，以此判断web api调用请求是否符合接口参数要求。
+
+当使用装饰器时，会导致获取到的函数签名错误（获取到装饰器的函数签名），从而无法正常判断接口所需参数。
+
+所以在编写装饰器时，需要在包装器函数上增加一个functools中内置的装饰器 wraps，才能获取正确的函数签名。
+
+```Python
+from functools import wraps
+
+def test_decorator(func):
+    # 需要在包装器函数上增加一个functools中内置的装饰器 wraps
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+```
 
 
 
@@ -198,24 +235,7 @@ def set_user(user_id: int, name: str, mark: float, age: int=19):
     ]
 ```
 
-### 使用装饰器
 
-接口路由中，通过函数签名获取接口函数参数，以此判断web api调用请求是否符合接口参数要求。
-
-当使用装饰器时，会导致获取到的函数签名错误（获取到装饰器的函数签名），从而无法正常判断接口所需参数。
-
-所以在编写装饰器时，需要在包装器函数上增加一个functools中内置的装饰器 wraps，才能获取正确的函数签名。
-
-```python
-from functools import wraps
-
-def test_decorator(func):
-    # 需要在包装器函数上增加一个functools中内置的装饰器 wraps
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-    return wrapper
-```
 
 ### 判断接口参数类型
 
