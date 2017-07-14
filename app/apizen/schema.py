@@ -151,6 +151,7 @@ class _Model(TypeBase):
         result.raw_data = data
         return result
 
+
 Integer = _Integer()
 List = _List()
 Float = _Float()
