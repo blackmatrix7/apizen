@@ -8,8 +8,8 @@
 import json
 import copy
 from app.database import db
-from datetime import datetime
 from json import JSONDecodeError
+from datetime import datetime, date
 from .exceptions import ApiSysExceptions
 
 __author__ = 'blackmatrix'
@@ -58,8 +58,6 @@ class _Integer(int, TypeBase):
         else:
             raise ValueError
 
-Integer = _Integer()
-
 
 class _String(str, TypeBase):
     __type__ = 'String'
@@ -70,9 +68,6 @@ class _String(str, TypeBase):
         return str(_value)
 
 
-String = _String()
-
-
 class _Float(float, TypeBase):
     __type__ = 'Float'
 
@@ -80,9 +75,6 @@ class _Float(float, TypeBase):
     def convert(*, value):
         _value = copy.copy(value)
         return float(_value)
-
-
-Float = _Float()
 
 
 class _Dict(dict, TypeBase):
@@ -98,9 +90,6 @@ class _Dict(dict, TypeBase):
             raise ValueError
 
 
-Dict = _Dict()
-
-
 class _List(list, TypeBase):
     __type__ = 'List'
 
@@ -114,10 +103,20 @@ class _List(list, TypeBase):
             raise ValueError
 
 
-List = _List()
+class _Date(date, TypeBase):
+    __type__ = 'DateTime'
+
+    def convert(self, *, value=None):
+        _value = copy.copy(value)
+        _value = datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
+        return _value
+
+    def __init__(self, format_='%Y-%m-%d'):
+        self.format_ = format_
+        super().__init__()
 
 
-class DateTime(TypeBase, datetime):
+class _DateTime(datetime, TypeBase):
     __type__ = 'DateTime'
 
     def convert(self, *, value=None):
@@ -128,6 +127,15 @@ class DateTime(TypeBase, datetime):
     def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
         self.format_ = format_
         super().__init__()
+
+
+Integer = _Integer()
+List = _List()
+Float = _Float()
+String = _String()
+Dict = _Dict()
+DateTime = _DateTime
+Date = _Date
 
 
 def dict2model(data, model):
@@ -169,8 +177,3 @@ def convert(key, value, default_value, type_hints):
         raise api_ex
     else:
         return value
-
-
-if __name__ == '__main__':
-    test = {'key': {'value': 'a', 'hello': 'python'}, 'test': 1}
-    print(test.keys())
