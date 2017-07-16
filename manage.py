@@ -18,7 +18,7 @@ from app.user.controller import new_user
 __author__ = 'blackmatrix'
 
 # command line env
-if sys.argv and len(sys.argv) >= 1 and '-env' in sys.argv[1]:
+if sys.argv and len(sys.argv) > 1 and '-env' in sys.argv[1]:
     app_config = sys.argv[1][sys.argv[1].find('=') + 1:]
 else:
     app_config = None
