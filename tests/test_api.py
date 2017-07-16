@@ -80,6 +80,14 @@ class FlaskTestCase(unittest.TestCase):
 
     # 测试自定义类型判断
 
+    # 测试application/x-www-form-urlencoded请求方式
+
+    # 测试application/json请求方式
+
+    # 测试json转换成dict
+
+    # 测试json转换成list
+
     # 测试抛出异常
 
     # 测试自定义异常内容
