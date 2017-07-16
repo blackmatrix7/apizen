@@ -10,7 +10,7 @@ import requests
 __author__ = 'blackmatrix'
 
 
-class FlaskTestCase(unittest.TestCase):
+class ApiZenTestCase(unittest.TestCase):
     @property
     def request_url(self):
         return '{host}?v={version}&method={method}'.format(
