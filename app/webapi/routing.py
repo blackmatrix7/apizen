@@ -31,7 +31,7 @@ def format_retinfo(response=None, err_code=1000,
                 'message': '{0}: {1}'.format(api_msg, dev_msg)
                 if current_app.config['DEBUG'] and dev_msg else api_msg
             },
-        'respone': response
+        'response': response
     }
 
 
