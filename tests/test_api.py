@@ -82,7 +82,7 @@ class FlaskTestCase(unittest.TestCase):
 
     # 测试application/x-www-form-urlencoded请求方式
 
-    # 测试application/json请求方式
+    # 测试application/json
 
     # 测试json转换成dict
 
