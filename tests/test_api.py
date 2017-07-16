@@ -43,6 +43,15 @@ class FlaskTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '错误或不合法的json格式'
 
+    # 测试多个的Content-Type
+    def test_mulit_content_type(self):
+        headers = {'Content-Type': 'application/x-www-form-urlencoded;text/plain'}
+        self.api_method = 'matrix.api.first-api'
+        resp = requests.post(self.request_url, headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['response'] == '这是第一个Api例子'
+
     # 测试参数缺失
     def test_missing_args(self):
         self.api_method = 'matrix.api.register_user'
@@ -69,6 +78,33 @@ class FlaskTestCase(unittest.TestCase):
         data = resp.json()
         assert '参数类型错误：age <Integer>' == data['meta']['message']
 
+    # 测试自定义类型判断
+
+    # 测试抛出异常
+
+    # 测试自定义异常内容
+
+    # 测试保留原始返回结果
+
+    # 测试自定义日期格式
+
+    # 测试使用装饰器的两种情况
+
+    # 测试只允许get请求
+
+    # 测试只允许post请求
+
+    # 测试不合法的json格式
+
+    # 测试接口版本禁用
+
+    # 测试接口停用
+
+    # 测试不支持的版本号
+
+    # 测试不存在的方法名
+
+    # 测试错误的api配置
 
 
 if __name__ == '__main__':
