@@ -27,7 +27,21 @@ class FlaskTestCase(unittest.TestCase):
         resp = requests.get(self.request_url)
         assert resp.status_code == 200
         data = resp.json()
-        assert '这是第一个Api例子' in data['respone']
+        assert '这是第一个Api例子' in data['response']
+
+    # 测试错误的Content-Type
+    def test_error_content_type(self):
+        headers = {'Content-Type': 'text/plain'}
+        self.api_method = 'matrix.api.first-api'
+        resp = requests.post(self.request_url, headers=headers)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '不被接受的Content-Type'
+        headers = {'Content-Type': 'application/json'}
+        resp = requests.get(self.request_url, headers=headers)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '错误或不合法的json格式'
 
     # 测试参数缺失
     def test_missing_args(self):
