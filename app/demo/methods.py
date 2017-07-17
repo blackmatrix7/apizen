@@ -6,11 +6,12 @@
 # @File: methods.py
 # @Software: PyCharm
 from .controller import *
-from ..apizen.version import ApiMethodsBase
+from ..apizen.version import ApiMethodsBase, version
 
 __author__ = 'blackmatrix'
 
 
+@version('demo', enable=False)
 class DemoApiMethods(ApiMethodsBase):
     api_methods = {
         # 第一个API
@@ -37,6 +38,10 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.only-post': {'func': first_api, 'methods': ['post']},
         # 允许post和get
         'matrix.api.get-post': {'func': first_api},
+        # 停用API
+        'matrix.api.api-stop': {'func': first_api, 'enable': False},
+        # 错误的API配置
+        'matrix.api.err-api': {'func': first_api()},
         # 错误的函数编写
         'matrix.api.err-func': {'func': demo.err_func},
         # 实例方法调用
@@ -47,8 +52,6 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.send-kwargs': {'func': demo.send_kwargs},
         # API版本继承
         'matrix.api.raise-error': {'func': raise_error},
-        # 停用API
-        'matrix.api.api-stop': {'func': raise_error, 'enable': False},
         # 保存到数据库
         'matrix.api.save-db': {'func': save_to_db}
     }

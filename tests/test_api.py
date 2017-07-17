@@ -203,32 +203,58 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '错误或不合法的json格式'
 
+    # 测试接口停用
+    def test_api_stop(self):
+        self.api_method = 'matrix.api.api-stop'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 405
+        data = resp.json()
+        assert data['meta']['message'] == 'api已经停用'
+
+    # 测试不支持的版本号
+    def test_unsupported_version(self):
+        self.api_method = 'matrix.api.first-api'
+        self.api_version = '9.99'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '不支持的版本号'
+        # 恢复正常的版本号
+        self.api_version = '1.0'
+
+    # 测试不存在的方法名
+    def test_invalid_method(self):
+        self.api_method = 'matrix.api.xxxxx'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 404
+        data = resp.json()
+        assert data['meta']['message'] == '不存在的方法名'
+
+    # 测试接口版本禁用
+    def test_version_stop(self):
+        self.api_method = 'matrix.api.first-api'
+        self.api_version = 'demo'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '接口版本已停用'
+        # 恢复正常的版本号
+        self.api_version = '1.0'
+
+    # 测试错误的api配置
+    def test_error_api_config(self):
+        self.api_method = 'matrix.api.err-api'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 500
+        data = resp.json()
+        assert data['meta']['message'] == '错误的API配置'
+
     # 测试自定义日期格式
     def test_custom_date(self):
         pass
 
     # 测试使用装饰器的两种情况
     def test_use_decorator(self):
-        pass
-
-    # 测试接口版本禁用
-    def test_version_stop(self):
-        pass
-
-    # 测试接口停用
-    def test_api_stop(self):
-        pass
-
-    # 测试不支持的版本号
-    def test_unsupported_version(self):
-        pass
-
-    # 测试不存在的方法名
-    def test_invalid_method(self):
-        pass
-
-    # 测试错误的api配置
-    def test_error_api_config(self):
         pass
 
 
