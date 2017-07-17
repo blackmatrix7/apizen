@@ -30,6 +30,14 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert '这是第一个Api例子' in data['response']
 
+    # 测试缺少Content-Type
+    def test_missing_content_type(self):
+        self.api_method = 'matrix.api.first-api'
+        resp = requests.post(self.request_url)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '缺少Content-Type'
+
     # 测试错误的Content-Type
     def test_error_content_type(self):
         headers = {'Content-Type': 'text/plain'}
@@ -154,28 +162,53 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['message'] == '保留原始返回格式'
 
+    # 测试只允许get请求
+    def test_only_get(self):
+        self.api_method = 'matrix.api.only-get'
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        resp = requests.post(self.request_url, headers=headers)
+        assert resp.status_code == 405
+        data = resp.json()
+        assert data['meta']['message'] == '不支持的http请求方式'
+
+    # 测试只允许post请求
+    def test_only_post(self):
+        self.api_method = 'matrix.api.only-post'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 405
+        data = resp.json()
+        assert data['meta']['message'] == '不支持的http请求方式'
+
+    # 测试同时支持get和post
+    def test_get_post(self):
+        self.api_method = 'matrix.api.get-post'
+        resp = requests.get(self.request_url)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['code'] == 1000
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        resp = requests.post(self.request_url, headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['code'] == 1000
+
+    # 测试不合法的json格式
+    def test_error_json(self):
+        self.api_method = 'matrix.api.json-to-dict'
+        headers = {'Content-Type': 'application/json'}
+        # 修改json字符串，使其错误
+        playload = json.dumps({'user': {'id': 1, 'name': 'jack'}}).replace(',', '.')
+        resp = requests.post(self.request_url, data=playload, headers=headers)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '错误或不合法的json格式'
+
     # 测试自定义日期格式
     def test_custom_date(self):
         pass
 
     # 测试使用装饰器的两种情况
     def test_use_decorator(self):
-        pass
-
-    # 测试只允许get请求
-    def test_only_get(self):
-        pass
-
-    # 测试只允许post请求
-    def test_only_post(self):
-        pass
-
-    # 测试同时支持get和post
-    def test_get_post(self):
-        pass
-
-    # 测试不合法的json格式
-    def test_error_json(self):
         pass
 
     # 测试接口版本禁用

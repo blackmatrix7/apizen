@@ -31,6 +31,12 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.custom-error': {'func': custom_error},
         # 保留原始返回格式
         'matrix.api.raw_response': {'func': raw_data},
+        # 只允许GET请求
+        'matrix.api.only-get': {'func': first_api, 'methods': ['get']},
+        # 只允许POST请求
+        'matrix.api.only-post': {'func': first_api, 'methods': ['post']},
+        # 允许post和get
+        'matrix.api.get-post': {'func': first_api},
         # 错误的函数编写
         'matrix.api.err-func': {'func': demo.err_func},
         # 实例方法调用
@@ -41,8 +47,6 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.send-kwargs': {'func': demo.send_kwargs},
         # API版本继承
         'matrix.api.raise-error': {'func': raise_error},
-        # 只允许POST请求
-        'matrix.api.only-post': {'func': raise_error, 'methods': ['post']},
         # 停用API
         'matrix.api.api-stop': {'func': raise_error, 'enable': False},
         # 保存到数据库
