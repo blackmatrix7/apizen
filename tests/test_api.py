@@ -58,7 +58,7 @@ class ApiZenTestCase(unittest.TestCase):
         resp = requests.get(self.request_url)
         assert resp.status_code == 400
         data = resp.json()
-        assert '缺少方法所需参数：name' == data['meta']['message']
+        assert data['meta']['message'] == '缺少方法所需参数：name'
 
     # 测试参数默认值
     def test_default_arg_value(self):
@@ -76,15 +76,39 @@ class ApiZenTestCase(unittest.TestCase):
         resp = requests.get(self.request_url, params=playload)
         assert resp.status_code == 400
         data = resp.json()
-        assert '参数类型错误：age <Integer>' == data['meta']['message']
+        assert  data['meta']['message'] == '参数类型错误：age <Integer>'
 
     # 测试自定义类型判断
+    def test_custom_arg_type(self):
+        self.api_method = 'matrix.api.validate_email'
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007/12/31', 'email': '123456'}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] ==  '参数类型错误：email <Email>'
 
     # 测试application/x-www-form-urlencoded请求方式
+    def test_form_data(self):
+        self.api_method = 'matrix.api.validate_email'
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007/12/31', 'email': '123456@qq.com'}
+        resp = requests.post(self.request_url, data=playload, headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['message'] == '执行成功'
 
     # 测试application/json
+    def test_app_json(self):
+        self.api_method = 'matrix.api.validate_email'
+        headers = {'Content-Type': 'application/json'}
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007/12/31', 'email': '123456@qq.com'}
+        resp = requests.post(self.request_url, json=playload, headers=headers)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['message'] == '执行成功'
 
     # 测试json转换成dict
+
 
     # 测试json转换成list
 
