@@ -87,6 +87,15 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '参数类型错误：age <Integer>'
 
+    # 测试自定义日期格式
+    def test_custom_date(self):
+        self.api_method = 'matrix.api.register_user_plus'
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007-12-31'}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '参数类型错误：birthday <DateTime>'
+
     # 测试自定义类型判断
     def test_custom_arg_type(self):
         self.api_method = 'matrix.api.validate_email'
@@ -248,10 +257,6 @@ class ApiZenTestCase(unittest.TestCase):
         assert resp.status_code == 500
         data = resp.json()
         assert data['meta']['message'] == '错误的API配置'
-
-    # 测试自定义日期格式
-    def test_custom_date(self):
-        pass
 
     # 测试使用装饰器的两种情况
     def test_use_decorator(self):
