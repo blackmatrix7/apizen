@@ -129,7 +129,7 @@ class _DateTime(datetime, TypeBase):
         super().__init__()
 
 
-class _Email(str, TypeBase):
+class _Email(_String):
     __type__ = 'Email'
 
     @staticmethod
@@ -152,8 +152,22 @@ class _Model(TypeBase):
         return result
 
 
+class _Money(_Float):
+
+    __type__ = 'Money'
+
+    @staticmethod
+    def convert(*, value):
+        value = float(value)
+        if value >= 0 and value == round(value, 2):
+            return value
+        else:
+            raise ValueError
+
+
 Integer = _Integer()
 List = _List()
+Money = _Money()
 Float = _Float()
 String = _String()
 Dict = _Dict()
