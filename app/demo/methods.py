@@ -21,8 +21,16 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.register_user_plus': {'func': register_user_plus},
         # 自定义类型判断方式
         'matrix.api.validate_email': {'func': validate_email},
+        # JSON 转 Dict
+        'matrix.api.json-to-dict': {'func': json_to_dict},
+        # JSON 转 List
+        'matrix.api.json-to-list': {'func': json_to_list},
         # 抛出一个异常
-        'matrix.api.return-err': {'func': demo.raise_error},
+        'matrix.api.return-err': {'func': raise_error},
+        # 自定义一个异常信息
+        'matrix.api.custom-error': {'func': custom_error},
+        # 保留原始返回格式
+        'matrix.api.raw_response': {'func': raw_data},
         # 错误的函数编写
         'matrix.api.err-func': {'func': demo.err_func},
         # 实例方法调用
@@ -32,15 +40,11 @@ class DemoApiMethods(ApiMethodsBase):
         # 传递任意参数
         'matrix.api.send-kwargs': {'func': demo.send_kwargs},
         # API版本继承
-        'matrix.api.raise-error': {'func': demo.raise_error},
+        'matrix.api.raise-error': {'func': raise_error},
         # 只允许POST请求
-        'matrix.api.only-post': {'func': demo.raise_error, 'methods': ['post']},
+        'matrix.api.only-post': {'func': raise_error, 'methods': ['post']},
         # 停用API
-        'matrix.api.api-stop': {'func': demo.raise_error, 'enable': False},
-        # 自定义一个异常信息
-        'matrix.api.custom-error': {'func': demo.custom_error},
-        # JSON 转 Dict
-        'matrix.api.json-to-dict': {'func': demo.json_to_dict},
+        'matrix.api.api-stop': {'func': raise_error, 'enable': False},
         # 保存到数据库
         'matrix.api.save-db': {'func': save_to_db}
     }

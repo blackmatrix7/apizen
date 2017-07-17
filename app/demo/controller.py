@@ -9,7 +9,7 @@ from functools import wraps
 from .models import DemoChild, DemoParent
 from app.apizen.method import raw_response
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email
+from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List
 
 __author__ = 'blackmatix'
 
@@ -78,6 +78,40 @@ def validate_email(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'), e
     return {'name': name, 'age': age, 'birthday': birthday, 'email': email}
 
 
+def json_to_dict(user: Dict):
+    return user
+
+
+def json_to_list(user: List):
+    return user
+
+
+# 演示抛出异常
+def raise_error():
+    """
+    接口抛出异常的使用说明，抛出异常信息后，会在返回接口的code中显示对应异常的编号，
+    同时，返回的http code 也会根据异常配置中的status_code而改变
+    :return:  返回异常信息
+    """
+    raise ApiSubExceptions.unknown_error
+
+
+# 演示自定义异常信息
+def custom_error():
+    """
+    接口抛出异常的使用说明，抛出异常信息后，会在返回接口的code中显示对应异常的编号，
+    同时，返回的http code 也会根据异常配置中的status_code而改变
+    :return:  返回异常信息
+    """
+    raise ApiSubExceptions.unknown_error('这是一个自定义异常信息')
+
+
+# 保留原始返回格式
+@raw_response
+def raw_data():
+    return {'id': 1, 'message': '保留原始返回格式'}
+
+
 class ApiDemo:
 
     def __init__(self):
@@ -139,26 +173,6 @@ class ApiDemo:
         :return:  返回self的值
         """
         return self
-
-    # 演示抛出异常
-    @staticmethod
-    def raise_error():
-        """
-        接口抛出异常的使用说明，抛出异常信息后，会在返回接口的code中显示对应异常的编号，
-        同时，返回的http code 也会根据异常配置中的status_code而改变
-        :return:  返回异常信息
-        """
-        raise ApiSubExceptions.unknown_error
-
-    # 演示自定义异常信息
-    @staticmethod
-    def custom_error(msg):
-        """
-        接口抛出异常的使用说明，抛出异常信息后，会在返回接口的code中显示对应异常的编号，
-        同时，返回的http code 也会根据异常配置中的status_code而改变
-        :return:  返回异常信息
-        """
-        raise ApiSubExceptions.unknown_error(msg)
 
     # 演示接口接收任意k/w参数
     @staticmethod
