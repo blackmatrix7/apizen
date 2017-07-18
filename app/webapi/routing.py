@@ -108,8 +108,8 @@ def after_request(param):
                 'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
                 'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
                 'response_param': response_param, 'request_raw_data': g.request_raw_data,
-                'request_time': g.get('request_time').strftime(current_app.config['DATETIME_FORMAT']),
-                'response_time': g.get('response_time').strftime(current_app.config['DATETIME_FORMAT']),
+                'request_time': g.get('request_time').strftime(current_app.config['APIZEN_DATETIME_FORMAT']),
+                'response_time': g.get('response_time').strftime(current_app.config['APIZEN_DATETIME_FORMAT']),
                 'time_consuming': time_consuming}
     if param.status_code >= 400:
         from app.tasks import send_mail_async
