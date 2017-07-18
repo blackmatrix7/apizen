@@ -258,9 +258,24 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '错误的API配置'
 
-    # 测试使用装饰器的两种情况
-    def test_use_decorator(self):
-        pass
+    # 测试布尔值类型
+    def test_is_bool(self):
+        self.api_method = 'matrix.api.is-bool'
+        playload = {'value': 'True'}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['response'] is True
+        playload = {'value': True}
+        resp = requests.post(self.request_url, json=playload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['response'] is True
+        playload = {'value': '123'}
+        resp = requests.post(self.request_url, json=playload)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '参数类型错误：value <Bool>'
 
 
 if __name__ == '__main__':

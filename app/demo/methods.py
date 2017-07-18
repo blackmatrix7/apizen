@@ -42,6 +42,8 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.api-stop': {'func': first_api, 'enable': False},
         # 错误的API配置
         'matrix.api.err-api': {'func': first_api()},
+        # 布尔值类型
+        'matrix.api.is-bool': {'func': is_bool},
         # 错误的函数编写
         'matrix.api.err-func': {'func': demo.err_func},
         # 实例方法调用

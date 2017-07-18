@@ -9,7 +9,7 @@ from functools import wraps
 from .models import DemoChild, DemoParent
 from app.apizen.method import raw_response
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List
+from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool
 
 __author__ = 'blackmatix'
 
@@ -110,6 +110,15 @@ def custom_error():
 @raw_response
 def raw_data():
     return {'id': 1, 'message': '保留原始返回格式'}
+
+
+def is_bool(value: Bool):
+    """
+    测试布尔值类型
+    :param value: 
+    :return: 
+    """
+    return value
 
 
 class ApiDemo:
