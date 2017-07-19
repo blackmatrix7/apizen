@@ -17,14 +17,14 @@ from app.apizen.exceptions import ZenException, ApiSysExceptions
 __author__ = 'blackmatrix'
 
 # 创建蓝图
-webapi = Blueprint('webapi', __name__)
+apizen = Blueprint('apizen', __name__)
 
 
 class ApiZen:
 
     @staticmethod
     def init_app(app):
-        app.register_blueprint(webapi)
+        app.register_blueprint(apizen)
         datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
@@ -69,7 +69,7 @@ def format_retinfo(response=None, err_code=1000,
     }
 
 
-@webapi.route(r'/api/router/rest', methods=['GET', 'POST'])
+@apizen.route(r'/api/router/rest', methods=['GET', 'POST'])
 def api_routing(v=None, method=None):
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
@@ -105,7 +105,7 @@ def api_routing(v=None, method=None):
     return resp, 200
 
 
-@webapi.before_request
+@apizen.before_request
 def before_request():
     request_param = {key.lower(): value for key, value in request.environ.items()
                      if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
@@ -126,7 +126,7 @@ def before_request():
         raise ApiSysExceptions.invalid_json
 
 
-@webapi.after_request
+@apizen.after_request
 def after_request(param):
     response_param = {'charset': param.charset,
                       'content_length': param.content_length,
@@ -154,7 +154,7 @@ def after_request(param):
     return param
 
 
-@webapi.errorhandler(BadRequestKeyError)
+@apizen.errorhandler(BadRequestKeyError)
 def missing_arguments(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
@@ -168,7 +168,7 @@ def missing_arguments(ex):
         return resp, api_ex.http_code
 
 
-@webapi.errorhandler(BadRequest)
+@apizen.errorhandler(BadRequest)
 def bad_request(ex):
     api_ex = ApiSysExceptions.bad_request
     retinfo = format_retinfo(err_code=api_ex.err_code,
@@ -182,7 +182,7 @@ def bad_request(ex):
         return resp, api_ex.http_code
 
 
-@webapi.errorhandler(ZenException)
+@apizen.errorhandler(ZenException)
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg)
@@ -196,7 +196,7 @@ def api_exception(api_ex):
         return resp, api_ex.http_code
 
 
-@webapi.errorhandler(Exception)
+@apizen.errorhandler(Exception)
 def other_exception(ex):
     api_ex = ApiSysExceptions.system_error
     retinfo = format_retinfo(err_code=api_ex.err_code,
