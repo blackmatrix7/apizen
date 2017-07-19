@@ -6,6 +6,8 @@
 # @File    : config.py
 # @Software: PyCharm
 import os
+from app.demo.methods import DemoApiMethods
+from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 
 __author__ = 'blackmatrix'
 
@@ -42,6 +44,7 @@ class BaseConfig:
 
     # API ZEN
     APIZEN_ROUTE = '/api/router/rest'
+    APIZEN_VSESION = (DemoApiMethods, ApiMethodsV10, ApiMethodsV11)
     APIZEN_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
 
     # Celery

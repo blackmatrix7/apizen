@@ -3,7 +3,7 @@
 # @Time    : 2017/5/28 20:47
 # @Author  : Matrix
 # @Site    : 
-# @File    : __init__.py.py
+# @File    : __init__.py
 # @Software: PyCharm
 from flask import Flask
 from app.exts import db
@@ -63,7 +63,6 @@ def create_app(app_config=None):
 
 
 def register_blueprints(app):
-    # app.register_blueprint(webapi, url_prefix='/api')
     app.register_blueprint(oauth, url_prefix='/oauth')
     app.register_blueprint(user, url_prefix='/user')
 
