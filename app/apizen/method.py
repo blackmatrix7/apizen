@@ -7,8 +7,8 @@
 # @Software: PyCharm
 from functools import wraps
 from inspect import unwrap
+from .schema import convert
 from .version import allversion
-from app.apizen.schema import convert
 from inspect import signature, Parameter
 from .exceptions import ApiSysExceptions
 

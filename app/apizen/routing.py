@@ -11,8 +11,8 @@ from .method import Method
 from datetime import datetime
 from flask.json import JSONEncoder
 from flask import g, request, jsonify, current_app
+from .exceptions import ZenException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from app.apizen.exceptions import ZenException, ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
