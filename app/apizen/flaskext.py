@@ -16,7 +16,7 @@ class ApiZen:
 
     @staticmethod
     def init_app(app):
-        datetime_format = app.config.get('DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
+        datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
 

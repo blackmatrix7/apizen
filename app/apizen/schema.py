@@ -131,6 +131,25 @@ class _DateTime(datetime, TypeBase):
         super().__init__()
 
 
+class _Bool(bool, TypeBase):
+
+    __type__ = 'Bool'
+
+    @staticmethod
+    def convert(*, value=None):
+        _value = str(value).lower()
+        if _value in ('true', 'yes', '是', '0'):
+            _value = True
+        elif _value in ('false', 'no', '否', '1'):
+            _value = False
+        else:
+            _value = value
+        if isinstance(_value, bool):
+            return _value
+        else:
+            raise ValueError
+
+
 class _Email(_String):
     __type__ = 'Email'
 
@@ -170,6 +189,7 @@ class _Money(_Float):
 Integer = _Integer()
 List = _List()
 Money = _Money()
+Bool = _Bool()
 Float = _Float()
 String = _String()
 Dict = _Dict()

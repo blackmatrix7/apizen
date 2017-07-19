@@ -41,7 +41,8 @@ class BaseConfig:
     )
 
     # API ZEN
-    DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
+    APIZEN_ROUTE = ['/api/router/rest']
+    APIZEN_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
 
     # Celery
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
