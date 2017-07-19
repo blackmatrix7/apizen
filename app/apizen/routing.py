@@ -18,9 +18,6 @@ __author__ = 'blackmatrix'
 
 # 创建蓝图
 webapi = Blueprint('webapi', __name__)
-# Web Api 版本注册
-# register(DemoApiMethods)  # 用于测试版本已停用的情况
-# register(ApiMethodsV10, ApiMethodsV11)
 
 
 class ApiZen:

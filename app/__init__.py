@@ -9,7 +9,6 @@ from flask import Flask
 from app.exts import db
 from app.user import user
 from app.oauth import oauth
-from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
 from flask_environments import Environments
