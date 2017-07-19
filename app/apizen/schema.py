@@ -43,7 +43,9 @@ class TypeMeta(type):
 
 
 class TypeBase(metaclass=TypeMeta):
-    pass
+    @staticmethod
+    def convert(*, value):
+        raise NotImplementedError
 
 
 class _Integer(int, TypeBase):
