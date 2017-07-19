@@ -10,8 +10,8 @@ from decimal import Decimal
 from .method import Method
 from datetime import datetime
 from flask.json import JSONEncoder
+from .exceptions import SysException, ApiSysExceptions
 from flask import g, request, jsonify, current_app
-from .exceptions import ZenException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 
 __author__ = 'blackmatrix'
@@ -182,7 +182,7 @@ def bad_request(ex):
         return resp, api_ex.http_code
 
 
-@apizen.errorhandler(ZenException)
+@apizen.errorhandler(SysException)
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg)
