@@ -48,7 +48,7 @@ class TypeBase(metaclass=TypeMeta):
         raise NotImplementedError
 
 
-class _Integer(int, TypeBase):
+class TypeInteger(int, TypeBase):
     __type__ = 'Integer'
 
     @staticmethod
@@ -61,7 +61,7 @@ class _Integer(int, TypeBase):
             raise ValueError
 
 
-class _String(str, TypeBase):
+class TypeString(str, TypeBase):
     __type__ = 'String'
 
     @staticmethod
@@ -69,7 +69,7 @@ class _String(str, TypeBase):
         return str(value)
 
 
-class _Float(float, TypeBase):
+class TypeFloat(float, TypeBase):
     __type__ = 'Float'
 
     @staticmethod
@@ -78,7 +78,7 @@ class _Float(float, TypeBase):
         return float(_value)
 
 
-class _Dict(dict, TypeBase):
+class TypeDict(dict, TypeBase):
     __type__ = 'Dict'
 
     @staticmethod
@@ -91,7 +91,7 @@ class _Dict(dict, TypeBase):
             raise ValueError
 
 
-class _List(list, TypeBase):
+class TypeList(list, TypeBase):
     __type__ = 'List'
 
     @staticmethod
@@ -104,7 +104,7 @@ class _List(list, TypeBase):
             raise ValueError
 
 
-class _Date(date, TypeBase):
+class TypeDate(date, TypeBase):
     __type__ = 'DateTime'
 
     def convert(self, *, value=None):
@@ -117,7 +117,7 @@ class _Date(date, TypeBase):
         super().__init__()
 
 
-class _DateTime(datetime, TypeBase):
+class TypeDatetime(datetime, TypeBase):
     __type__ = 'DateTime'
 
     def convert(self, *, value=None):
@@ -130,7 +130,7 @@ class _DateTime(datetime, TypeBase):
         super().__init__()
 
 
-class _Bool(bool, TypeBase):
+class TypeBool(bool, TypeBase):
 
     __type__ = 'Bool'
 
@@ -149,7 +149,7 @@ class _Bool(bool, TypeBase):
             raise ValueError
 
 
-class _Email(_String):
+class TypeEmail(TypeString):
     __type__ = 'Email'
 
     @staticmethod
@@ -160,7 +160,7 @@ class _Email(_String):
             raise ValueError
 
 
-class _Model(TypeBase):
+class TypeModel(TypeBase):
 
     def __init__(self, model):
         self.model = model
@@ -172,7 +172,7 @@ class _Model(TypeBase):
         return result
 
 
-class _Money(_Float):
+class TypeMoney(TypeFloat):
 
     __type__ = 'Money'
 
@@ -185,17 +185,17 @@ class _Money(_Float):
             raise ValueError
 
 
-Integer = _Integer()
-List = _List()
-Money = _Money()
-Bool = _Bool()
-Float = _Float()
-String = _String()
-Dict = _Dict()
-Date = _Date
-Model = _Model
-DateTime = _DateTime
-Email = _Email
+Integer = TypeInteger()
+List = TypeList()
+Money = TypeMoney()
+Bool = TypeBool()
+Float = TypeFloat()
+String = TypeString()
+Dict = TypeDict()
+Date = TypeDate
+Model = TypeModel
+DateTime = TypeDatetime
+Email = TypeEmail
 
 
 def dict2model(data, model):
