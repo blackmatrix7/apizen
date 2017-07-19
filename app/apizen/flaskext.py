@@ -5,6 +5,7 @@
 # @Site: https://github.com/blackmatrix7
 # @File: flaskext.py
 # @Software: PyCharm
+from flask import Blueprint
 from decimal import Decimal
 from datetime import datetime
 from flask.json import JSONEncoder
@@ -39,6 +40,15 @@ class ApiZenJSONEncoder(JSONEncoder):
             return list(iterable)
         return JSONEncoder.default(self, obj)
 
+
+# 创建蓝图
+webapi = Blueprint('webapi', __name__)
+# Web Api 版本注册
+# register(DemoApiMethods)  # 用于测试版本已停用的情况
+# register(ApiMethodsV10, ApiMethodsV11)
+
+# 必须注册完蓝图后才能导入
+from .routing import *
 
 if __name__ == '__main__':
     pass

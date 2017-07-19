@@ -10,7 +10,7 @@ from flask_mail import Mail
 from flask_celery import Celery
 from flask_script import Manager
 from flask_migrate import Migrate
-from app.apizen.flaskext import ApiZen
+from app.apizen.routing import ApiZen
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import MigrateCommand
 

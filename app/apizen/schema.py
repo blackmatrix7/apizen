@@ -8,7 +8,6 @@
 import re
 import json
 import copy
-from app.database import db
 from json import JSONDecodeError
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
@@ -225,8 +224,6 @@ def convert(key, value, default_value, type_hints):
             instance = _type_hints if isinstance(_type_hints, Typed) else _type_hints() if issubclass(_type_hints, Typed) else object()
             if isinstance(instance, Typed):
                 value = instance.convert(value=value)
-            elif issubclass(_type_hints, db.Model):
-                value = dict2model(value, _type_hints)
             return value
     except JSONDecodeError:
         raise ApiSysExceptions.invalid_json

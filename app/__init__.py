@@ -6,14 +6,14 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 from flask import Flask
+from app.exts import db
 from app.user import user
 from app.oauth import oauth
-from app.database import db
 from app.webapi import webapi
 from app.config import configs
 from flask_script import Manager
 from flask_environments import Environments
-from app.exts import mail, celery, apizen, migrate, manager
+from app.exts import mail, celery, migrate, manager, apizen
 
 __author__ = 'blackmatrix'
 
@@ -63,7 +63,7 @@ def create_app(app_config=None):
 
 
 def register_blueprints(app):
-    app.register_blueprint(webapi, url_prefix='/api')
+    # app.register_blueprint(webapi, url_prefix='/api')
     app.register_blueprint(oauth, url_prefix='/oauth')
     app.register_blueprint(user, url_prefix='/user')
 

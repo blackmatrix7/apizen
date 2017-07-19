@@ -41,7 +41,7 @@ class BaseConfig:
     )
 
     # API ZEN
-    APIZEN_ROUTE = ['/api/router/rest']
+    APIZEN_ROUTE = '/api/router/rest'
     APIZEN_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
 
     # Celery
