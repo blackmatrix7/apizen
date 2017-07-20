@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2017/5/28 20:50
-# @Author  : BlackMatrix
-# @Site    : 
-# @File    : config.py
-# @Software: PyCharm
+# @Time : 2017/5/28 20:50
+# @Author : BlackMatrix
+# @Sit :
+# @File : config.py
+# @Software : PyCharm
 import os
 from app.demo.methods import DemoApiMethods
 from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
