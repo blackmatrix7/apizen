@@ -25,21 +25,21 @@ class ApiZen:
 
     @staticmethod
     def init_app(app):
-        # 在蓝图上注册路由
+        # 在蓝图上注册handler
         apizen.before_request(before_request)
         apizen.after_request(after_request)
-        apizen.before_request(before_request)
         apizen.errorhandler(BadRequestKeyError)(missing_arguments)
         apizen.errorhandler(BadRequest)(bad_request)
         apizen.errorhandler(SysException)(api_exception)
         apizen.errorhandler(Exception)(other_exception)
-        # 注册蓝图，需要先通过蓝图注册路由，再把蓝图注册到Flask App上
+        # 在蓝图上注册路由
         routes = app.config['APIZEN_ROUTE']
         if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
             for route in routes:
                 apizen.route(route, methods=['GET', 'POST'])(api_routing)
         elif isinstance(routes, (str, bytes)):
             apizen.route(routes, methods=['GET', 'POST'])(api_routing)
+        # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
         datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
