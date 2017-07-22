@@ -25,7 +25,7 @@ class ApiZen:
 
     @staticmethod
     def init_app(app):
-        # 注册路由
+        # 在蓝图上注册路由
         apizen.before_request(before_request)
         apizen.after_request(after_request)
         apizen.before_request(before_request)
@@ -38,7 +38,7 @@ class ApiZen:
         if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
             for route in routes:
                 apizen.route(route, methods=['GET', 'POST'])(api_routing)
-        else:
+        elif isinstance(routes, (str, bytes)):
             apizen.route(routes, methods=['GET', 'POST'])(api_routing)
         app.register_blueprint(apizen)
         datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
