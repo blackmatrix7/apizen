@@ -77,7 +77,7 @@ def format_retinfo(response=None, err_code=1000,
     }
 
 
-# @apizen.route(r'/api/router/rest', methods=['GET', 'POST'])
+# 对应的路由：@apizen.route(r'/api/router/rest', methods=['GET', 'POST'])
 def api_routing(v=None, method=None):
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
@@ -113,7 +113,7 @@ def api_routing(v=None, method=None):
     return resp, 200
 
 
-# @apizen.before_request
+# 对应的路由：@apizen.before_request
 def before_request():
     request_param = {key.lower(): value for key, value in request.environ.items()
                      if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
@@ -134,7 +134,7 @@ def before_request():
         raise ApiSysExceptions.invalid_json
 
 
-# @apizen.after_request
+# 对应的路由：@apizen.after_request
 def after_request(param):
     response_param = {'charset': param.charset,
                       'content_length': param.content_length,
@@ -162,7 +162,7 @@ def after_request(param):
     return param
 
 
-# @apizen.errorhandler(BadRequestKeyError)
+# 对应的路由：@apizen.errorhandler(BadRequestKeyError)
 def missing_arguments(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
@@ -176,7 +176,7 @@ def missing_arguments(ex):
         return resp, api_ex.http_code
 
 
-# @apizen.errorhandler(BadRequest)
+# 对应的路由：@apizen.errorhandler(BadRequest)
 def bad_request(ex):
     api_ex = ApiSysExceptions.bad_request
     retinfo = format_retinfo(err_code=api_ex.err_code,
@@ -190,7 +190,7 @@ def bad_request(ex):
         return resp, api_ex.http_code
 
 
-# @apizen.errorhandler(SysException)
+# 对应的路由：@apizen.errorhandler(SysException)
 def api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg)
@@ -204,7 +204,7 @@ def api_exception(api_ex):
         return resp, api_ex.http_code
 
 
-# @apizen.errorhandler(Exception)
+# 对应的路由：@apizen.errorhandler(Exception)
 def other_exception(ex):
     api_ex = ApiSysExceptions.system_error
     retinfo = format_retinfo(err_code=api_ex.err_code,
