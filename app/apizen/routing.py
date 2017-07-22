@@ -24,7 +24,7 @@ apizen = Blueprint('apizen', __name__)
 class ApiZen:
 
     @staticmethod
-    def init_app(app):
+    def init_app(app, routes=None):
         # 在蓝图上注册handler
         apizen.before_request(before_request)
         apizen.after_request(after_request)
@@ -33,7 +33,8 @@ class ApiZen:
         apizen.errorhandler(SysException)(api_exception)
         apizen.errorhandler(Exception)(other_exception)
         # 在蓝图上注册路由
-        routes = app.config['APIZEN_ROUTE']
+        if routes is None:
+            routes = app.config['APIZEN_ROUTE']
         if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
             for route in routes:
                 apizen.route(route, methods=['GET', 'POST'])(api_routing)

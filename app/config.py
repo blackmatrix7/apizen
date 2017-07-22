@@ -44,9 +44,9 @@ class BaseConfig:
 
     # API ZEN
     APIZEN_ROUTE = ['/api/router/rest', '/api/router/json']
-    APIZEN_RESP_FORMAT = '{"meta": {"code": {code}, "message": {message}}, "response": {response}}'
     APIZEN_VSESION = (DemoApiMethods, ApiMethodsV10, ApiMethodsV11)
     APIZEN_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
+    APIZEN_RESP_FORMAT = '{"meta": {"code": {code}, "message": {message}}, "response": {response}}'
 
     # Celery
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
