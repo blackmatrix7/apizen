@@ -43,7 +43,7 @@ class BaseConfig:
     )
 
     # API ZEN
-    APIZEN_ROUTE = '/api/router/rest'
+    APIZEN_ROUTE = ['/api/router/rest', '/api/router/json']
     APIZEN_VSESION = (DemoApiMethods, ApiMethodsV10, ApiMethodsV11)
     APIZEN_DATETIME_FORMAT = '%Y/%m/%d %H:%M:%S'
 

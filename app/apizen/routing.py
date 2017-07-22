@@ -9,6 +9,7 @@ from flask import Blueprint
 from decimal import Decimal
 from .method import Method
 from datetime import datetime
+from collections import Iterable
 from flask.json import JSONEncoder
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
@@ -24,6 +25,7 @@ class ApiZen:
 
     @staticmethod
     def init_app(app):
+        # 注册路由
         apizen.before_request(before_request)
         apizen.after_request(after_request)
         apizen.before_request(before_request)
@@ -31,7 +33,13 @@ class ApiZen:
         apizen.errorhandler(BadRequest)(bad_request)
         apizen.errorhandler(SysException)(api_exception)
         apizen.errorhandler(Exception)(other_exception)
-        apizen.route(app.config['APIZEN_ROUTE'], methods=['GET', 'POST'])(api_routing)
+        # 注册蓝图，需要先通过蓝图注册路由，再把蓝图注册到Flask App上
+        routes = app.config['APIZEN_ROUTE']
+        if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
+            for route in routes:
+                apizen.route(route, methods=['GET', 'POST'])(api_routing)
+        else:
+            apizen.route(routes, methods=['GET', 'POST'])(api_routing)
         app.register_blueprint(apizen)
         datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
