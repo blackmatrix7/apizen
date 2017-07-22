@@ -24,7 +24,7 @@ apizen = Blueprint('apizen', __name__)
 class ApiZen:
 
     @staticmethod
-    def init_app(app, routes=None):
+    def init_app(app, routes=None, resp_fmt=None):
         # 在蓝图上注册handler
         apizen.before_request(before_request)
         apizen.after_request(after_request)
@@ -42,7 +42,7 @@ class ApiZen:
             apizen.route(routes, methods=['GET', 'POST'])(api_routing)
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
-        datetime_format = app.config.get('APIZEN_DATETIME_FORMAT', '%Y/%m/%d %H:%M:%S')
+        datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
 
@@ -159,8 +159,8 @@ def after_request(param):
                 'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
                 'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
                 'response_param': response_param, 'request_raw_data': g.request_raw_data,
-                'request_time': g.get('request_time').strftime(current_app.config['APIZEN_DATETIME_FORMAT']),
-                'response_time': g.get('response_time').strftime(current_app.config['APIZEN_DATETIME_FORMAT']),
+                'request_time': g.get('request_time').strftime(current_app.config['APIZEN_DATETIME_FMT']),
+                'response_time': g.get('response_time').strftime(current_app.config['APIZEN_DATETIME_FMT']),
                 'time_consuming': time_consuming}
     if param.status_code >= 400:
         from app.tasks import send_mail_async
