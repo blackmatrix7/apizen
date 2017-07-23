@@ -42,6 +42,7 @@ class ApiZen:
             apizen.route(routes, methods=['GET', 'POST'])(api_routing)
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
+        # 自定义日期格式，待修改
         datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
