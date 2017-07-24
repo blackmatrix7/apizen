@@ -54,10 +54,7 @@ class ApiZen:
         """
 
         def get_handler(handler, default_hanlder):
-            if handler is not None and callable(handler):
-                return handler
-            else:
-                return default_hanlder
+            return handler if handler is not None and callable(handler) else default_hanlder
 
         self.before_request = get_handler(before_request, default_before_request)
         self.after_request = get_handler(after_request, default_after_request)
