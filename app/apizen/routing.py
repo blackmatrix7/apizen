@@ -24,32 +24,32 @@ apizen = Blueprint('apizen', __name__)
 class ApiZen:
 
     def __init__(self):
-        self.before_request_handler = None
-        self.after_request_handler = None
-        self.missing_args_handler = None
-        self.bad_request_handler = None
-        self.api_exception_handler = None
-        self.other_exception_handler = None
+        self.before_request = None
+        self.after_request = None
+        self.missing_args = None
+        self.bad_request = None
+        self.api_exception = None
+        self.other_exception = None
 
     def init_app(self, app, routes=None,
                  resp_fmt=None,
-                 before_request_handler=None,
-                 after_request_handler=None,
-                 missing_args_handler=None,
-                 bad_request_handler=None,
-                 api_exception_handler=None,
-                 other_exception_handler=None):
+                 before_request=None,
+                 after_request=None,
+                 missing_args=None,
+                 bad_request=None,
+                 api_exception=None,
+                 other_exception=None):
         """
         初始化App
         :param app: Flask App
         :param routes: 自定义路由规则
         :param resp_fmt: 自定义返回数据格式
-        :param before_request_handler: Flask 接口请求前触发的钩子函数
-        :param after_request_handler: Flask 接口请求后触发的钩子函数
-        :param missing_args_handler: Flask 接口请求参数缺失时触发的钩子函数
-        :param bad_request_handler: Flask 接口请求异常时触发的钩子函数
-        :param api_exception_handler: Flask 接口调用引发Api异常时触发的钩子函数
-        :param other_exception_handler: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
+        :param before_request: Flask 接口请求前触发的钩子函数
+        :param after_request: Flask 接口请求后触发的钩子函数
+        :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
+        :param bad_request: Flask 接口请求异常时触发的钩子函数
+        :param api_exception: Flask 接口调用引发Api异常时触发的钩子函数
+        :param other_exception: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
         :return:
         """
 
@@ -59,12 +59,12 @@ class ApiZen:
             else:
                 return default_hanlder
 
-        self.before_request_handler = get_handler(before_request_handler, before_request)
-        self.after_request_handler = get_handler(after_request_handler, after_request)
-        self.missing_args_handler = get_handler(missing_args_handler, missing_arguments)
-        self.bad_request_handler = get_handler(bad_request_handler, bad_request)
-        self.api_exception_handler = get_handler(api_exception_handler, api_exception)
-        self.other_exception_handler = get_handler(other_exception_handler, other_exception)
+        self.before_request = get_handler(before_request, default_before_request)
+        self.after_request = get_handler(after_request, default_after_request)
+        self.missing_args = get_handler(missing_args, default_missing_args)
+        self.bad_request = get_handler(bad_request, default_bad_request)
+        self.api_exception = get_handler(api_exception, default_api_exception)
+        self.other_exception = get_handler(other_exception, default_other_exception)
 
         # 在蓝图上注册handler
         self.register_handler()
@@ -88,12 +88,12 @@ class ApiZen:
 
     # 在蓝图上注册handler
     def register_handler(self):
-        apizen.before_request(self.before_request_handler)
-        apizen.after_request(self.after_request_handler)
-        apizen.errorhandler(BadRequestKeyError)(self.missing_args_handler)
-        apizen.errorhandler(BadRequest)(self.bad_request_handler)
-        apizen.errorhandler(SysException)(self.api_exception_handler)
-        apizen.errorhandler(Exception)(self.other_exception_handler)
+        apizen.before_request(self.before_request)
+        apizen.after_request(self.after_request)
+        apizen.errorhandler(BadRequestKeyError)(self.missing_args)
+        apizen.errorhandler(BadRequest)(self.bad_request)
+        apizen.errorhandler(SysException)(self.api_exception)
+        apizen.errorhandler(Exception)(self.other_exception)
 
 
 class ApiZenJSONEncoder(JSONEncoder):
@@ -172,7 +172,7 @@ def api_routing(v=None, method=None):
 
 
 # 对应的路由：@apizen.before_request
-def before_request():
+def default_before_request():
     request_param = {key.lower(): value for key, value in request.environ.items()
                      if key in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HTTP_HOST',
                                 'HTTP_ACCEPT', 'HTTP_ACCEPT_ENCODING', 'HTTP_COOKIE',
@@ -192,8 +192,8 @@ def before_request():
         raise ApiSysExceptions.invalid_json
 
 
-# 对应的路由：@apizen.after_request
-def after_request(param):
+# 对应的路由：@apizen.default_after_request
+def default_after_request(param):
     response_param = {'charset': param.charset,
                       'content_length': param.content_length,
                       'content_type': param.content_type,
@@ -221,7 +221,7 @@ def after_request(param):
 
 
 # 对应的路由：@apizen.errorhandler(BadRequestKeyError)
-def missing_arguments(ex):
+def default_missing_args(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
@@ -235,7 +235,7 @@ def missing_arguments(ex):
 
 
 # 对应的路由：@apizen.errorhandler(BadRequest)
-def bad_request(ex):
+def default_bad_request(ex):
     api_ex = ApiSysExceptions.bad_request
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
@@ -249,7 +249,7 @@ def bad_request(ex):
 
 
 # 对应的路由：@apizen.errorhandler(SysException)
-def api_exception(api_ex):
+def default_api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg)
     g.result = retinfo
@@ -263,7 +263,7 @@ def api_exception(api_ex):
 
 
 # 对应的路由：@apizen.errorhandler(Exception)
-def other_exception(ex):
+def default_other_exception(ex):
     api_ex = ApiSysExceptions.system_error
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
