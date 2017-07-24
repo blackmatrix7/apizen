@@ -5,9 +5,9 @@
 # @Site :
 # @File : routing.py
 # @Software: PyCharm
-from flask import Blueprint
 from decimal import Decimal
 from .method import Method
+from .blueprint import apizen
 from datetime import datetime
 from collections import Iterable
 from flask.json import JSONEncoder
@@ -16,9 +16,6 @@ from .exceptions import SysException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 
 __author__ = 'blackmatrix'
-
-# 创建蓝图
-apizen = Blueprint('apizen', __name__)
 
 
 class ApiZen:
