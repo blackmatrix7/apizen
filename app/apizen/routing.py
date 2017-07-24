@@ -23,16 +23,32 @@ apizen = Blueprint('apizen', __name__)
 
 class ApiZen:
 
-    def __init__(self):
-        self.before_request = None
-        self.after_request = None
-        self.missing_args = None
-        self.bad_request = None
-        self.api_exception = None
-        self.other_exception = None
-
-    def init_app(self, app, routes=None,
+    def __init__(self, app=None,
+                 routes=None,
                  resp_fmt=None,
+                 api_routing=None,
+                 before_request=None,
+                 after_request=None,
+                 missing_args=None,
+                 bad_request=None,
+                 api_exception=None,
+                 other_exception=None):
+        self.routes = routes
+        self.resp_fmt = resp_fmt
+        self.api_routing = api_routing or default_api_routing
+        self.before_request = before_request or default_before_request
+        self.after_request = after_request or default_after_request
+        self.missing_args = missing_args or default_missing_args
+        self.bad_request = bad_request or default_bad_request
+        self.api_exception = api_exception or default_api_exception
+        self.other_exception = other_exception or default_other_exception
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app,
+                 routes=None,
+                 resp_fmt=None,
+                 api_routing=None,
                  before_request=None,
                  after_request=None,
                  missing_args=None,
@@ -44,6 +60,7 @@ class ApiZen:
         :param app: Flask App
         :param routes: 自定义路由规则
         :param resp_fmt: 自定义返回数据格式
+        :param api_routing: ApiZen路由函数
         :param before_request: Flask 接口请求前触发的钩子函数
         :param after_request: Flask 接口请求后触发的钩子函数
         :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
@@ -53,15 +70,13 @@ class ApiZen:
         :return:
         """
 
-        def get_handler(handler, default_hanlder):
-            return handler if handler is not None and callable(handler) else default_hanlder
-
-        self.before_request = get_handler(before_request, default_before_request)
-        self.after_request = get_handler(after_request, default_after_request)
-        self.missing_args = get_handler(missing_args, default_missing_args)
-        self.bad_request = get_handler(bad_request, default_bad_request)
-        self.api_exception = get_handler(api_exception, default_api_exception)
-        self.other_exception = get_handler(other_exception, default_other_exception)
+        self.api_routing = api_routing or self.api_routing
+        self.before_request = before_request or self.before_request
+        self.after_request = after_request or self.after_request
+        self.missing_args = missing_args or self.missing_args
+        self.bad_request = bad_request or self.bad_request
+        self.api_exception = api_exception or self.api_exception
+        self.other_exception = other_exception or self.other_exception
 
         # 在蓝图上注册handler
         self.register_handler()
@@ -71,9 +86,9 @@ class ApiZen:
             routes = app.config['APIZEN_ROUTE']
         if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
             for route in routes:
-                apizen.route(route, methods=['GET', 'POST'])(api_routing)
+                apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
         elif isinstance(routes, (str, bytes)):
-            apizen.route(routes, methods=['GET', 'POST'])(api_routing)
+            apizen.route(routes, methods=['GET', 'POST'])(self.api_routing)
 
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
@@ -133,7 +148,7 @@ def format_retinfo(response=None, err_code=1000,
 
 
 # 对应的路由：@apizen.route(r'/api/router/rest', methods=['GET', 'POST'])
-def api_routing(v=None, method=None):
+def default_api_routing(v=None, method=None):
     _method = method if method else request.args['method']
     _v = v if v else request.args['v']
 
