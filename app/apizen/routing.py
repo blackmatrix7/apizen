@@ -31,41 +31,31 @@ class ApiZen:
         self.api_exception_handler = None
         self.other_exception_handler = None
 
-    def init_app(self, app, routes=None, resp_fmt=None,
+    def init_app(self, app, routes=None,
+                 resp_fmt=None,
                  before_request_handler=None,
                  after_request_handler=None,
                  missing_args_handler=None,
                  bad_request_handler=None,
                  api_exception_handler=None,
                  other_exception_handler=None):
-        self.before_request_handler = before_request_handler \
-            if before_request_handler is not None and callable(before_request_handler) \
-            else before_request
-        self.after_request_handler = after_request_handler \
-            if after_request_handler is not None and callable(after_request_handler) \
-            else after_request
-        self.missing_args_handler = missing_args_handler \
-            if missing_args_handler is not None and callable(missing_args_handler) \
-            else missing_arguments
-        self.bad_request_handler = bad_request_handler \
-            if bad_request_handler is not None and callable(bad_request_handler) \
-            else bad_request
-        self.api_exception_handler = api_exception_handler \
-            if api_exception_handler is not None and callable(api_exception_handler) \
-            else api_exception
-        self.api_exception_handler = api_exception_handler \
-            if api_exception_handler is not None and callable(api_exception_handler) \
-            else api_exception
-        self.other_exception_handler = other_exception_handler \
-            if other_exception_handler is not None and callable(other_exception_handler) \
-            else other_exception_handler
+
+        def get_handler(handler, default_hanlder):
+            if handler is not None and callable(handler):
+                return handler
+            else:
+                return default_hanlder
+
+        self.before_request_handler = get_handler(before_request_handler, before_request)
+        self.after_request_handler = get_handler(after_request_handler, after_request)
+        self.missing_args_handler = get_handler(missing_args_handler, missing_arguments)
+        self.bad_request_handler = get_handler(bad_request_handler, bad_request)
+        self.api_exception_handler = get_handler(api_exception_handler, api_exception)
+        self.other_exception_handler = get_handler(other_exception_handler, other_exception)
+
         # 在蓝图上注册handler
-        apizen.before_request(self.before_request_handler)
-        apizen.after_request(self.after_request_handler)
-        apizen.errorhandler(BadRequestKeyError)(self.missing_args_handler)
-        apizen.errorhandler(BadRequest)(self.bad_request_handler)
-        apizen.errorhandler(SysException)(self.api_exception_handler)
-        apizen.errorhandler(Exception)(self.other_exception_handler)
+        self.register_handler()
+
         # 在蓝图上注册路由
         if routes is None:
             routes = app.config['APIZEN_ROUTE']
@@ -74,12 +64,23 @@ class ApiZen:
                 apizen.route(route, methods=['GET', 'POST'])(api_routing)
         elif isinstance(routes, (str, bytes)):
             apizen.route(routes, methods=['GET', 'POST'])(api_routing)
+
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
+
         # 自定义日期格式，待修改
         datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
+
+    # 在蓝图上注册handler
+    def register_handler(self):
+        apizen.before_request(self.before_request_handler)
+        apizen.after_request(self.after_request_handler)
+        apizen.errorhandler(BadRequestKeyError)(self.missing_args_handler)
+        apizen.errorhandler(BadRequest)(self.bad_request_handler)
+        apizen.errorhandler(SysException)(self.api_exception_handler)
+        apizen.errorhandler(Exception)(self.other_exception_handler)
 
 
 class ApiZenJSONEncoder(JSONEncoder):
