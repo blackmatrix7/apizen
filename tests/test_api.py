@@ -38,6 +38,16 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '缺少Content-Type'
 
+    # 测试第一个接口
+    def test_missing_version(self):
+        self.api_method = 'matrix.api.first-api'
+        url = '{host}?method={method}'.format(host=self.api_host, version=self.api_version,
+                                              method=self.api_method)
+        resp = requests.get(url)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert '这是第一个Api例子' in data['response']
+
     # 测试错误的Content-Type
     def test_error_content_type(self):
         headers = {'Content-Type': 'text/plain'}
