@@ -39,6 +39,19 @@ class ApiZen:
                  bad_request_handler=None,
                  api_exception_handler=None,
                  other_exception_handler=None):
+        """
+        初始化App
+        :param app: Flask App
+        :param routes: 自定义路由规则
+        :param resp_fmt: 自定义返回数据格式
+        :param before_request_handler: Flask 接口请求前触发的钩子函数
+        :param after_request_handler: Flask 接口请求后触发的钩子函数
+        :param missing_args_handler: Flask 接口请求参数缺失时触发的钩子函数
+        :param bad_request_handler: Flask 接口请求异常时触发的钩子函数
+        :param api_exception_handler: Flask 接口调用引发Api异常时触发的钩子函数
+        :param other_exception_handler: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
+        :return:
+        """
 
         def get_handler(handler, default_hanlder):
             if handler is not None and callable(handler):
