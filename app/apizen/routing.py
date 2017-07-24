@@ -23,15 +23,49 @@ apizen = Blueprint('apizen', __name__)
 
 class ApiZen:
 
-    @staticmethod
-    def init_app(app, routes=None, resp_fmt=None):
+    def __init__(self):
+        self.before_request_handler = None
+        self.after_request_handler = None
+        self.missing_args_handler = None
+        self.bad_request_handler = None
+        self.api_exception_handler = None
+        self.other_exception_handler = None
+
+    def init_app(self, app, routes=None, resp_fmt=None,
+                 before_request_handler=None,
+                 after_request_handler=None,
+                 missing_args_handler=None,
+                 bad_request_handler=None,
+                 api_exception_handler=None,
+                 other_exception_handler=None):
+        self.before_request_handler = before_request_handler \
+            if before_request_handler is not None and callable(before_request_handler) \
+            else before_request
+        self.after_request_handler = after_request_handler \
+            if after_request_handler is not None and callable(after_request_handler) \
+            else after_request
+        self.missing_args_handler = missing_args_handler \
+            if missing_args_handler is not None and callable(missing_args_handler) \
+            else missing_arguments
+        self.bad_request_handler = bad_request_handler \
+            if bad_request_handler is not None and callable(bad_request_handler) \
+            else bad_request
+        self.api_exception_handler = api_exception_handler \
+            if api_exception_handler is not None and callable(api_exception_handler) \
+            else api_exception
+        self.api_exception_handler = api_exception_handler \
+            if api_exception_handler is not None and callable(api_exception_handler) \
+            else api_exception
+        self.other_exception_handler = other_exception_handler \
+            if other_exception_handler is not None and callable(other_exception_handler) \
+            else other_exception_handler
         # 在蓝图上注册handler
-        apizen.before_request(before_request)
-        apizen.after_request(after_request)
-        apizen.errorhandler(BadRequestKeyError)(missing_arguments)
-        apizen.errorhandler(BadRequest)(bad_request)
-        apizen.errorhandler(SysException)(api_exception)
-        apizen.errorhandler(Exception)(other_exception)
+        apizen.before_request(self.before_request_handler)
+        apizen.after_request(self.after_request_handler)
+        apizen.errorhandler(BadRequestKeyError)(self.missing_args_handler)
+        apizen.errorhandler(BadRequest)(self.bad_request_handler)
+        apizen.errorhandler(SysException)(self.api_exception_handler)
+        apizen.errorhandler(Exception)(self.other_exception_handler)
         # 在蓝图上注册路由
         if routes is None:
             routes = app.config['APIZEN_ROUTE']
