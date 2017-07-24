@@ -40,7 +40,7 @@ class ApiZen:
                  api_exception=None,
                  other_exception=None):
         """
-        初始化App
+        初始化App，并且可以自定义一些handler
         :param app: Flask App
         :param routes: 自定义路由规则
         :param resp_fmt: 自定义返回数据格式
