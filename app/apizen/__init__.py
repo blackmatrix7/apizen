@@ -5,6 +5,7 @@
 # @Site :
 # @File : __init__.py
 # @Software: PyCharm
+import importlib
 from decimal import Decimal
 from .blueprint import apizen
 from datetime import datetime
@@ -29,6 +30,7 @@ class ApiZen:
                  bad_request=None,
                  api_exception=None,
                  other_exception=None):
+        self.app = app
         self.routes = routes
         self.resp_fmt = resp_fmt
         self.api_routing = default_api_routing
@@ -38,7 +40,7 @@ class ApiZen:
         self.bad_request = bad_request or default_bad_request
         self.api_exception = api_exception or default_api_exception
         self.other_exception = other_exception or default_other_exception
-        if app is not None:
+        if self.app is not None:
             self.init_app(app)
 
     def init_app(self, app,
@@ -63,6 +65,7 @@ class ApiZen:
         :param other_exception: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
         :return:
         """
+        self.app = app or self.app
         self.routes = routes or self.routes or app.config['APIZEN_ROUTE']
         self.before_request = before_request or self.before_request
         self.after_request = after_request or self.after_request
@@ -84,6 +87,9 @@ class ApiZen:
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
 
+        # 导入Api版本
+        self.import_api_versions(versions=app.config['APIZEN_VSESIONS'])
+
         # 自定义日期格式，待修改
         datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
         ApiZenJSONEncoder.datetime_format = datetime_format
@@ -97,6 +103,12 @@ class ApiZen:
         apizen.errorhandler(BadRequest)(self.bad_request)
         apizen.errorhandler(SysException)(self.api_exception)
         apizen.errorhandler(Exception)(self.other_exception)
+
+    # 导入Api版本
+    @staticmethod
+    def import_api_versions(versions):
+        for version in versions:
+            importlib.import_module(version)
 
 
 class ApiZenJSONEncoder(JSONEncoder):

@@ -16,11 +16,6 @@ __author__ = 'blackmatrix'
 allversion = {}
 
 
-def register(*args):
-    # \(╯-╰)/ 我就是什么也不干
-    return args
-
-
 def version(v, enable=True):
     """
     Web Api版本注册
