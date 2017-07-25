@@ -46,7 +46,7 @@ class ApiZenTestCase(unittest.TestCase):
         resp = requests.get(url)
         assert resp.status_code == 400
         data = resp.json()
-        assert '这是第一个Api例子' in data['response']
+        assert '缺少方法所需参数' in data['meta']['message']
 
     # 测试错误的Content-Type
     def test_error_content_type(self):

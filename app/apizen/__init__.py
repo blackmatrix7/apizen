@@ -145,9 +145,9 @@ def format_retinfo(response=None, err_code=1000,
 
 
 # 对应的路由：@apizen.route(r'/api/router/rest', methods=['GET', 'POST'])
-def default_api_routing(v=None, method=None):
-    _method = method if method else request.args['method']
-    _v = v if v else request.args['v']
+def default_api_routing():
+    _method = request.args['method']
+    _v = request.args['v']
 
     # 检查 content-type
     if request.method == 'POST':
