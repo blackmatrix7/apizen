@@ -159,6 +159,7 @@ class TypeEmail(TypeString):
         else:
             raise ValueError
 
+
 class TypeModel(TypeBase):
 
     def __init__(self, model):
