@@ -34,12 +34,12 @@ def raw_response(func):
 
 
 # 获取api处理函数及相关异常判断
-def get_method(version, method_name, request_method):
+def get_method(version, api_method, http_method):
     """
     获取api处理函数及相关异常判断
     :param version:  接口版本
-    :param method_name:  方法名
-    :param request_method:  http请求方式
+    :param api_method:  方法名
+    :param http_method:  http请求方式
     :return:
     """
     raw_resp = False
@@ -63,19 +63,19 @@ def get_method(version, method_name, request_method):
     methods = getattr(allversion[version]['methods'], 'api_methods')
 
     # 检查方法名是否存在
-    if method_name not in methods:
+    if api_method not in methods:
         raise ApiSysExceptions.invalid_method
     # 检查方法是否停用
-    elif not methods[method_name].get('enable', True):
+    elif not methods[api_method].get('enable', True):
         raise ApiSysExceptions.api_stop
     # 检查方法是否允许以某种请求方式调用
-    elif request_method.lower() not in methods[method_name].get('methods', ['get', 'post']):
+    elif http_method.lower() not in methods[api_method].get('methods', ['get', 'post']):
         raise ApiSysExceptions.not_allowed_request
     # 检查函数是否可调用
-    elif not callable(methods[method_name].get('func')):
+    elif not callable(methods[api_method].get('func')):
         raise ApiSysExceptions.error_api_config
 
-    _func = methods[method_name].get('func')
+    _func = methods[api_method].get('func')
 
     # 解包，检查是否有不统一格式化输出的装饰器，或允许匿名访问情况
     unwrap(_func, stop=check_decorator)

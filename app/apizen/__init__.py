@@ -159,7 +159,7 @@ def default_api_routing():
         request_args.update(request.json)
 
     # 获取接口处理函数，及接口部分配置
-    api_func, raw_resp, *_ = get_method(version=_v, method_name=_method, request_method=request.method)
+    api_func, raw_resp, *_ = get_method(version=_v, api_method=_method, http_method=request.method)
 
     # 将请求参数传入接口处理函数并运行
     result = run_method(api_func, request_params=request_args)
