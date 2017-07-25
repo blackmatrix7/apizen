@@ -23,7 +23,6 @@ class ApiZen:
     def __init__(self, app=None,
                  routes=None,
                  resp_fmt=None,
-                 api_routing=None,
                  before_request=None,
                  after_request=None,
                  missing_args=None,
@@ -32,7 +31,7 @@ class ApiZen:
                  other_exception=None):
         self.routes = routes
         self.resp_fmt = resp_fmt
-        self.api_routing = api_routing or default_api_routing
+        self.api_routing = default_api_routing
         self.before_request = before_request or default_before_request
         self.after_request = after_request or default_after_request
         self.missing_args = missing_args or default_missing_args
@@ -45,7 +44,6 @@ class ApiZen:
     def init_app(self, app,
                  routes=None,
                  resp_fmt=None,
-                 api_routing=None,
                  before_request=None,
                  after_request=None,
                  missing_args=None,
@@ -57,7 +55,6 @@ class ApiZen:
         :param app: Flask App
         :param routes: 自定义路由规则
         :param resp_fmt: 自定义返回数据格式
-        :param api_routing: ApiZen路由函数
         :param before_request: Flask 接口请求前触发的钩子函数
         :param after_request: Flask 接口请求后触发的钩子函数
         :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
@@ -66,8 +63,7 @@ class ApiZen:
         :param other_exception: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
         :return:
         """
-
-        self.api_routing = api_routing or self.api_routing
+        self.routes = routes or self.routes or app.config['APIZEN_ROUTE']
         self.before_request = before_request or self.before_request
         self.after_request = after_request or self.after_request
         self.missing_args = missing_args or self.missing_args
@@ -79,13 +75,11 @@ class ApiZen:
         self.register_handler()
 
         # 在蓝图上注册路由
-        if routes is None:
-            routes = app.config['APIZEN_ROUTE']
-        if isinstance(routes, Iterable) and not isinstance(routes, (str, bytes)):
-            for route in routes:
+        if isinstance(self.routes, Iterable) and not isinstance(self.routes, (str, bytes)):
+            for route in self.routes:
                 apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
-        elif isinstance(routes, (str, bytes)):
-            apizen.route(routes, methods=['GET', 'POST'])(self.api_routing)
+        elif isinstance(self.routes, (str, bytes)):
+            apizen.route(self.routes, methods=['GET', 'POST'])(self.api_routing)
 
         # 把蓝图注册到Flask App上
         app.register_blueprint(apizen)
