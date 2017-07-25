@@ -49,7 +49,7 @@ class TypeBase(metaclass=TypeMeta):
 
 
 class TypeInteger(int, TypeBase):
-    __type__ = 'Integer'
+    typename = 'Integer'
 
     @staticmethod
     def convert(*, value):
@@ -62,7 +62,7 @@ class TypeInteger(int, TypeBase):
 
 
 class TypeString(str, TypeBase):
-    __type__ = 'String'
+    typename = 'String'
 
     @staticmethod
     def convert(*, value):
@@ -70,7 +70,7 @@ class TypeString(str, TypeBase):
 
 
 class TypeFloat(float, TypeBase):
-    __type__ = 'Float'
+    typename = 'Float'
 
     @staticmethod
     def convert(*, value):
@@ -79,7 +79,7 @@ class TypeFloat(float, TypeBase):
 
 
 class TypeDict(dict, TypeBase):
-    __type__ = 'Dict'
+    typename = 'Dict'
 
     @staticmethod
     def convert(*, value):
@@ -92,7 +92,7 @@ class TypeDict(dict, TypeBase):
 
 
 class TypeList(list, TypeBase):
-    __type__ = 'List'
+    typename = 'List'
 
     @staticmethod
     def convert(*, value):
@@ -105,7 +105,7 @@ class TypeList(list, TypeBase):
 
 
 class TypeDate(date, TypeBase):
-    __type__ = 'DateTime'
+    typename = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
@@ -118,7 +118,7 @@ class TypeDate(date, TypeBase):
 
 
 class TypeDatetime(datetime, TypeBase):
-    __type__ = 'DateTime'
+    typename = 'DateTime'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
@@ -132,7 +132,7 @@ class TypeDatetime(datetime, TypeBase):
 
 class TypeBool(bool, TypeBase):
 
-    __type__ = 'Bool'
+    typename = 'Bool'
 
     @staticmethod
     def convert(*, value=None):
@@ -150,7 +150,7 @@ class TypeBool(bool, TypeBase):
 
 
 class TypeEmail(TypeString):
-    __type__ = 'Email'
+    typename = 'Email'
 
     @staticmethod
     def convert(*, value):
@@ -158,7 +158,6 @@ class TypeEmail(TypeString):
             return value
         else:
             raise ValueError
-
 
 class TypeModel(TypeBase):
 
@@ -174,7 +173,7 @@ class TypeModel(TypeBase):
 
 class TypeMoney(TypeFloat):
 
-    __type__ = 'Money'
+    typename = 'Money'
 
     @staticmethod
     def convert(*, value):
@@ -231,7 +230,7 @@ def convert(key, value, default_value, type_hints):
         raise ApiSysExceptions.invalid_json
     except ValueError:
         api_ex = ApiSysExceptions.error_args_type
-        api_ex.err_msg = '{0}：{1} <{2}>'.format(api_ex.err_msg, key, _type_hints.__type__)
+        api_ex.err_msg = '{0}：{1} <{2}>'.format(api_ex.err_msg, key, _type_hints.typename)
         raise api_ex
     else:
         return value
