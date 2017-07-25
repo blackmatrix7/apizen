@@ -229,18 +229,25 @@ def default_after_request(param):
     return param
 
 
+# 异常处理方法
+def _exception_handler(ex, retinfo):
+    g.result = retinfo
+    g.status_code = ex.http_code
+    if current_app.config['DEBUG'] and ex.http_code >= 500:
+        raise ex
+    else:
+        resp = jsonify(retinfo)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp, ex.http_code
+
+
 # 对应的路由：@apizen.errorhandler(BadRequestKeyError)
 def default_missing_args(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
                              dev_msg=','.join(ex.args))
-    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
-        raise ex
-    else:
-        resp = jsonify(retinfo)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.http_code
+    return _exception_handler(api_ex, retinfo)
 
 
 # 对应的路由：@apizen.errorhandler(BadRequest)
@@ -249,26 +256,14 @@ def default_bad_request(ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
                              dev_msg=ex.description)
-    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
-        raise ex
-    else:
-        resp = jsonify(retinfo)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.http_code
+    return _exception_handler(api_ex, retinfo)
 
 
 # 对应的路由：@apizen.errorhandler(SysException)
 def default_api_exception(api_ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg)
-    g.result = retinfo
-    g.status_code = api_ex.http_code
-    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
-        raise api_ex
-    else:
-        resp = jsonify(retinfo)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.http_code
+    return _exception_handler(api_ex, retinfo)
 
 
 # 对应的路由：@apizen.errorhandler(Exception)
@@ -277,11 +272,4 @@ def default_other_exception(ex):
     retinfo = format_retinfo(err_code=api_ex.err_code,
                              api_msg=api_ex.err_msg,
                              dev_msg=ex)
-    g.result = retinfo
-    g.status_code = api_ex.http_code
-    if current_app.config['DEBUG'] and api_ex.http_code >= 500:
-        raise ex
-    else:
-        resp = jsonify(retinfo)
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp, api_ex.http_code
+    return _exception_handler(api_ex, retinfo)
