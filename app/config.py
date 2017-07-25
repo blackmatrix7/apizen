@@ -6,8 +6,6 @@
 # @File : config.py
 # @Software : PyCharm
 import os
-from app.demo.methods import DemoApiMethods
-from app.webapi.methods import ApiMethodsV10, ApiMethodsV11
 
 __author__ = 'blackmatrix'
 
@@ -43,7 +41,7 @@ class BaseConfig:
     )
 
     # API ZEN
-    APIZEN_ROUTE = ['/api/router/rest', '/api/router/json']
+    APIZEN_ROUTE = ('/api/router/rest', '/api/router/json')
     APIZEN_VSESIONS = ('app.demo.methods', 'app.webapi.methods')
     APIZEN_DATETIME_FMT = '%Y/%m/%d %H:%M:%S'
     APIZEN_RESP_FMT = '{"meta": {"code": {code}, "message": {message}}, "response": {response}}'

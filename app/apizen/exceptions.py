@@ -99,7 +99,7 @@ class ApiSysExceptions:
     # 不支持的http请求方式
     not_allowed_request = SysException(err_code=1019, http_code=405, err_msg='不支持的http请求方式', err_type=Exception)
     # 错误的API配置
-    error_api_config = SysException(err_code=1020, http_code=500, err_msg='错误的API配置', err_type=NotImplementedError)
+    error_api_config = SysException(err_code=1020, http_code=500, err_msg='错误的API配置', err_type=Exception)
     # 无效的json格式
     invalid_json = SysException(err_code=1021, http_code=400, err_msg='错误或不合法的json格式', err_type=JSONDecodeError)
     # 参数类型错误
