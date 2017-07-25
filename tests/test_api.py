@@ -38,11 +38,19 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '缺少Content-Type'
 
-    # 测试第一个接口
+    # 测试缺少版本号
     def test_missing_version(self):
         self.api_method = 'matrix.api.first-api'
-        url = '{host}?method={method}'.format(host=self.api_host, version=self.api_version,
-                                              method=self.api_method)
+        url = '{host}?method={method}'.format(host=self.api_host, method=self.api_method)
+        resp = requests.get(url)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert '缺少方法所需参数' in data['meta']['message']
+
+    # 测试缺少方法名
+    def test_missing_method(self):
+        self.api_method = 'matrix.api.first-api'
+        url = '{host}?v={version}'.format(host=self.api_host, version=self.api_version)
         resp = requests.get(url)
         assert resp.status_code == 400
         data = resp.json()
