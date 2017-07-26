@@ -12,6 +12,7 @@ from decimal import Decimal
 from json import JSONDecodeError
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
+from .config import APIZEN_DATE_FMT, APIZEN_DATETIME_FMT
 
 __author__ = 'blackmatrix'
 
@@ -116,9 +117,9 @@ class TypeDate(date, TypeBase):
     def __init__(self, format_=None):
         try:
             from flask import current_app
-            self.format_ = format_ or current_app.config['APIZEN_DATE_FMT'] or '%Y/%m/%d'
+            self.format_ = format_ or current_app.config.get('APIZEN_DATE_FMT', APIZEN_DATE_FMT)
         except (KeyError, ImportError):
-            self.format_ = '%Y/%m/%d'
+            self.format_ = APIZEN_DATE_FMT
         finally:
             super().__init__()
 
@@ -134,9 +135,9 @@ class TypeDatetime(datetime, TypeBase):
     def __init__(self, format_=None):
         try:
             from flask import current_app
-            self.format_ = format_ or current_app.config['APIZEN_DATETIME_FMT'] or '%Y/%m/%d %H:%M:%S'
+            self.format_ = format_ or current_app.config.get('APIZEN_DATETIME_FMT', APIZEN_DATETIME_FMT)
         except (KeyError, ImportError):
-            self.format_ = '%Y/%m/%d %H:%M:%S'
+            self.format_ = APIZEN_DATETIME_FMT
         finally:
             super().__init__()
 
