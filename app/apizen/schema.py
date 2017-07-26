@@ -8,7 +8,6 @@
 import re
 import json
 import copy
-from flask import current_app
 from json import JSONDecodeError
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
@@ -114,8 +113,13 @@ class TypeDate(date, TypeBase):
         return _value
 
     def __init__(self, format_=None):
-        self.format_ = format_ or current_app.config['APIZEN_DATE_FMT'] or '%Y/%m/%d'
-        super().__init__()
+        try:
+            from flask import current_app
+            self.format_ = format_ or current_app.config['APIZEN_DATE_FMT'] or '%Y/%m/%d'
+        except (KeyError, ImportError):
+            self.format_ = '%Y/%m/%d'
+        finally:
+            super().__init__()
 
 
 class TypeDatetime(datetime, TypeBase):
@@ -127,8 +131,13 @@ class TypeDatetime(datetime, TypeBase):
         return _value
 
     def __init__(self, format_=None):
-        self.format_ = format_ or current_app.config['APIZEN_DATETIME_FMT'] or '%Y/%m/%d %H:%M:%S'
-        super().__init__()
+        try:
+            from flask import current_app
+            self.format_ = format_ or current_app.config['APIZEN_DATETIME_FMT'] or '%Y/%m/%d %H:%M:%S'
+        except (KeyError, ImportError):
+            self.format_ = '%Y/%m/%d %H:%M:%S'
+        finally:
+            super().__init__()
 
 
 class TypeBool(bool, TypeBase):
