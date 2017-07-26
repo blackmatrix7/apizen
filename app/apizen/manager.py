@@ -15,7 +15,8 @@ from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from .config import APIZEN_ROUTE, APIZEN_VERSIONS, APIZEN_DATETIME_FMT
+from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS,
+                     APIZEN_DATETIME_FMT,  ACTIVATE_DEFAULT_ROUTE)
 
 __author__ = 'blackmatrix'
 
@@ -90,26 +91,27 @@ class ApiZenManager:
         :return:
         """
         self.app = app or self.app
-        self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE', APIZEN_ROUTE)
-        self.before_request = before_request or self.before_request
-        self.after_request = after_request or self.after_request
-        self.missing_args = missing_args or self.missing_args
-        self.bad_request = bad_request or self.bad_request
-        self.api_exception = api_exception or self.api_exception
-        self.other_exception = other_exception or self.other_exception
 
-        # 在蓝图上注册handler
-        self.register_handler()
-
-        # 在蓝图上注册路由
-        if isinstance(self.routes, Iterable) and not isinstance(self.routes, (str, bytes)):
-            for route in self.routes:
-                apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
-        elif isinstance(self.routes, (str, bytes)):
-            apizen.route(self.routes, methods=['GET', 'POST'])(self.api_routing)
-
-        # 注册蓝图
-        app.register_blueprint(apizen)
+        # 只有选择激活默认路由，才会注册对应的handler 与 blueprint
+        activate_default_route = app.config.get('ACTIVATE_DEFAULT_ROUTE', ACTIVATE_DEFAULT_ROUTE)
+        if activate_default_route:
+            self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE', APIZEN_ROUTE)
+            self.before_request = before_request or self.before_request
+            self.after_request = after_request or self.after_request
+            self.missing_args = missing_args or self.missing_args
+            self.bad_request = bad_request or self.bad_request
+            self.api_exception = api_exception or self.api_exception
+            self.other_exception = other_exception or self.other_exception
+            # 在蓝图上注册handler
+            self.register_handler()
+            # 在蓝图上注册路由
+            if isinstance(self.routes, Iterable) and not isinstance(self.routes, (str, bytes)):
+                for route in self.routes:
+                    apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
+            elif isinstance(self.routes, (str, bytes)):
+                apizen.route(self.routes, methods=['GET', 'POST'])(self.api_routing)
+            # 注册蓝图
+            app.register_blueprint(apizen)
 
         # 导入Api版本
         self.import_api_versions(versions=app.config.get('APIZEN_VERSIONS', APIZEN_VERSIONS))

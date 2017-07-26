@@ -10,6 +10,9 @@
 此模块提供ApiZen配置默认值
 """
 
+# 是否激活默认的接口路由
+ACTIVATE_DEFAULT_ROUTE = True
+
 # 接口路由默认地址
 APIZEN_ROUTE = ('/api/router/rest', '/api/router/json')
 
