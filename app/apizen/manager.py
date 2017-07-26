@@ -14,8 +14,8 @@ from flask.json import JSONEncoder
 from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
-from .config import APIZEN_ROUTE, APIZEN_VERSIONS
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
+from .config import APIZEN_ROUTE, APIZEN_VERSIONS, APIZEN_DATETIME_FMT
 
 __author__ = 'blackmatrix'
 
@@ -105,17 +105,17 @@ class ApiZenManager:
         if isinstance(self.routes, Iterable) and not isinstance(self.routes, (str, bytes)):
             for route in self.routes:
                 apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
-            # 只有在配置文件中定义了有效URL的情况下才会注册蓝图，下同
-            app.register_blueprint(apizen)
         elif isinstance(self.routes, (str, bytes)):
             apizen.route(self.routes, methods=['GET', 'POST'])(self.api_routing)
-            app.register_blueprint(apizen)
+
+        # 注册蓝图
+        app.register_blueprint(apizen)
 
         # 导入Api版本
         self.import_api_versions(versions=app.config.get('APIZEN_VERSIONS', APIZEN_VERSIONS))
 
         # 自定义日期格式，待修改
-        datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
+        datetime_format = app.config.get('APIZEN_DATETIME_FMT', APIZEN_DATETIME_FMT)
         ApiZenJSONEncoder.datetime_format = datetime_format
         app.json_encoder = ApiZenJSONEncoder
 
