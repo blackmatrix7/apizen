@@ -26,18 +26,6 @@ def test_decorator(func):
     return wrapper
 
 
-def save_to_db(data: DemoParent):
-    """
-    实验性功能,自动将接口调用者传入的json字符串转换为SQLalchemy Model
-    JSON中与Model不匹配的Key将被忽略,同时可以通过raw_
-    :param data:
-    :return:
-    """
-    # 获取未转换之前的数据
-    raw_data = data.raw_data
-    return data.to_dict(), raw_data
-
-
 def first_api():
     return '这是第一个Api例子'
 

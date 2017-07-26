@@ -55,9 +55,7 @@ class DemoApiMethods(ApiMethodsBase):
         # 传递任意参数
         'matrix.api.send-kwargs': {'func': demo.send_kwargs},
         # API版本继承
-        'matrix.api.raise-error': {'func': raise_error},
-        # 保存到数据库
-        'matrix.api.save-db': {'func': save_to_db}
+        'matrix.api.raise-error': {'func': raise_error}
     }
 
 if __name__ == '__main__':
