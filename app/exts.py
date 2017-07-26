@@ -7,10 +7,10 @@
 # @Software: PyCharm
 from flask import Flask
 from flask_mail import Mail
-from app.apizen import ApiZen
 from flask_celery import Celery
 from flask_script import Manager
 from flask_migrate import Migrate
+from app.apizen import ApiZenManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import MigrateCommand
 
@@ -59,7 +59,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 # ApiZen
-apizen = ApiZen()
+apizen = ApiZenManager()
 
 # Flask-Mail
 mail = Mail()
