@@ -42,9 +42,9 @@ class SysException(Exception):
         return api_ex
 
     def __str__(self):
-        return str('异常编号：{err_code} 异常信息：{err_msg}'.format(
+        return '异常编号：{err_code} 异常信息：{err_msg}'.format(
             err_code=self.err_code,
-            err_msg=self.err_msg))
+            err_msg=self.err_msg)
 
     # 让类实例变成可调用对象，用于接收自定义异常信息，并抛出
     def __call__(self, err_msg=_no_value, *, err_code=_no_value, http_code=_no_value):
