@@ -66,7 +66,7 @@ class ApiZen:
         :return:
         """
         self.app = app or self.app
-        self.routes = routes or self.routes or app.config['APIZEN_ROUTE']
+        self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE')
         self.before_request = before_request or self.before_request
         self.after_request = after_request or self.after_request
         self.missing_args = missing_args or self.missing_args
@@ -81,11 +81,11 @@ class ApiZen:
         if isinstance(self.routes, Iterable) and not isinstance(self.routes, (str, bytes)):
             for route in self.routes:
                 apizen.route(route, methods=['GET', 'POST'])(self.api_routing)
+            # 只有在配置文件中定义了有效URL的情况下才会注册蓝图，下同
+            app.register_blueprint(apizen)
         elif isinstance(self.routes, (str, bytes)):
             apizen.route(self.routes, methods=['GET', 'POST'])(self.api_routing)
-
-        # 把蓝图注册到Flask App上
-        app.register_blueprint(apizen)
+            app.register_blueprint(apizen)
 
         # 导入Api版本
         self.import_api_versions(versions=app.config['APIZEN_VERSIONS'])
