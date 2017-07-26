@@ -8,6 +8,7 @@
 import re
 import json
 import copy
+from flask import current_app
 from json import JSONDecodeError
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
@@ -105,15 +106,15 @@ class TypeList(list, TypeBase):
 
 
 class TypeDate(date, TypeBase):
-    typename = 'DateTime'
+    typename = 'Date'
 
     def convert(self, *, value=None):
         _value = copy.copy(value)
         _value = datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
         return _value
 
-    def __init__(self, format_='%Y-%m-%d'):
-        self.format_ = format_
+    def __init__(self, format_=None):
+        self.format_ = format_ or current_app.config['APIZEN_DATE_FMT'] or '%Y/%m/%d'
         super().__init__()
 
 
@@ -125,8 +126,8 @@ class TypeDatetime(datetime, TypeBase):
         _value = datetime.strptime(_value, self.format_) if isinstance(_value, str) else _value
         return _value
 
-    def __init__(self, format_='%Y-%m-%d %H:%M:%S'):
-        self.format_ = format_
+    def __init__(self, format_=None):
+        self.format_ = format_ or current_app.config['APIZEN_DATETIME_FMT'] or '%Y/%m/%d %H:%M:%S'
         super().__init__()
 
 

@@ -9,7 +9,7 @@ from functools import wraps
 from .models import DemoChild, DemoParent
 from app.apizen.method import raw_response
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool
+from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool, Date
 
 __author__ = 'blackmatix'
 
@@ -53,7 +53,7 @@ def register_user(name, age, email=None):
     return {'name': name, 'age': age, 'email': email}
 
 
-def register_user_plus(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'), email=None):
+def register_user_plus(name: String, age: Integer, birthday: Date, email=None):
     """
     测试装饰器对获取函数参数的影响，及接口参数判断说明
     :param age:  年龄，必填，原因同上
@@ -66,9 +66,21 @@ def register_user_plus(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'
 
 
 @test_decorator
-def validate_email(name: String, age: Integer, birthday: DateTime('%Y/%m/%d'), email: Email):
+def validate_email(name: String, age: Integer, birthday: Date, email: Email):
     """
     测试装饰器对获取函数参数的影响，及接口参数判断说明
+    :param age:  年龄，必填，原因同上
+    :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
+    :param birthday:  生日
+    :param email:  电子邮箱
+    :return:  返回测试结果
+    """
+    return {'name': name, 'age': age, 'birthday': birthday, 'email': email}
+
+
+def custom_date_fmt(name: String, age: Integer, birthday: Date('%Y年%M月%d日'), email: Email):
+    """
+    测试自定义日期格式
     :param age:  年龄，必填，原因同上
     :param name:  姓名，非必填，当传入值时，接口取参数默认值传入
     :param birthday:  生日

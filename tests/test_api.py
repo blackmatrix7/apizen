@@ -105,14 +105,23 @@ class ApiZenTestCase(unittest.TestCase):
         data = resp.json()
         assert data['meta']['message'] == '参数类型错误：age <Integer>'
 
-    # 测试自定义日期格式
+    # 测试自定义日期格式，符合格式要求
     def test_custom_date(self):
-        self.api_method = 'matrix.api.register_user_plus'
-        playload = {'name': 'tom', 'age': 19, 'birthday': '2007-12-31'}
+        self.api_method = 'matrix.api.custom_date_fmt'
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007年12月31日', 'email': '123456@qq.com'}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['message'] == '执行成功'
+
+    # 测试自定义日期格式，不符合格式要求
+    def test_custom_date_error(self):
+        self.api_method = 'matrix.api.custom_date_fmt'
+        playload = {'name': 'tom', 'age': 19, 'birthday': '2007-12-31', 'email': '123456@qq.com'}
         resp = requests.get(self.request_url, params=playload)
         assert resp.status_code == 400
         data = resp.json()
-        assert data['meta']['message'] == '参数类型错误：birthday <DateTime>'
+        assert data['meta']['message'] == '参数类型错误：birthday <Date>'
 
     # 测试自定义类型判断
     def test_custom_arg_type(self):

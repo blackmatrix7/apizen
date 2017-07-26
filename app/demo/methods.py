@@ -22,6 +22,8 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.register_user_plus': {'func': register_user_plus},
         # 自定义类型判断方式
         'matrix.api.validate_email': {'func': validate_email},
+        # 自定义日期格式
+        'matrix.api.custom_date_fmt': {'func': custom_date_fmt},
         # JSON 转 Dict
         'matrix.api.json-to-dict': {'func': json_to_dict},
         # JSON 转 List
