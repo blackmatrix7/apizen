@@ -24,6 +24,8 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.validate_email': {'func': validate_email},
         # 自定义日期格式
         'matrix.api.custom_date_fmt': {'func': custom_date_fmt},
+        # 自定义Money类型
+        'matrix.api.money_to_decimal': {'func': money_to_decimal},
         # JSON 转 Dict
         'matrix.api.json-to-dict': {'func': json_to_dict},
         # JSON 转 List

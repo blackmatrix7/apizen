@@ -113,15 +113,35 @@ class ApiZenTestCase(unittest.TestCase):
         assert resp.status_code == 200
         data = resp.json()
         assert data['meta']['message'] == '执行成功'
-
-    # 测试自定义日期格式，不符合格式要求
-    def test_custom_date_error(self):
-        self.api_method = 'matrix.api.custom_date_fmt'
         playload = {'name': 'tom', 'age': 19, 'birthday': '2007-12-31', 'email': '123456@qq.com'}
         resp = requests.get(self.request_url, params=playload)
         assert resp.status_code == 400
         data = resp.json()
         assert data['meta']['message'] == '参数类型错误：birthday <Date>'
+
+    # 测试自定义Money
+    def test_money_to_decimal(self):
+        self.api_method = 'matrix.api.money_to_decimal'
+        playload = {'money': 19.2}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['message'] == '执行成功'
+        playload = {'money': 19}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['meta']['message'] == '执行成功'
+        playload = {'money': -19.2}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '参数类型错误：money <Money>'
+        playload = {'money': 19.221}
+        resp = requests.get(self.request_url, params=playload)
+        assert resp.status_code == 400
+        data = resp.json()
+        assert data['meta']['message'] == '参数类型错误：money <Money>'
 
     # 测试自定义类型判断
     def test_custom_arg_type(self):

@@ -9,7 +9,7 @@ from functools import wraps
 from .models import DemoChild, DemoParent
 from app.apizen.method import raw_response
 from app.webapi.exceptions import ApiSubExceptions
-from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool, Date
+from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool, Date, Money
 
 __author__ = 'blackmatix'
 
@@ -76,6 +76,15 @@ def custom_date_fmt(name: String, age: Integer, birthday: Date('%Y年%M月%d日'
     :return:  返回测试结果
     """
     return {'name': name, 'age': age, 'birthday': birthday, 'email': email}
+
+
+def money_to_decimal(money: Money):
+    """
+    测试自定义的Money类型，会转换成Decimal
+    :param money:  金额
+    :return: 
+    """
+    return money
 
 
 def json_to_dict(user: Dict):

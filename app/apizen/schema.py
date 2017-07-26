@@ -8,6 +8,7 @@
 import re
 import json
 import copy
+from decimal import Decimal
 from json import JSONDecodeError
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
@@ -182,13 +183,13 @@ class TypeModel(TypeBase):
         return result
 
 
-class TypeMoney(TypeFloat):
+class TypeMoney(TypeBase):
 
     typename = 'Money'
 
     @staticmethod
     def convert(*, value):
-        value = float(value)
+        value = Decimal(value)
         if value >= 0 and value == round(value, 2):
             return value
         else:
