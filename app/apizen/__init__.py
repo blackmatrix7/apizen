@@ -62,7 +62,7 @@ class ApiZen:
         :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
         :param bad_request: Flask 接口请求异常时触发的钩子函数
         :param api_exception: Flask 接口调用引发Api异常时触发的钩子函数
-        :param other_exception: Flask 接口调用引发异常时处罚的钩子函数（Api异常除外）
+        :param other_exception: Flask 接口调用引发异常时触发的钩子函数（Api异常除外）
         :return:
         """
         self.app = app or self.app
@@ -88,7 +88,7 @@ class ApiZen:
         app.register_blueprint(apizen)
 
         # 导入Api版本
-        self.import_api_versions(versions=app.config['APIZEN_VSESIONS'])
+        self.import_api_versions(versions=app.config['APIZEN_VERSIONS'])
 
         # 自定义日期格式，待修改
         datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
