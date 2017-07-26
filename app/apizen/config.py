@@ -14,7 +14,7 @@
 APIZEN_ROUTE = ('/api/router/rest', '/api/router/json')
 
 # 接口版本位置
-APIZEN_VERSIONS = (None, )
+APIZEN_VERSIONS = None
 
 # 默认Date格式
 APIZEN_DATE_FMT = '%Y/%m/%d'

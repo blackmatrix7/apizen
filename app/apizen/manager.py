@@ -14,6 +14,7 @@ from flask.json import JSONEncoder
 from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
+from .config import APIZEN_ROUTE, APIZEN_VERSIONS
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
 
 __author__ = 'blackmatrix'
@@ -89,7 +90,7 @@ class ApiZenManager:
         :return:
         """
         self.app = app or self.app
-        self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE')
+        self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE', APIZEN_ROUTE)
         self.before_request = before_request or self.before_request
         self.after_request = after_request or self.after_request
         self.missing_args = missing_args or self.missing_args
@@ -111,7 +112,7 @@ class ApiZenManager:
             app.register_blueprint(apizen)
 
         # 导入Api版本
-        self.import_api_versions(versions=app.config['APIZEN_VERSIONS'])
+        self.import_api_versions(versions=app.config.get('APIZEN_VERSIONS', APIZEN_VERSIONS))
 
         # 自定义日期格式，待修改
         datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
@@ -130,8 +131,9 @@ class ApiZenManager:
     # 导入Api版本
     @staticmethod
     def import_api_versions(versions):
-        for version in versions:
-            importlib.import_module(version)
+        if versions:
+            for version in versions:
+                importlib.import_module(version)
 
 
 def format_retinfo(response=None, err_code=1000,
