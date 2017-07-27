@@ -13,7 +13,7 @@ from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS, ACTIVATE_DEFAULT_ROUTE, APIZEN_RESP_FMT)
+from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS, ACTIVATE_DEFAULT_ROUTE)
 
 __author__ = 'blackmatrix'
 
