@@ -5,11 +5,13 @@
 # @Site :
 # @File : __init__.py
 # @Software: PyCharm
+from .method import get_method, run_method
 from .manager import apizen, ApiZenManager
 
 __all__ = [
-    apizen,
-    ApiZenManager.__name__
+    ApiZenManager.__name__,
+    'get_method',
+    'run_method'
 ]
 
 
