@@ -9,8 +9,11 @@ from flask import Flask
 from app.exts import db
 from app.user import user
 from app.oauth import oauth
+from decimal import Decimal
+from datetime import datetime
 from app.config import configs
 from flask_script import Manager
+from flask.json import JSONEncoder
 from flask_environments import Environments
 from app.exts import mail, celery, migrate, manager, apizen
 
@@ -38,6 +41,25 @@ class CustomManager(Manager):
         return app
 
 
+class CustomJSONEncoder(JSONEncoder):
+
+    datetime_format = None
+
+    def default(self, obj):
+        try:
+            if isinstance(obj, datetime):
+                return obj.strftime(CustomJSONEncoder.datetime_format)
+            elif isinstance(obj, Decimal):
+                # 不转换为float是为了防止精度丢失
+                return str(obj)
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
+
 def create_app(app_config=None):
 
     app = Flask(__name__)
@@ -53,6 +75,11 @@ def create_app(app_config=None):
     register_blueprints(app)
     # 扩展注册
     register_extensions(app)
+
+    # 自定义日期格式，待修改
+    datetime_format = app.config.get('APIZEN_DATETIME_FMT', '%Y/%m/%d %H:%M:%S')
+    CustomJSONEncoder.datetime_format = datetime_format
+    app.json_encoder = CustomJSONEncoder
 
     @app.route('/', methods=['GET'])
     def index():

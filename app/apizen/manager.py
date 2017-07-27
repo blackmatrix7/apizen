@@ -7,41 +7,19 @@
 # @Software: PyCharm
 import importlib
 from flask import Blueprint
-from decimal import Decimal
 from datetime import datetime
 from collections import Iterable
-from flask.json import JSONEncoder
 from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
 from .exceptions import SysException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS,
-                     APIZEN_DATETIME_FMT,  ACTIVATE_DEFAULT_ROUTE)
+from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS, ACTIVATE_DEFAULT_ROUTE)
 
 __author__ = 'blackmatrix'
 
 
 # 创建蓝图
 apizen = Blueprint('apizen', __name__)
-
-
-class ApiZenJSONEncoder(JSONEncoder):
-
-    datetime_format = None
-
-    def default(self, obj):
-        try:
-            if isinstance(obj, datetime):
-                return obj.strftime(ApiZenJSONEncoder.datetime_format)
-            elif isinstance(obj, Decimal):
-                # 不转换为float是为了防止精度丢失
-                return str(obj)
-            iterable = iter(obj)
-        except TypeError:
-            pass
-        else:
-            return list(iterable)
-        return JSONEncoder.default(self, obj)
 
 
 class ApiZenManager:
@@ -115,11 +93,6 @@ class ApiZenManager:
 
         # 导入Api版本
         self.import_api_versions(versions=app.config.get('APIZEN_VERSIONS', APIZEN_VERSIONS))
-
-        # 自定义日期格式，待修改
-        datetime_format = app.config.get('APIZEN_DATETIME_FMT', APIZEN_DATETIME_FMT)
-        ApiZenJSONEncoder.datetime_format = datetime_format
-        app.json_encoder = ApiZenJSONEncoder
 
     # 在蓝图上注册handler
     def register_handler(self):
