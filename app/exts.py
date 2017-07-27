@@ -13,6 +13,7 @@ from flask_migrate import Migrate
 from app.apizen import ApiZenManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import MigrateCommand
+from app.webapi.routing import before_request, after_request
 
 __author__ = 'blackmatrix'
 
@@ -58,14 +59,15 @@ db = SQLAlchemy()
 # Flask-Migrate
 migrate = Migrate()
 
-# ApiZen
-apizen = ApiZenManager()
-
 # Flask-Mail
 mail = Mail()
 
 # Celery
 celery = Celery()
+
+# ApiZen
+apizen = ApiZenManager(before_request=before_request,
+                       after_request=after_request)
 
 
 if __name__ == '__main__':
