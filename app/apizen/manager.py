@@ -48,7 +48,6 @@ class ApiZenManager:
 
     def init_app(self, app,
                  routes=None,
-                 resp_fmt=None,
                  before_request=None,
                  after_request=None,
                  missing_args=None,
@@ -59,7 +58,6 @@ class ApiZenManager:
         初始化App，并且可以自定义一些handler
         :param app: Flask App
         :param routes: 自定义路由规则
-        :param resp_fmt: 自定义返回数据格式
         :param before_request: Flask 接口请求前触发的钩子函数
         :param after_request: Flask 接口请求后触发的钩子函数
         :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
