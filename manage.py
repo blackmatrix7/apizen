@@ -32,7 +32,7 @@ if not os.path.exists('logs'):
 logging.basicConfig(level=logging.DEBUG)
 logfile = os.path.abspath('logs/manage.log')
 # 每个日志512k,保留10个日志文件
-fh = TimedRotatingFileHandler('logs/manage.log', 'midnight', 1, 10)
+fh = TimedRotatingFileHandler('logs/manage.log', 'midnight', 1, 10, encoding="utf-8")
 ch = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)s]')
 fh.setFormatter(formatter)
