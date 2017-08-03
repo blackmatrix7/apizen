@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2017/5/19 上午8:54
-# @Author  : Matrix
-# @Site    : 
-# @File    : exceptions.py
+# @Time  : 2017/5/19 上午8:54
+# @Author : Matrix
+# @Site :
+# @File : exceptions.py
 # @Software: PyCharm
 import types
 from json import JSONDecodeError

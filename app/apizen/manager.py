@@ -48,7 +48,6 @@ class ApiZenManager:
 
     def init_app(self, app,
                  routes=None,
-                 resp_fmt=None,
                  before_request=None,
                  after_request=None,
                  missing_args=None,
@@ -59,7 +58,6 @@ class ApiZenManager:
         初始化App，并且可以自定义一些handler
         :param app: Flask App
         :param routes: 自定义路由规则
-        :param resp_fmt: 自定义返回数据格式
         :param before_request: Flask 接口请求前触发的钩子函数
         :param after_request: Flask 接口请求后触发的钩子函数
         :param missing_args: Flask 接口请求参数缺失时触发的钩子函数
@@ -71,9 +69,8 @@ class ApiZenManager:
         self.app = app or self.app
 
         # 只有选择激活默认路由，才会注册对应的handler 与 blueprint
-        activate_default_route = app.config.get('ACTIVATE_DEFAULT_ROUTE', ACTIVATE_DEFAULT_ROUTE)
-        if activate_default_route:
-            self.routes = routes or self.routes or app.config.get('APIZEN_ROUTE', APIZEN_ROUTE)
+        if app.config.setdefault('ACTIVATE_DEFAULT_ROUTE', ACTIVATE_DEFAULT_ROUTE):
+            self.routes = routes or self.routes or app.config.setdefault('APIZEN_ROUTE', APIZEN_ROUTE)
             self.before_request = before_request or self.before_request
             self.after_request = after_request or self.after_request
             self.missing_args = missing_args or self.missing_args
@@ -92,7 +89,7 @@ class ApiZenManager:
             app.register_blueprint(apizen)
 
         # 导入Api版本
-        self.import_api_versions(versions=app.config.get('APIZEN_VERSIONS', APIZEN_VERSIONS))
+        self.import_api_versions(versions=app.config.setdefault('APIZEN_VERSIONS', APIZEN_VERSIONS))
 
     # 在蓝图上注册handler
     def register_handler(self):
