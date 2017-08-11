@@ -17,6 +17,13 @@ from .config import APIZEN_DATE_FMT, APIZEN_DATETIME_FMT
 __author__ = 'blackmatrix'
 
 """
+-------------------------------
+ApiZen Type Hints 使用的自定义类型
+-------------------------------
+适用版本：Flask、Tornado
+-------------------------------
+其他说明：
+
 继承自某个内建类型，是为了解决Pycharm关于type hints的警告。
 比如在一个函数中，type hints 使用自定义的DateTime，然后在函数内部使用了obj.year的方法，
 因为DateTime本身与内建的datetime类型没有继承关系，并且没有year属性，Pycharm就会提示DateTime类型没有year属性的警告。

@@ -14,9 +14,12 @@ from .exceptions import ApiSysExceptions
 
 __author__ = 'blackmatrix'
 
-'''
-接口处理方法的异常判断与执行
-'''
+"""
+-------------------------------
+ApiZen 接口处理方法的异常判断与执行
+-------------------------------
+适用版本：Flask、Tornado
+"""
 
 
 def raw_response(func):

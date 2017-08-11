@@ -17,6 +17,13 @@ from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS, ACTIVATE_DEFAULT_ROUTE)
 
 __author__ = 'blackmatrix'
 
+"""
+-------------------------------
+ApiZen初始化管理模块
+-------------------------------
+适用版本：Flask
+"""
+
 
 # 创建蓝图
 apizen = Blueprint('apizen', __name__)

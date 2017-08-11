@@ -10,9 +10,13 @@ from json import JSONDecodeError
 
 __author__ = 'blackmatrix'
 
-'''
-接口异常类型的管理与继承
-'''
+"""
+-------------------------------
+ApiZen 接口异常类型的管理模块
+-------------------------------
+适用版本：Flask、Tornado
+"""
+
 
 _no_value = object()
 
