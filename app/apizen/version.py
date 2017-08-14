@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2017/5/19 上午8:56
-# @Author  : Matrix
-# @Site    : 
-# @File    : version.py
+# @Time : 2017/8/4 上午11:03
+# @Author : Matrix
+# @Github : https://github.com/blackmatrix7/
+# @Blog : http://www.cnblogs.com/blackmatrix/
+# @File : version.py
 # @Software: PyCharm
 import copy
 
