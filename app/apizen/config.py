@@ -45,7 +45,7 @@ class BaseConfig(ConfigMixin):
     pass
 
 
-class DefaultConfig:
+class DefaultConfig(BaseConfig):
 
     # 是否激活ApiZen默认的路由
     ACTIVATE_DEFAULT_ROUTE = True

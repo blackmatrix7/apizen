@@ -91,8 +91,6 @@ def run_method(api_method, request_params):
 
     # 最终传递给接口处理方法的全部参数
     func_args = {}
-    if hasattr(api_method, 'format_retinfo') and api_method.format_retinfo:
-        print(True)
     # 获取函数方法的参数
     api_method_params = signature(api_method).parameters
 

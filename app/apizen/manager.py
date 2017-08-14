@@ -98,6 +98,9 @@ class ApiZenManager:
         # 导入Api版本
         self.import_api_versions(versions=app.config.setdefault('APIZEN_VERSIONS', default_config.APIZEN_VERSIONS))
 
+        # 复制一份配置文件
+        self.copy_apizen_config()
+
     # 在蓝图上注册handler
     def register_handler(self):
         apizen.before_request(self.before_request)
