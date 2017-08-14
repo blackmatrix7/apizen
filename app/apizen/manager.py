@@ -99,7 +99,7 @@ class ApiZenManager:
         self.import_api_versions(versions=app.config.setdefault('APIZEN_VERSIONS', default_config.APIZEN_VERSIONS))
 
         # 复制一份配置文件
-        self.copy_apizen_config()
+        self.copy_current_config()
 
     # 在蓝图上注册handler
     def register_handler(self):
@@ -117,7 +117,7 @@ class ApiZenManager:
             for version in versions:
                 importlib.import_module(version)
 
-    def copy_apizen_config(self):
+    def copy_current_config(self):
         if self.app.config:
             for k, v in default_config.items():
                 set_current_config(k, self.app.config.get(k, default_config[k]))
