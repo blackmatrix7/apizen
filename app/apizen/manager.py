@@ -242,8 +242,7 @@ def _exception_handler(ex, retinfo):
 def default_missing_args(ex):
     api_ex = ApiSysExceptions.missing_arguments
     retinfo = format_retinfo(err_code=api_ex.err_code,
-                             api_msg=api_ex.err_msg,
-                             dev_msg=','.join(ex.args))
+                             api_msg='{0}: {1}'.format(api_ex.err_msg, ','.join(ex.args)))
     return _exception_handler(api_ex, retinfo)
 
 

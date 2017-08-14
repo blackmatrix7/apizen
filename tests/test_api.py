@@ -45,16 +45,15 @@ class ApiZenTestCase(unittest.TestCase):
         resp = requests.get(url)
         assert resp.status_code == 400
         data = resp.json()
-        assert '缺少方法所需参数' in data['meta']['message']
+        assert data['meta']['message'] == '缺少方法所需参数: v'
 
     # 测试缺少方法名
     def test_missing_method(self):
-        self.api_method = 'matrix.api.first-api'
         url = '{host}?v={version}'.format(host=self.api_host, version=self.api_version)
         resp = requests.get(url)
         assert resp.status_code == 400
         data = resp.json()
-        assert '缺少方法名参数' in data['meta']['message']
+        assert data['meta']['message'] == '缺少方法所需参数: method'
 
     # 测试错误的Content-Type
     def test_error_content_type(self):

@@ -46,7 +46,7 @@ def after_request(param):
     time_consuming = str(g.response_time - g.request_time)
     log_info = {'api_method': g.get('api_method'), 'api_version': g.get('api_version'),
                 'request_param': g.get('request_param'), 'request_form': g.get('request_form'),
-                'querystring': g.get('request_param')['query_string'], 'request_json': g.get('request_json'),
+                'querystring': g.get('request_param', {}).get('query_string'), 'request_json': g.get('request_json'),
                 'response_param': response_param, 'request_raw_data': g.request_raw_data,
                 'request_time': g.get('request_time').strftime(current_app.config['APIZEN_DATETIME_FMT']),
                 'response_time': g.get('response_time').strftime(current_app.config['APIZEN_DATETIME_FMT']),
