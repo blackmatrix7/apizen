@@ -10,9 +10,9 @@ import json
 import copy
 from decimal import Decimal
 from json import JSONDecodeError
+from .config import current_config
 from datetime import datetime, date
 from .exceptions import ApiSysExceptions
-from .config import APIZEN_DATE_FMT, APIZEN_DATETIME_FMT
 
 __author__ = 'blackmatrix'
 
@@ -122,13 +122,9 @@ class TypeDate(date, TypeBase):
         return _value
 
     def __init__(self, format_=None):
-        try:
-            from flask import current_app
-            self.format_ = format_ or current_app.config.get('APIZEN_DATE_FMT', APIZEN_DATE_FMT)
-        except (KeyError, ImportError):
-            self.format_ = APIZEN_DATE_FMT
-        finally:
-            super().__init__()
+        from flask import current_app
+        self.format_ = format_ or current_app.config.get('APIZEN_DATE_FMT', current_config.APIZEN_DATE_FMT)
+        super().__init__()
 
 
 class TypeDatetime(datetime, TypeBase):
@@ -140,13 +136,9 @@ class TypeDatetime(datetime, TypeBase):
         return _value
 
     def __init__(self, format_=None):
-        try:
-            from flask import current_app
-            self.format_ = format_ or current_app.config.get('APIZEN_DATETIME_FMT', APIZEN_DATETIME_FMT)
-        except (KeyError, ImportError):
-            self.format_ = APIZEN_DATETIME_FMT
-        finally:
-            super().__init__()
+        from flask import current_app
+        self.format_ = format_ or current_app.config.get('APIZEN_DATETIME_FMT', current_config.APIZEN_DATETIME_FMT)
+        super().__init__()
 
 
 class TypeBool(bool, TypeBase):
@@ -238,6 +230,7 @@ def convert(key, value, default_value, type_hints):
         str: String,
         list: List,
         dict: Dict,
+        date: Date,
         datetime: DateTime
     }.get(type_hints, type_hints)
     try:

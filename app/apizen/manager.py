@@ -11,9 +11,9 @@ from datetime import datetime
 from collections import Iterable
 from .method import get_method, run_method
 from flask import g, request, jsonify, current_app
+from .config import default_config, set_current_config
 from .exceptions import SysException, ApiSysExceptions
 from werkzeug.exceptions import BadRequest, BadRequestKeyError
-from .config import (APIZEN_ROUTE,  APIZEN_VERSIONS, ACTIVATE_DEFAULT_ROUTE)
 
 __author__ = 'blackmatrix'
 
@@ -76,8 +76,8 @@ class ApiZenManager:
         self.app = app or self.app
 
         # 只有选择激活默认路由，才会注册对应的handler 与 blueprint
-        if app.config.setdefault('ACTIVATE_DEFAULT_ROUTE', ACTIVATE_DEFAULT_ROUTE):
-            self.routes = routes or self.routes or app.config.setdefault('APIZEN_ROUTE', APIZEN_ROUTE)
+        if app.config.setdefault('ACTIVATE_DEFAULT_ROUTE', default_config.ACTIVATE_DEFAULT_ROUTE):
+            self.routes = routes or self.routes or app.config.setdefault('APIZEN_ROUTE', default_config.APIZEN_ROUTE)
             self.before_request = before_request or self.before_request
             self.after_request = after_request or self.after_request
             self.missing_args = missing_args or self.missing_args
@@ -96,7 +96,7 @@ class ApiZenManager:
             app.register_blueprint(apizen)
 
         # 导入Api版本
-        self.import_api_versions(versions=app.config.setdefault('APIZEN_VERSIONS', APIZEN_VERSIONS))
+        self.import_api_versions(versions=app.config.setdefault('APIZEN_VERSIONS', default_config.APIZEN_VERSIONS))
 
     # 在蓝图上注册handler
     def register_handler(self):
@@ -113,6 +113,11 @@ class ApiZenManager:
         if versions:
             for version in versions:
                 importlib.import_module(version)
+
+    def copy_apizen_config(self):
+        if self.app.config:
+            for k, v in default_config.items():
+                set_current_config(k, self.app.config.get(k, default_config[k]))
 
 
 def format_retinfo(response=None, err_code=1000,
