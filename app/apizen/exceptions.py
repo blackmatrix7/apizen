@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Time  : 2017/5/19 上午8:54
 # @Author : Matrix
-# @Site :
+# @Github : https://github.com/blackmatrix7/
+# @Blog : http://www.cnblogs.com/blackmatrix/
 # @File : exceptions.py
 # @Software: PyCharm
 import types
@@ -16,7 +17,6 @@ ApiZen 接口异常类型的管理模块
 -------------------------------
 适用版本：Flask、Tornado
 """
-
 
 _no_value = object()
 
@@ -59,7 +59,7 @@ class SysException(Exception):
         if http_code is not _no_value:
             self.http_code = http_code
         return self
-    
+
 
 # API 系统层面异常信息
 class ApiSysExceptions:

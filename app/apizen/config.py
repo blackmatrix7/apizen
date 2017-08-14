@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Time  : 2017/7/26 21:41
 # @Author  : BlackMatrix
-# @Site : 
+# @Github : https://github.com/blackmatrix7/
+# @Blog : http://www.cnblogs.com/blackmatrix/
 # @File : config.py
 # @Software: PyCharm
 
@@ -73,7 +74,6 @@ current_config = {}
 
 def set_current_config(key, value):
     current_config[key] = value
-
 
 if __name__ == '__main__':
     pass
