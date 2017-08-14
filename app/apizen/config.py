@@ -7,6 +7,8 @@
 # @File : config.py
 # @Software: PyCharm
 
+__author__ = 'blackmatrix'
+
 """
 -------------------------------
 ApiZen 接口版本的注册、管理与继承功能
@@ -19,9 +21,8 @@ ApiZen提供一个默认的接口路由，默认为激活状态。
 通过配置文件可以进行关闭。
 如果不激活默认接口路由，则以下配置无效：
 APIZEN_ROUTE、APIZEN_RESP_FMT
-"""
 
-__author__ = 'blackmatrix'
+"""
 
 
 class ConfigMixin:
