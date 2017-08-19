@@ -5,25 +5,15 @@
 # @Site :
 # @File : __init__.py
 # @Software: PyCharm
-from functools import wraps
 from .manager import apizen, ApiZenManager
-from .method import get_method, run_method
+from .method import get_method, run_method, apiconfig
 
 __all__ = [
     ApiZenManager.__name__,
     'get_method',
-    'run_method'
+    'run_method',
+    'apiconfig'
 ]
-
-
-def apiconfig(raw_resp=False):
-    def _apiconfig(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            return func(*args, **kwargs)
-        wrapper.raw_resp = raw_resp
-        return wrapper
-    return _apiconfig
 
 
 __author__ = 'blackmatrix'

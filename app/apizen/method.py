@@ -5,7 +5,6 @@
 # @Site    :
 # @File    : controller.py
 # @Software: PyCharm
-from inspect import unwrap
 from functools import wraps
 from .schema import convert
 from .version import allversion
@@ -20,6 +19,21 @@ ApiZen 接口处理方法的异常判断与执行
 -------------------------------
 适用版本：Flask、Tornado
 """
+
+
+def apiconfig(raw_resp=False):
+    """
+    Api配置装饰器
+    :param raw_resp: 是否保留原始返回格式，默认不保留。 
+    :return: 
+    """
+    def _apiconfig(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        wrapper.raw_resp = raw_resp
+        return wrapper
+    return _apiconfig
 
 
 # 获取api处理函数及相关异常判断
