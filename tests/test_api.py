@@ -296,14 +296,6 @@ class ApiZenTestCase(unittest.TestCase):
         # 恢复正常的版本号
         self.api_version = '1.0'
 
-    # 测试错误的api配置
-    def test_error_api_config(self):
-        self.api_method = 'matrix.api.err-api'
-        resp = requests.get(self.request_url)
-        assert resp.status_code == 500
-        data = resp.json()
-        assert data['meta']['message'] == '错误的API配置'
-
     # 测试布尔值类型
     def test_is_bool(self):
         self.api_method = 'matrix.api.is-bool'

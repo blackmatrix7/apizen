@@ -22,20 +22,6 @@ ApiZen 接口处理方法的异常判断与执行
 """
 
 
-def raw_response(func):
-    """
-    装饰器，表示接口处理函数返回的值不需要统一的返回格式
-    :param func: 装饰的函数
-    :return:
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-
-    wrapper.raw_response = True
-    return wrapper
-
-
 # 获取api处理函数及相关异常判断
 def get_method(version, api_method, http_method):
     """
@@ -45,16 +31,6 @@ def get_method(version, api_method, http_method):
     :param http_method:  http请求方式
     :return:
     """
-    raw_resp = False
-    allow_anonymous = False
-
-    def check_decorator(func):
-        nonlocal raw_resp
-        nonlocal allow_anonymous
-        if hasattr(func, 'raw_response') and func.raw_response is True:
-            raw_resp = True
-        if hasattr(func, 'allow_anonymous') and func.allow_anonymous is True:
-            allow_anonymous = True
 
     # 检查版本号
     if version not in allversion:
@@ -80,10 +56,10 @@ def get_method(version, api_method, http_method):
 
     _func = methods[api_method].get('func')
 
-    # 解包，检查是否有不统一格式化输出的装饰器，或允许匿名访问情况
-    unwrap(_func, stop=check_decorator)
+    if not hasattr(_func, 'raw_resp'):
+        _func.raw_resp = False
 
-    return _func, raw_resp, allow_anonymous
+    return _func
 
 
 # 运行接口处理方法，及异常处理
