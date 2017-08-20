@@ -31,7 +31,7 @@ def apiconfig(raw_resp=False):
         @wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
-        wrapper.raw_resp = raw_resp
+        wrapper.__rawresp__ = raw_resp
         return wrapper
     return _apiconfig
 
@@ -70,8 +70,8 @@ def get_method(version, api_method, http_method):
 
     _func = methods[api_method].get('func')
 
-    if not hasattr(_func, 'raw_resp'):
-        _func.raw_resp = False
+    if not hasattr(_func, '__rawresp__'):
+        _func.__rawresp__ = False
 
     return _func
 

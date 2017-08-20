@@ -169,7 +169,7 @@ def default_api_routing():
     # 将请求参数传入接口处理函数并运行
     result = run_method(api_func, request_params=request_args)
 
-    if api_func.raw_resp is False:
+    if api_func.__rawresp__ is False:
         result = format_retinfo(result)
 
     g.result = result
