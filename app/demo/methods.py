@@ -5,7 +5,7 @@
 # @Site: https://github.com/blackmatrix7
 # @File: methods.py
 # @Software: PyCharm
-from .controller import *
+from .handler import *
 from ..apizen.version import ApiMethodsBase, version
 
 __author__ = 'blackmatrix'
