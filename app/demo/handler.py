@@ -6,8 +6,8 @@
 # @File: controller.py
 # @Software: PyCharm
 from functools import wraps
-from app.apizen.method import raw_response
-from app.webapi.exceptions import ApiSubExceptions
+from app.apizen import apiconfig
+from app.errors import Exceptions
 from app.apizen.schema import Integer, String, Float, Dict, DateTime, Email, List, Bool, Date, Money
 
 __author__ = 'blackmatix'
@@ -101,7 +101,7 @@ def raise_error():
     同时，返回的http code 也会根据异常配置中的status_code而改变
     :return:  返回异常信息
     """
-    raise ApiSubExceptions.unknown_error
+    raise Exceptions.unknown_error
 
 
 # 演示自定义异常信息
@@ -111,11 +111,11 @@ def custom_error():
     同时，返回的http code 也会根据异常配置中的status_code而改变
     :return:  返回异常信息
     """
-    raise ApiSubExceptions.unknown_error('这是一个自定义异常信息')
+    raise Exceptions.unknown_error('这是一个自定义异常信息')
 
 
 # 保留原始返回格式
-@raw_response
+@apiconfig(raw_resp=True)
 def raw_data():
     return {'id': 1, 'message': '保留原始返回格式'}
 

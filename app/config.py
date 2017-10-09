@@ -97,7 +97,7 @@ class DevConfig(BaseConfig):
 
 class TestConfig(BaseConfig):
     DEBUG = False
-    TESTING = True
+    TESTING = False
 
     # 端口号
     PORT = 8080

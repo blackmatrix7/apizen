@@ -5,13 +5,14 @@
 # @Site :
 # @File : __init__.py
 # @Software: PyCharm
-from .method import get_method, run_method
 from .manager import apizen, ApiZenManager
+from .method import get_method, run_method, apiconfig
 
 __all__ = [
     ApiZenManager.__name__,
     'get_method',
-    'run_method'
+    'run_method',
+    'apiconfig'
 ]
 
 

@@ -5,7 +5,7 @@
 # @Site: https://github.com/blackmatrix7
 # @File: methods.py
 # @Software: PyCharm
-from .controller import *
+from .handler import *
 from ..apizen.version import ApiMethodsBase, version
 
 __author__ = 'blackmatrix'
@@ -44,8 +44,6 @@ class DemoApiMethods(ApiMethodsBase):
         'matrix.api.get-post': {'func': first_api},
         # 停用API
         'matrix.api.api-stop': {'func': first_api, 'enable': False},
-        # 错误的API配置
-        'matrix.api.err-api': {'func': first_api()},
         # 布尔值类型
         'matrix.api.is-bool': {'func': is_bool},
         # 错误的函数编写
