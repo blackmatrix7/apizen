@@ -53,7 +53,7 @@ class SysException(Exception):
     # 让类实例变成可调用对象，用于接收自定义异常信息，并抛出
     def __call__(self, err_msg=_no_value, *, err_code=_no_value, http_code=_no_value):
         if err_msg is not _no_value:
-            self.err_msg = err_msg
+            self.err_msg = '{0},{1}'.format(self.err_msg, err_msg)
         if err_code is not _no_value:
             self.err_code = err_code
         if http_code is not _no_value:
