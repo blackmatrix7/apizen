@@ -7,7 +7,6 @@
 # @Software: PyCharm
 import copy
 from app.exts import db
-from ..oauth.models import Client
 from app.database import ModelBase
 from werkzeug.security import check_password_hash, generate_password_hash
 

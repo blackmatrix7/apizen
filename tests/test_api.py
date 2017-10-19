@@ -207,7 +207,7 @@ class ApiZenTestCase(unittest.TestCase):
         resp = requests.get(self.request_url)
         assert resp.status_code == 500
         data = resp.json()
-        assert data['meta']['message'] == '这是一个自定义异常信息'
+        assert data['meta']['message'] == '未知异常，这是一个自定义异常信息'
 
     # 测试保留原始返回结果
     def test_raw_data(self):

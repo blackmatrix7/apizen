@@ -8,7 +8,6 @@
 from flask import Flask
 from app.exts import db
 from app.user import user
-from app.oauth import oauth
 from decimal import Decimal
 from datetime import datetime
 from app.config import configs
@@ -89,7 +88,6 @@ def create_app(app_config=None):
 
 
 def register_blueprints(app):
-    app.register_blueprint(oauth, url_prefix='/oauth')
     app.register_blueprint(user, url_prefix='/user')
 
 
