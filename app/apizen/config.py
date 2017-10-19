@@ -27,6 +27,13 @@ APIZEN_ROUTE、APIZEN_RESP_FMT
 
 class ConfigMixin:
 
+    """
+    Config混合类，支持部分dict协议，实现以类似操作dict的方式操作配置文件。
+    """
+
+    def __setattr__(self, key, value):
+        raise AttributeError
+
     def __setitem__(self, key, value):
         raise AttributeError
 
@@ -34,10 +41,19 @@ class ConfigMixin:
         raise AttributeError
 
     def __getitem__(self, item):
-        return getattr(self, item)
+        try:
+            return getattr(self, item)
+        except AttributeError as ex:
+            raise KeyError('{0} object has no key {1}'.format(self.__class__.__name__, item)) from ex
+
+    def __iter__(self):
+        return (k for k in dir(self) if k.upper() == k)
+
+    def __contains__(self, key):
+        return hasattr(self, key)
 
     def items(self):
-        yield from {k: getattr(self, k, None) for k in dir(self) if k.upper() == k}.items()
+        return {k: getattr(self, k, None) for k in dir(self) if k.upper() == k}.items()
 
     def get(self, item, value=None):
         return getattr(self, item, value)
